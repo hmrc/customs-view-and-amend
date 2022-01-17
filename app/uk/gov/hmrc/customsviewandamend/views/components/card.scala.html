@@ -14,20 +14,25 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.customsviewandamend.config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
-@import views.html.helper.CSPNonce
-
 @this(
-        appConfig: AppConfig,
-        hmrcLayout: HmrcLayout
+        h3: h3,
+        p: p,
+        link: link,
+        inset: inset
 )
-@(pageTitle: Option[String] = None)(contentBlock: Html)(implicit request: Request[_], messages: Messages)
 
-<link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
+@(title: String,
+        p1: String,
+        linkMessage: String,
+        linkLocation: String,
+        insetMessage: Option[String] = None,
+        p2: Option[String] = None
+)(implicit messages: Messages)
 
-@hmrcLayout(
-    pageTitle = pageTitle,
-    nonce = CSPNonce.get,
-    isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled
-)(contentBlock)
+<div class="custom-card">
+    @h3(title)
+    @p(p1)
+    @insetMessage.map(inset(_))
+    @p2.map(p(_))
+    @link(linkMessage, linkLocation)
+</div>
