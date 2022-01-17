@@ -1,5 +1,11 @@
 # microservice specific routes
 
 ->         /hmrc-frontend           hmrcfrontend.Routes
-GET        /                        uk.gov.hmrc.customsviewandamend.controllers.HelloWorldController.helloWorld
+GET        /                        uk.gov.hmrc.customsviewandamend.controllers.ClaimsOverview.show
+
+GET        /claims-in-progress      uk.gov.hmrc.customsviewandamend.controllers.ClaimsOverview.showInProgressClaimList
+GET        /pending-claims          uk.gov.hmrc.customsviewandamend.controllers.ClaimsOverview.showPendingClaimList
+GET        /closed-claims           uk.gov.hmrc.customsviewandamend.controllers.ClaimsOverview.showClosedClaimList
+GET        /detail/:claim           uk.gov.hmrc.customsviewandamend.controllers.ClaimsOverview.claimDetail(claim: String)
+
 GET        /assets/*file            controllers.Assets.versioned(path = "/public", file: Asset)

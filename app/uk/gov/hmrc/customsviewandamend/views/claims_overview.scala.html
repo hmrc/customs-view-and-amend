@@ -28,26 +28,20 @@
         "You have 5 claims in progress",
         "Claims currently being reviewed by HMRC.",
         "View claims in progress",
-        "#"
+        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showInProgressClaimList.url
     )
     @card(
         "You have 7 claims that are pending",
         "A HMRC caseworker has asked you for additional information.",
         "View claims that are pending",
-        "#",
+        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showPendingClaimList.url,
         insetMessage = Some("You have 5 unread messages.")
-    )
-    @card(
-        "You have 1 claim pending refusal",
-        "This decision can be appealed as a ‘Right to be heard’.",
-        "View claims pending refusal",
-        "#"
     )
     @card(
         "You have 2 closed claims",
         "Claims closed when HMRC has not received a response in time, are rejected or resolved.",
         "View closed claims",
-        "#",
+        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showClosedClaimList.url,
         p2 = Some("Closed claims will be removed one month from date of closure.")
     )
 }
