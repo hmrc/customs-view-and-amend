@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.customsviewandamend.views.html.Layout
-@import uk.gov.hmrc.customsviewandamend.models._
+package models
 
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
+sealed trait ClaimType
 
-@(claims: Seq[InProgressClaim])(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = Some("Claims that are in progress")) {
-    @h1("Claims that are in progress", classes = "govuk-heading-xl")
-    @claimTable(claims, InProgress)
-}
+case object InProgress extends ClaimType
+case object Pending extends ClaimType
+case object Closed extends ClaimType

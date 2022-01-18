@@ -14,14 +14,11 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.customsviewandamend.views.html.Layout
-@import uk.gov.hmrc.customsviewandamend.models._
-
 @this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
 
-@(claims: Seq[PendingClaim])(implicit request: Request[_], messages: Messages)
+@(claims: Seq[InProgressClaim])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("Claims that are pending")) {
-    @h1("Claims that are pending", classes = "govuk-heading-xl")
-    @claimTable(claims, Pending)
+@layout(pageTitle = Some("Claims that are in progress")) {
+    @h1("Claims that are in progress", classes = "govuk-heading-xl")
+    @claimTable(claims, InProgress)
 }

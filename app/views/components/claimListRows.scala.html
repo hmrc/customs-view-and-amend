@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,12 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.customsviewandamend.models
+@this()
 
-sealed trait ClaimType
+@(col1: String, col2: String, col3: String, col4: String)(implicit messages: Messages)
 
-case object InProgress extends ClaimType
-case object Pending extends ClaimType
-case object Closed extends ClaimType
+<td class="govuk-table__cell">@col1</td>
+<td class="govuk-table__cell">@col2</td>
+<td class="govuk-table__cell">@col3</td>
+<td class="govuk-table__cell">@col4</td>

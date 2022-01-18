@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@this()
+@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
 
-@(link: link, col2: String, col3: String, col4: String)(implicit messages: Messages)
+@(claims: Seq[PendingClaim])(implicit request: Request[_], messages: Messages)
 
-<td class="govuk-table__cell">@link</td>
-<td class="govuk-table__cell">@col2</td>
-<td class="govuk-table__cell">@col3</td>
-<td class="govuk-table__cell">@col4</td>
+@layout(pageTitle = Some("Claims that are pending")) {
+    @h1("Claims that are pending", classes = "govuk-heading-xl")
+    @claimTable(claims, Pending)
+}

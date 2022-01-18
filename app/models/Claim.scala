@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsviewandamend.models
+package models
 
 import java.time.LocalDate
 
 sealed trait Claim {
   val caseNumber: String
   val claimStartDate: LocalDate
-  val url: String = uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.claimDetail(caseNumber).url
+  val url: String = controllers.routes.ClaimsOverview.claimDetail(caseNumber).url
 }
 
 case class InProgressClaim(caseNumber: String, claimStartDate: LocalDate, newMessage: Boolean) extends Claim

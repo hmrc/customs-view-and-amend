@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsviewandamend.controllers
+package controllers
 
+import connector.FinancialsApiConnector
+import models.{ClosedClaim, InProgressClaim, PendingClaim}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.customsviewandamend.connector.FinancialsApiConnector
-import uk.gov.hmrc.customsviewandamend.models.{ClosedClaim, InProgressClaim, PendingClaim}
-import uk.gov.hmrc.customsviewandamend.views.html.claims_overview
-import uk.gov.hmrc.customsviewandamend.views.html.claims_closed
-import uk.gov.hmrc.customsviewandamend.views.html.claims_pending
-import uk.gov.hmrc.customsviewandamend.views.html.claims_in_progress
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import views.html.{claims_closed, claims_in_progress, claims_overview, claims_pending}
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 

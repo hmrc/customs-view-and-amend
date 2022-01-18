@@ -14,8 +14,6 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.customsviewandamend.views.html.Layout
-
 @this(layout: Layout, card: components.card, h1: components.h1, h2: components.h2)
 
 @()(implicit request: Request[_], messages: Messages)
@@ -28,20 +26,20 @@
         "You have 5 claims in progress",
         "Claims currently being reviewed by HMRC.",
         "View claims in progress",
-        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showInProgressClaimList.url
+        controllers.routes.ClaimsOverview.showInProgressClaimList.url
     )
     @card(
         "You have 7 claims that are pending",
         "A HMRC caseworker has asked you for additional information.",
         "View claims that are pending",
-        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showPendingClaimList.url,
+        controllers.routes.ClaimsOverview.showPendingClaimList.url,
         insetMessage = Some("You have 5 unread messages.")
     )
     @card(
         "You have 2 closed claims",
         "Claims closed when HMRC has not received a response in time, are rejected or resolved.",
         "View closed claims",
-        uk.gov.hmrc.customsviewandamend.controllers.routes.ClaimsOverview.showClosedClaimList.url,
+        controllers.routes.ClaimsOverview.showClosedClaimList.url,
         p2 = Some("Closed claims will be removed one month from date of closure.")
     )
 }

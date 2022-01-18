@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.customsviewandamend.connector
+package connector
 
-import uk.gov.hmrc.customsviewandamend.models.{Claim, ClosedClaim, InProgressClaim, PendingClaim}
+import models.{Claim, ClosedClaim, InProgressClaim, PendingClaim}
+import models.ClosedClaim
 
 import java.time.LocalDate
 import scala.concurrent.Future

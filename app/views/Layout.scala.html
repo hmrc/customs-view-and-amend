@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.customsviewandamend.config.AppConfig
+@import config.AppConfig
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
@@ -33,6 +33,7 @@
         hmrcLanguageSelectHelper: HmrcLanguageSelectHelper
 
 )
+
 @(      pageTitle: Option[String] = None,
         backLink: Option[String] = None,
         helpAndSupport: Boolean = true,

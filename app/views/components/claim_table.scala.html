@@ -14,15 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.customsviewandamend.models.Claim
-@import uk.gov.hmrc.customsviewandamend.models.ClaimType
-@import uk.gov.hmrc.customsviewandamend.models.Closed
-@import uk.gov.hmrc.customsviewandamend.models.ClosedClaim
-@import uk.gov.hmrc.customsviewandamend.models.PendingClaim
-@import uk.gov.hmrc.customsviewandamend.models.InProgressClaim
-
-
-@this(claimListRows: claimListRows, link: link)
+@this(claimListRows: claimListRows)
 
 @(claims: Seq[Claim], claimType: ClaimType)(implicit messages: Messages)
 
@@ -51,7 +43,7 @@
         <tr class="govuk-table__row">
         @{
             claim match {
-                case e@ClosedClaim(caseNumber, claimStartDate, removalDate) => claimListRows(link(caseNumber, e.url, pWrapped = false), claimStartDate.toString, "Closed", removalDate.toString)
+                case e@ClosedClaim(caseNumber, claimStartDate, removalDate) => claimListRows(caseNumber, claimStartDate.toString, "Closed", removalDate.toString)
                 case PendingClaim(caseNumber, claimStartDate, newMessage) => claimListRows(caseNumber, claimStartDate.toString, "Pending", newMessage.toString)
                 case InProgressClaim(caseNumber, claimStartDate, newMessage) => claimListRows(caseNumber, claimStartDate.toString, "In Progress", newMessage.toString)
             }
