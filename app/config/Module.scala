@@ -16,14 +16,16 @@
 
 package config
 
-import javax.inject.{Inject, Singleton}
-import play.api.Configuration
+import com.google.inject.AbstractModule
+import controllers.actions.{AuthenticatedIdentifierAction, IdentifierAction}
+import repositories.{ClaimsCache, DefaultClaimsCache}
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
-@Singleton
-class AppConfig @Inject()(config: Configuration) {
-  lazy val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
-  lazy val registerCdsUrl: String = config.get[String]("urls.cdsRegisterUrl")
-  lazy val subscribeCdsUrl: String = config.get[String]("urls.cdsSubscribeUrl")
-  lazy val loginUrl: String = config.get[String]("urls.login")
-  lazy val loginContinueUrl: String = config.get[String]("urls.loginContinue")
+class Module extends AbstractModule {
+  override def configure(): Unit = {
+    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
+    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
+    bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
+  }
 }

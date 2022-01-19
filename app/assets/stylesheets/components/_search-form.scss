@@ -1,35 +1,72 @@
-.search-form {
-    display: flex;
-    flex-wrap: wrap;
-    &__label {
-        flex-basis: 100%;
-    }
+.gem-c-search {
+    position: relative;
+    margin-bottom: 30px;
 }
 
-.search-box {
-    display: flex;
+.gem-c-search__item-wrapper {
+    display: table;
     width: 100%;
-    &__input {
-        flex-grow: 1;
-        height: 29px;
-        padding: 5px 4px 4px;
-        border: 1px solid $silver-sand;
-    }
-    &__button {
-        position: relative;
-        width: 40px;
-        height: 40px;
-        border: none;
-        overflow: hidden;
-        text-indent: -5000px;
-        color: #fff;
-        background-color: $curious-blue;
-        background-repeat: no-repeat;
-        background-position: 80% 50%;
-        box-shadow:none;
-    }
+    background: #fff;
 }
 
-.icon-search {
-    background-image: url(./images/icon-search.png);
+.gem-c-search__submit-wrapper {
+    width: 1%;
+}
+
+.gem-c-search__item {
+    position: relative;
+    display: table-cell;
+    vertical-align: top;
+}
+
+.gem-c-search__item-wrapper .gem-c-search__submit {
+    background-color: #1d70b8;
+    color: #fff;
+}
+
+.gem-c-search__input[type="search"] {
+    font-size: 19px;
+    line-height: 1.4736842105;
+    height: 2.1052631579em;
+    padding: .3157894737em;
+}
+
+
+.gem-c-search__item-wrapper  .gem-c-search__input[type="search"] {
+    border-right-width: 0;
+}
+
+.gem-c-search__input[type="search"]:focus, .gem-c-search__input.focus[type="search"] {
+    z-index: 2;
+}
+
+.app-patch--search-input-override input[type="search"] {
+    box-sizing: border-box;
+}
+
+.gem-c-search__submit {
+    border: 0;
+    cursor: pointer;
+    border-radius: 0;
+    position: relative;
+    padding: 0;
+    width: 40px;
+    height: 40px;
+    background-image: url("../images/search-button-ca89b2a79f944909ceb7370d3f0b78811d32b96e883348fcd8886f63dd619585.png");
+    background-repeat: no-repeat;
+    background-position: 2px 50%;
+    text-indent: -5000px;
+    overflow: hidden;
+}
+
+.gem-c-search__input[type="search"] {
+    font-family: "nta",arial,sans-serif;
+    -webkit-font-smoothing: antialiased;
+    font-weight: 400;
+    margin: 0;
+    width: 100%;
+    border: 2px solid #0b0c0c;
+    background: #fff;
+    border-radius: 0;
+    appearance: none;
 }

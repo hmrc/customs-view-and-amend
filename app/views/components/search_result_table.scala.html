@@ -16,20 +16,20 @@
 
 @this(claimListRows: claimListRows)
 
-@(claims: Seq[Claim], claimType: ClaimType)(implicit messages: Messages)
+@(claim: Claim)(implicit messages: Messages)
 
 <table class="govuk-table">
-    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">C285 reimbursement claims</caption>
+    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">Your search returned 1 claim</caption>
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
             <th>@messages("claim.list.table.heading.case")</th>
             <th>@messages("claim.list.table.heading.start")</th>
             <th>@messages("claim.list.table.heading.status")</th>
             @{
-                claimType match {
-                    case Closed =>
+                claim match {
+                    case e:ClosedClaim =>
                         <th>{messages("claim.list.table.heading.removal")}</th>
-                    case Pending =>
+                    case e:PendingClaim =>
                         <th>{messages("claim.list.table.heading.pending")}</th>
                     case _ => Html("")
                 }
@@ -37,16 +37,14 @@
         </tr>
     </thead>
     <tbody class="govuk-table__body">
-    @for(claim <- claims) {
         <tr class="govuk-table__row">
         @{
             claim match {
                 case e@ClosedClaim(caseNumber, claimStartDate, removalDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.closed"), Some(e.formattedRemovalDate()))
-                case e@PendingClaim(caseNumber, claimStartDate, respondByDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.pending"), Some(e.formattedRespondByDate()))
+                case e@PendingClaim(caseNumber, claimStartDate, newMessage) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.pending"), Some(e.formattedRespondByDate()))
                 case e@InProgressClaim(caseNumber, claimStartDate, newMessage) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.inProgress"), None)
             }
         }
         </tr>
-    }
     </tbody>
 </table>

@@ -18,7 +18,7 @@
 
 @(claims: Seq[ClosedClaim])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("Claims that are closed")) {
-    @h1("Claims that are closed", classes = "govuk-heading-xl")
+@layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true) {
+    @h1("claim.list.closed.title", classes = "govuk-heading-xl")
     @claimTable(claims, Closed)
 }

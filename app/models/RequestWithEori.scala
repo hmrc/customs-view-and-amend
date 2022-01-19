@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,13 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
+package models
 
-@(claims: Seq[PendingClaim])(implicit request: Request[_], messages: Messages)
+import play.api.mvc.{Request, WrappedRequest}
 
-@layout(pageTitle = Some(messages("claim.list.pending.title")), fullWidth = true) {
-    @h1("claim.list.pending.title", classes = "govuk-heading-xl")
-    @claimTable(claims, Pending)
-}
+trait RequestWithEori[A] extends Request[A]
+
+final case class IdentifierRequest[A] (request: Request[A], eori: String)
+  extends WrappedRequest[A](request) with RequestWithEori[A]

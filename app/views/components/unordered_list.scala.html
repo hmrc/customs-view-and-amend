@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
+@this()
 
-@(claims: Seq[PendingClaim])(implicit request: Request[_], messages: Messages)
-
-@layout(pageTitle = Some(messages("claim.list.pending.title")), fullWidth = true) {
-    @h1("claim.list.pending.title", classes = "govuk-heading-xl")
-    @claimTable(claims, Pending)
-}
+@(msg: String*)(implicit messages: Messages)
+<ul class="govuk-list govuk-list--bullet govuk-!-margin-bottom-6">
+    @msg.map { listItem =>
+        <li>@messages(listItem)</li>
+    }
+</ul>

@@ -29,10 +29,10 @@
         p2: Option[String] = None
 )(implicit messages: Messages)
 
-<div class="custom-card">
-    @h3(title)
+<div class="custom-card govuk-!-padding-4">
+    @h3(title, classes = "govuk-heading-m govuk-!-margin-bottom-4")
     @p(p1)
     @insetMessage.map(inset(_))
     @p2.map(p(_))
-    @link(linkMessage, linkLocation)
+    @link(linkMessage, linkLocation, pWrapped = false)
 </div>

@@ -17,51 +17,69 @@
 package controllers
 
 import connector.FinancialsApiConnector
+import controllers.actions.IdentifierAction
 import models.{ClosedClaim, InProgressClaim, PendingClaim}
+import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.ClaimsCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{claims_closed, claims_in_progress, claims_overview, claims_pending}
+import views.html.{claim_detail, claims_closed, claims_in_progress, claims_overview, claims_pending}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ClaimsOverview @Inject()(
                                 mcc: MessagesControllerComponents,
+                                authenticate: IdentifierAction,
                                 financialsApiConnector: FinancialsApiConnector,
                                 claimsOverview: claims_overview,
                                 claimsClosed: claims_closed,
                                 claimsPending: claims_pending,
-                                claimsInProgress: claims_in_progress
+                                claimsInProgress: claims_in_progress,
+                                claimsCache: ClaimsCache,
+                                claimDetail: claim_detail
                               )(implicit executionContext: ExecutionContext)
-  extends FrontendController(mcc) {
-
-  def show: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(claimsOverview()))
+  extends FrontendController(mcc) with I18nSupport {
+  def show: Action[AnyContent] = authenticate.async { implicit request =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
+      val noOfInProgress = claims.collect { case e: InProgressClaim => e }.size
+      val noOfPending = claims.collect { case e: PendingClaim => e }.size
+      val noOfClosed = claims.collect { case e: ClosedClaim => e }.size
+      //TODO add number of notifications
+      Ok(claimsOverview(0, noOfPending, noOfClosed, noOfInProgress))
+    }
   }
 
-  def showInProgressClaimList: Action[AnyContent] = Action.async { implicit request =>
-    financialsApiConnector.getClaims().map { claims =>
+  def showInProgressClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       val x = claims.collect { case e: InProgressClaim => e }
       Ok(claimsInProgress(x))
     }
   }
 
-  def showPendingClaimList: Action[AnyContent] = Action.async { implicit request =>
-    financialsApiConnector.getClaims().map { claims =>
+  def showPendingClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       val x = claims.collect { case e: PendingClaim => e }
       Ok(claimsPending(x))
     }
   }
 
-  def showClosedClaimList: Action[AnyContent] = Action.async { implicit request =>
-    financialsApiConnector.getClaims().map { claims =>
+  def showClosedClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       val x = claims.collect { case e: ClosedClaim => e }
       Ok(claimsClosed(x))
     }
   }
 
-  def claimDetail(caseNumber: String): Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(s"Success $caseNumber"))
-
+  def claimDetail(caseNumber: String): Action[AnyContent] = authenticate.async { implicit request =>
+    claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
+      if (caseExists) {
+        financialsApiConnector.getClaimInformation(caseNumber).map { result =>
+          Ok(claimDetail(result))
+        }
+      } else {
+        Future.successful(Ok("No Result Found"))
+      }
+    }
   }
 }

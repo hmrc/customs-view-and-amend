@@ -22,6 +22,7 @@
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
+@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
 
 @this(
         appConfig: AppConfig,
@@ -30,13 +31,15 @@
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         navigationPanel: components.navigation_panel,
         eoriBanner: components.eori_banner,
-        hmrcLanguageSelectHelper: HmrcLanguageSelectHelper
+        hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
+        twoThirdsMainContent: TwoThirdsMainContent
 
 )
 
 @(      pageTitle: Option[String] = None,
         backLink: Option[String] = None,
         helpAndSupport: Boolean = true,
+        fullWidth: Boolean = false,
         deskpro: Boolean = true,
         welshToggle: Boolean = true,
         userResearchBanner: Boolean = true,
@@ -80,6 +83,7 @@
     signOutUrl = Some("#"),
     nonce = CSPNonce.get,
     backLinkUrl = backLink,
+    mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
     beforeContentBlock = Some(beforeContent),
     phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
     isWelshTranslationAvailable = welshToggle,

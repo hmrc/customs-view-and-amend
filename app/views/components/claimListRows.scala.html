@@ -14,11 +14,11 @@
  * limitations under the License.
  *@
 
-@this()
+@this(link: components.link)
 
-@(col1: String, col2: String, col3: String, col4: String)(implicit messages: Messages)
+@(linkUrl: String, linkMessage: String, col2: String, col3: String, col4: Option[String])(implicit messages: Messages)
 
-<td class="govuk-table__cell">@col1</td>
+<td class="govuk-table__cell">@link(linkMessage, linkUrl, pWrapped = false)</td>
 <td class="govuk-table__cell">@col2</td>
 <td class="govuk-table__cell">@col3</td>
-<td class="govuk-table__cell">@col4</td>
+@col4.map(value => <td class="govuk-table__cell">{value}</td>)

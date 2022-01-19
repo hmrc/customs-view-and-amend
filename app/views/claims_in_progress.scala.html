@@ -18,7 +18,7 @@
 
 @(claims: Seq[InProgressClaim])(implicit request: Request[_], messages: Messages)
 
-@layout(pageTitle = Some("Claims that are in progress")) {
-    @h1("Claims that are in progress", classes = "govuk-heading-xl")
+@layout(pageTitle = Some(messages("claim.list.progress.title")), fullWidth = true) {
+    @h1("claim.list.progress.title", classes = "govuk-heading-xl")
     @claimTable(claims, InProgress)
 }

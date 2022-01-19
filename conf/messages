@@ -1,2 +1,92 @@
 service.name = customs-view-and-amend
 service.text = This is your new service
+
+cf.header.eori=EORI:
+cf.header.eori.dash= -
+cf.header.companyName = {0} -
+
+feedback.before = This is a new service – your
+feedback.link = feedback
+feedback.after = will help us to improve it.
+
+service.banner.home = Home
+service.banner.start = Start a new claim
+service.banner.search = Find a claim
+
+claims.overview.title = Your claims for repayment of customs charges
+claims.overview.summary = Summary
+
+claims.overview.progress.h3 = You have {0} claims in progress
+claims.overview.progress.p1 = Claims currently being reviewed by HMRC.
+claims.overview.progress.link = View claims in progress
+
+claims.overview.pending.h3 = You have {0} claims that are pending
+claims.overview.pending.p1 = A HMRC caseworker has asked you for additional information.
+claims.overview.pending.indent = You have {0} unread messages.
+claims.overview.pending.link = View claims pending
+
+claims.overview.closed.h3 = You have {0} closed claims
+claims.overview.closed.p1 = Claims closed when HMRC has not received a response in time, are rejected or resolved.
+claims.overview.closed.p2 = Closed claims will be removed one month from date of closure.
+claims.overview.closed.link = View closed claims
+
+claim.detail.title = Case number {0}
+claim.detail.p1 = Claim details:
+claim.detail.mrn = MRN
+claim.detail.claimant.eori = Claimant's EORI
+claim.detail.status = Claim status
+claim.detail.start.date = Claim start date
+claim.detail.value = Value of claim
+claim.detail.name = Claimant's name
+claim.detail.email = Claimant's email address
+
+claim.list.closed.title = Claims that are closed
+claim.list.pending.title = Claims that are pending
+claim.list.progress.title = Claims that are in progress
+
+claim.list.table.heading.case = Case number
+claim.list.table.heading.start = Claim start date
+claim.list.table.heading.status = Claim status
+claim.list.table.heading.pending = Respond by date
+claim.list.table.heading.removal = Removal date
+
+claim.search.title = Find a claim
+claim.search.p1 = Enter a case number or Movement Reference Number (MRN)
+claim.search.hint = For example, NDRC-1234 or 22GBJD4DCMAM33DOI2.
+claim.search.none.p1 = Your search using <strong>{0}</strong> has not returned any matching results.
+claim.search.none.p2 = Try searching again by:
+claim.search.none.bullet.1 = MRN
+claim.search.none.bullet.2 = double-checking your NDRC case number
+
+case.pending = Pending
+case.inProgress = In Progress
+case.closed = Closed
+
+# Date Format
+# ------------------------------------------------------------------------
+month.1 = January
+month.2 = February
+month.3 = March
+month.4 = April
+month.5 = May
+month.6 = June
+month.7 = July
+month.8 = August
+month.9 = September
+month.10 = October
+month.11 = November
+month.12 = December
+
+month.abbr.1 = Jan
+month.abbr.2 = Feb
+month.abbr.3 = Mar
+month.abbr.4 = Apr
+month.abbr.5 = May
+month.abbr.6 = Jun
+month.abbr.7 = Jul
+month.abbr.8 = Aug
+month.abbr.9 = Sep
+month.abbr.10 = Oct
+month.abbr.11 = Nov
+month.abbr.12 = Dec
+# ------------------------------------------------------------------------
