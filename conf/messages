@@ -1,5 +1,5 @@
-service.name = customs-view-and-amend
-service.text = This is your new service
+service.name = Customs view and amend
+back.link = Back
 
 cf.header.eori=EORI:
 cf.header.eori.dash= -
@@ -33,6 +33,9 @@ claims.overview.closed.link = View closed claims
 claim.detail.title = Case number {0}
 claim.detail.p1 = Claim details:
 claim.detail.mrn = MRN
+claim.detail.type = Claim type
+claim.detail.type.c285 = C285
+claim.detail.type.security = Security
 claim.detail.claimant.eori = Claimant's EORI
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
@@ -41,6 +44,8 @@ claim.detail.name = Claimant's name
 claim.detail.email = Claimant's email address
 
 claim.list.closed.title = Claims that are closed
+claim.list.closed.p1 = Claims will be removed from this list on the removal date.
+
 claim.list.pending.title = Claims that are pending
 claim.list.progress.title = Claims that are in progress
 

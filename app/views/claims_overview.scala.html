@@ -14,9 +14,11 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
+
 @this(layout: Layout, card: components.card, h1: components.h1, h2: components.h2)
 
-@(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages)
+@(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claims.overview.title"))) {
     @h1("claims.overview.title", classes = "govuk-heading-xl")

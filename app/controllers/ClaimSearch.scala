@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.AppConfig
 import connector.FinancialsApiConnector
 import controllers.actions.{EmailAction, IdentifierAction}
 import forms.SearchFormProvider
@@ -34,7 +35,7 @@ class ClaimSearch @Inject()(connector: FinancialsApiConnector,
                             searchForm: SearchFormProvider,
                             searchClaim: search_claims,
                             authenticate: IdentifierAction,
-                            verifyEmail: EmailAction)(implicit executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                            verifyEmail: EmailAction)(implicit executionContext: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   val formProvider: Form[String] = searchForm()
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail

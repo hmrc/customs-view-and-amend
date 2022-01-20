@@ -14,20 +14,22 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
+
 @this(layout: Layout, h1: components.h1, p: components.p, summaryList: components.summaryList)
 
-@(claimDetail: ClaimDetail)(implicit request: IdentifierRequest[_], messages: Messages)
+@(claimDetail: ClaimDetail)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber))) {
+@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = Some(claimDetail.backLink())) {
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
     @p("claim.detail.p1")
     @summaryList(
      ("claim.detail.mrn", claimDetail.mrn.head),
      ("claim.detail.claimant.eori", claimDetail.claimantsEori),
-     ("claim.detail.status", claimDetail.claimStatus),
+     ("claim.detail.type", claimDetail.claimType.messageKey),
+     ("claim.detail.status", claimDetail.claimStatus.messageKey),
      ("claim.detail.start.date", claimDetail.formattedStartDate()),
      ("claim.detail.value", claimDetail.valueOfClaim.toString),
-     ("claim.detail.name", claimDetail.claimantsName),
-     ("claim.detail.email", claimDetail.claimantsEmail)
+     ("claim.detail.name", claimDetail.claimantsName)
     )
 }

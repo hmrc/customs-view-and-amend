@@ -16,10 +16,9 @@
 
 @this(claimListRows: claimListRows)
 
-@(claims: Seq[Claim], claimType: ClaimType)(implicit messages: Messages)
+@(claims: Seq[Claim], claimType: ClaimStatus)(implicit messages: Messages)
 
 <table class="govuk-table">
-    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">C285 reimbursement claims</caption>
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
             <th>@messages("claim.list.table.heading.case")</th>

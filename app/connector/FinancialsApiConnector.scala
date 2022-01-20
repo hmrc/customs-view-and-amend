@@ -16,7 +16,7 @@
 
 package connector
 
-import models.{AllClaims, Claim, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, PendingClaim}
+import models.{AllClaims, C285, Claim, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, PendingClaim}
 import repositories.ClaimsCache
 
 import java.time.LocalDate
@@ -41,12 +41,13 @@ class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit execut
     }
   }
 
-  def getClaimInformation(caseNumber: String) = Future.successful(
+  def getClaimInformation(caseNumber: String): Future[ClaimDetail] = Future.successful(
     ClaimDetail(
       caseNumber,
       Seq("21GB03I52858073821"),
       "GB746502538945",
-      "InProgress",
+      InProgress,
+      C285,
       LocalDate.of(2021, 10, 23),
       1200,
       "Sarah Philips",

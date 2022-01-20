@@ -14,11 +14,13 @@
  * limitations under the License.
  *@
 
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
+@import config.AppConfig
+@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table, p: components.p)
 
-@(claims: Seq[ClosedClaim])(implicit request: IdentifierRequest[_], messages: Messages)
+@(claims: Seq[ClosedClaim])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true) {
+@layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.closed.title", classes = "govuk-heading-xl")
+    @p("claim.list.closed.p1")
     @claimTable(claims, Closed)
 }

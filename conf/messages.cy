@@ -1,5 +1,6 @@
 service.name = customs-view-and-amend
 service.text = Dyma'ch gwasanaeth newydd
+back.link=Yn ôl
 
 #Verify Your Email Address
 cf.verify.your.email.title=Mae angen i chi ddilysu’r cyfeiriad e-bost cofrestredig ar gyfer y Gwasanaeth Datganiadau Tollau

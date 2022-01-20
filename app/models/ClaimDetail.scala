@@ -25,13 +25,21 @@ import java.time.LocalDate
 case class ClaimDetail(caseNumber: String,
                        mrn: Seq[String],
                        claimantsEori: String,
-                       claimStatus: String,
+                       claimStatus: ClaimStatus,
+                       claimType: ClaimType,
                        claimStartDate: LocalDate,
                        valueOfClaim: Int,
                        claimantsName: String,
                        claimantsEmail: String
                       ) extends DateFormatters {
+
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+  def backLink(): String =
+    claimStatus match {
+      case InProgress => controllers.routes.ClaimsOverview.showInProgressClaimList.url
+      case Pending => controllers.routes.ClaimsOverview.showPendingClaimList.url
+      case Closed => controllers.routes.ClaimsOverview.showClosedClaimList.url
+    }
 }
 
 object ClaimDetail {

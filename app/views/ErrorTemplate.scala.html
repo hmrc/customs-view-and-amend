@@ -15,10 +15,11 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.Text
+@import config.AppConfig
 
 @this(layout: Layout)
 
-@(pageTitle: String, heading: String, message: String)(implicit request: IdentifierRequest[_], messages: Messages)
+@(pageTitle: String, heading: String, message: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 @layout(pageTitle = Some(pageTitle), companyBannerEnabled = false, navigationBannerEnabled = false) {
     <h1 class="govuk-heading-xl">@{Text(heading).asHtml}</h1>
     <p class="govuk-body">@{Text(message).asHtml}</p>

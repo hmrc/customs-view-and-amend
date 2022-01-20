@@ -17,7 +17,7 @@
 package repositories
 
 import models.Claim
-import org.mongodb.scala.model.Filters.{equal, exists}
+import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{IndexModel, IndexOptions, ReplaceOptions}
 import play.api.Configuration

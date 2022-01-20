@@ -16,8 +16,34 @@
 
 package models
 
-sealed trait ClaimType
+import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
 
-case object InProgress extends ClaimType
-case object Pending extends ClaimType
-case object Closed extends ClaimType
+sealed trait ClaimType {
+  val messageKey: String
+}
+
+case object C285 extends ClaimType {
+  override val messageKey: String = "claim.detail.type.c285"
+}
+case object Security extends ClaimType {
+  override val messageKey: String = "claim.detail.type.security"
+}
+
+object ClaimType {
+  implicit val format: Format[ClaimType] = new Format[ClaimType] {
+    override def writes(o: ClaimType): JsValue =
+      o match {
+        case C285 => JsString("Security")
+        case Security => JsString("C285")
+      }
+
+    override def reads(json: JsValue): JsResult[ClaimType] =
+      json match {
+        case JsString("SCTY") => JsSuccess(Security)
+        case JsString("NDRC") => JsSuccess(C285)
+        case e => JsError(s"Unexpected claimType from TPI02: $e")
+      }
+  }
+}
+
+

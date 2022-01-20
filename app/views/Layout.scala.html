@@ -23,10 +23,12 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
 
 @this(
         appConfig: AppConfig,
         hmrcLayout: HmrcLayout,
+        govukBackLink: GovukBackLink,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         navigationPanel: components.navigation_panel,
@@ -47,7 +49,7 @@
         companyBannerEnabled: Boolean = true,
         eori: Option[String] = None,
         companyName: Option[String] = None
-)(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages)
+)(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
 
@@ -65,14 +67,23 @@
 }
 
 @beforeContent = {
-    @if(navigationBannerEnabled) {
-        @navigationPanel()
-    }
-    @if(companyBannerEnabled) {
-        @eoriBanner(Some(request.eori), request.companyName)
-    }
+    @if(navigationBannerEnabled) { @navigationPanel() }
+    @if(companyBannerEnabled) { @eoriBanner(Some(request.eori), request.companyName) }
     @hmrcLanguageSelectHelper()
+    @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
+
 }
+
+    @additionalHead = {
+    @hmrcTimeoutDialog(TimeoutDialog(
+        title = Some(messages("timeout.title")),
+        timeout = Some(appConfig.timeout),
+        countdown = Some(appConfig.countdown),
+        keepAliveUrl = Some(request.uri),
+        signOutUrl = Some(routes.LogoutController.logout.url),
+        timeoutUrl = Some(routes.LogoutController.logoutNoSurvey.url)
+    ))
+    }
 
 @mainContent = {
     @contentBlock
@@ -82,8 +93,8 @@
 @hmrcLayout(
     userResearchBannerUrl = if (userResearchBanner) Some("appConfig.helpMakeGovUkBetterUrl") else None,
     pageTitle = fullPageTitle,
-    serviceUrl = Some("#"),
-    signOutUrl = Some("#"),
+    serviceUrl = Some(appConfig.homepage),
+    signOutUrl = Some(routes.LogoutController.logout.url),
     nonce = CSPNonce.get,
     backLinkUrl = backLink,
     mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),

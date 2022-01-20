@@ -16,6 +16,7 @@
 
 package controllers
 
+import config.AppConfig
 import connector.FinancialsApiConnector
 import controllers.actions.{EmailAction, IdentifierAction}
 import models.{ClosedClaim, IdentifierRequest, InProgressClaim, PendingClaim}
@@ -39,7 +40,7 @@ class ClaimsOverview @Inject()(
                                 claimsInProgress: claims_in_progress,
                                 claimsCache: ClaimsCache,
                                 claimDetail: claim_detail
-                              )(implicit executionContext: ExecutionContext)
+                              )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail

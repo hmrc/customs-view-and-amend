@@ -23,11 +23,18 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
-  val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
   val registerCdsUrl: String = config.get[String]("urls.cdsRegisterUrl")
   val subscribeCdsUrl: String = config.get[String]("urls.cdsSubscribeUrl")
   val loginUrl: String = config.get[String]("urls.login")
   val loginContinueUrl: String = config.get[String]("urls.loginContinue")
+  val homepage: String = config.get[String]("urls.homepage")
+  lazy val signOutUrl: String = config.get[String]("urls.signOut")
+  lazy val feedbackService = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
+    config.getOptional[String]("feedback.source").getOrElse("/CDS-FIN")
+
+  lazy val timeout: Int = config.get[Int]("timeout.timeout")
+  lazy val countdown: Int = config.get[Int]("timeout.countdown")
+
 
   val customsDataStore: String = servicesConfig.baseUrl("customs-data-store") +
     config.get[String]("microservice.services.customs-data-store.context")

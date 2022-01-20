@@ -15,6 +15,7 @@
  *@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import config.AppConfig
 
 @this(layout: Layout,
         formHelper: FormWithCSRF,
@@ -27,9 +28,9 @@
         unorderedList: components.unordered_list,
         searchInput: components.search_input)
 
-@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages)
+@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true) {
+@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
 
     @h1("claim.search.title")
     @p("claim.search.p1")
