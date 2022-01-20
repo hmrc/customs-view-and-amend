@@ -17,20 +17,24 @@
 package controllers
 
 import config.AppConfig
-import models.IdentifierRequest
+import controllers.actions.IdentifierAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.{Logger, LoggerLike}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.unauthorised
+import views.html.email.verify_your_email
 
 import javax.inject.Inject
 
-class UnauthorisedController @Inject()(
-                                        controllerComponents: MessagesControllerComponents,
-                                        unauthorisedView: unauthorised
-                                      )(implicit val appConfig: AppConfig) extends FrontendController(controllerComponents) with I18nSupport {
+class EmailController @Inject()(authenticate: IdentifierAction,
+                                verifyEmailView: verify_your_email,
+                                implicit val mcc: MessagesControllerComponents)
+                               (implicit val appConfig: AppConfig)
+  extends FrontendController(mcc) with I18nSupport {
 
-  def onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView()(IdentifierRequest(request, "", None), implicitly, implicitly))
+  val log: LoggerLike = Logger(this.getClass)
+
+  def showUnverified():Action[AnyContent] = authenticate { implicit request =>
+    Ok(verifyEmailView(appConfig.emailFrontendUrl))
   }
 }

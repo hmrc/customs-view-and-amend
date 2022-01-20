@@ -17,6 +17,7 @@
 package controllers.actions
 
 import config.AppConfig
+import connector.DataStoreConnector
 import controllers.routes
 import models.IdentifierRequest
 import play.api.mvc.Results._
@@ -34,6 +35,7 @@ trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent] with
 
 class AuthenticatedIdentifierAction @Inject()(
                                                override val authConnector: AuthConnector,
+                                               dataStoreConnector: DataStoreConnector,
                                                config: AppConfig,
                                                val parser: BodyParsers.Default
                                              )
@@ -45,7 +47,10 @@ class AuthenticatedIdentifierAction @Inject()(
       and Retrievals.affinityGroup and Retrievals.internalId and Retrievals.allEnrolments) {
       case Some(_) ~ _ ~ _ ~ Some(_) ~ Some(_) ~ allEnrolments =>
         allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
-          case Some(eori) => block(IdentifierRequest(request, eori.value))
+          case Some(eori) =>
+            dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
+              block(IdentifierRequest(request, eori.value, maybeCompanyName))
+            }
           case None => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
         }
     } recover {

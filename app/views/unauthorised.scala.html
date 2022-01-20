@@ -24,7 +24,7 @@
         newTabLink: components.newTabLink
 )
 
-@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
     @layout(pageTitle = Some(messages("cf.not-subscribed-to-cds.detail.title")), backLink = None) {
         @h1("cf.not-subscribed-to-cds.detail.heading",id = None, classes = "govuk-heading-l")

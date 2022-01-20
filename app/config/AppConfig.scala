@@ -16,14 +16,22 @@
 
 package config
 
-import javax.inject.{Inject, Singleton}
 import play.api.Configuration
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject()(config: Configuration) {
-  lazy val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
-  lazy val registerCdsUrl: String = config.get[String]("urls.cdsRegisterUrl")
-  lazy val subscribeCdsUrl: String = config.get[String]("urls.cdsSubscribeUrl")
-  lazy val loginUrl: String = config.get[String]("urls.login")
-  lazy val loginContinueUrl: String = config.get[String]("urls.loginContinue")
+class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
+  val welshLanguageSupportEnabled: Boolean = config.getOptional[Boolean]("features.welsh-language-support").getOrElse(false)
+  val registerCdsUrl: String = config.get[String]("urls.cdsRegisterUrl")
+  val subscribeCdsUrl: String = config.get[String]("urls.cdsSubscribeUrl")
+  val loginUrl: String = config.get[String]("urls.login")
+  val loginContinueUrl: String = config.get[String]("urls.loginContinue")
+
+  val customsDataStore: String = servicesConfig.baseUrl("customs-data-store") +
+    config.get[String]("microservice.services.customs-data-store.context")
+
+  val emailFrontendUrl: String = config.get[String]("urls.emailFrontend")
+
 }

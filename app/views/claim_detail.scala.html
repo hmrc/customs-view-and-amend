@@ -16,7 +16,7 @@
 
 @this(layout: Layout, h1: components.h1, p: components.p, summaryList: components.summaryList)
 
-@(claimDetail: ClaimDetail)(implicit request: Request[_], messages: Messages)
+@(claimDetail: ClaimDetail)(implicit request: IdentifierRequest[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber))) {
     @h1(messages("claim.detail.title", claimDetail.caseNumber))

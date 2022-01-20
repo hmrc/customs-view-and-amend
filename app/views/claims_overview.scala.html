@@ -16,27 +16,27 @@
 
 @this(layout: Layout, card: components.card, h1: components.h1, h2: components.h2)
 
-@(newMessageCount:Int = 0, numberOfPending: Int, numberOfClosed: Int, numberOfInProgress: Int)(implicit request: Request[_], messages: Messages)
+@(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("claims.overview.title"))) {
     @h1("claims.overview.title", classes = "govuk-heading-xl")
     @h2("claims.overview.summary", classes = "govuk-heading-l")
 
     @card(
-        messages("claims.overview.progress.h3", numberOfInProgress),
+        messages("claims.overview.progress.h3", allClaims.inProgressClaims.size),
         messages("claims.overview.progress.p1"),
         messages("claims.overview.progress.link"),
         controllers.routes.ClaimsOverview.showInProgressClaimList.url
     )
     @card(
-        messages("claims.overview.pending.h3", numberOfClosed),
+        messages("claims.overview.pending.h3", allClaims.pendingClaims.size),
         messages("claims.overview.pending.p1"),
         messages("claims.overview.pending.link"),
         controllers.routes.ClaimsOverview.showPendingClaimList.url,
         insetMessage = if (newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
     )
     @card(
-        messages("claims.overview.closed.h3", numberOfInProgress),
+        messages("claims.overview.closed.h3", allClaims.closedClaims.size),
         messages("claims.overview.closed.p1"),
         messages("claims.overview.closed.link"),
         controllers.routes.ClaimsOverview.showClosedClaimList.url,

@@ -17,10 +17,10 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import controllers.actions.IdentifierAction
-import models.{ClosedClaim, InProgressClaim, PendingClaim}
+import controllers.actions.{EmailAction, IdentifierAction}
+import models.{ClosedClaim, IdentifierRequest, InProgressClaim, PendingClaim}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import repositories.ClaimsCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.{claim_detail, claims_closed, claims_in_progress, claims_overview, claims_pending}
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class ClaimsOverview @Inject()(
                                 mcc: MessagesControllerComponents,
                                 authenticate: IdentifierAction,
+                                verifyEmail: EmailAction,
                                 financialsApiConnector: FinancialsApiConnector,
                                 claimsOverview: claims_overview,
                                 claimsClosed: claims_closed,
@@ -40,38 +41,41 @@ class ClaimsOverview @Inject()(
                                 claimDetail: claim_detail
                               )(implicit executionContext: ExecutionContext)
   extends FrontendController(mcc) with I18nSupport {
-  def show: Action[AnyContent] = authenticate.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      val noOfInProgress = claims.collect { case e: InProgressClaim => e }.size
-      val noOfPending = claims.collect { case e: PendingClaim => e }.size
-      val noOfClosed = claims.collect { case e: ClosedClaim => e }.size
+
+  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
+
+  //TODO sepearate this file
+  //TODO add case class with each claim type sequence
+  //TODO write tests
+  //TODO refactor views to be a bit more sensible
+  //TODO add missing messages e.g. UNAUTHORIZED
+
+  def show: Action[AnyContent] = actions.async { implicit request =>
+    financialsApiConnector.getClaims(request.eori).map { allClaims =>
       //TODO add number of notifications
-      Ok(claimsOverview(0, noOfPending, noOfClosed, noOfInProgress))
+      Ok(claimsOverview(0, allClaims))
     }
   }
 
-  def showInProgressClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+  def showInProgressClaimList: Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      val x = claims.collect { case e: InProgressClaim => e }
-      Ok(claimsInProgress(x))
+      Ok(claimsInProgress(claims.inProgressClaims))
     }
   }
 
-  def showPendingClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+  def showPendingClaimList: Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      val x = claims.collect { case e: PendingClaim => e }
-      Ok(claimsPending(x))
+      Ok(claimsPending(claims.pendingClaims))
     }
   }
 
-  def showClosedClaimList: Action[AnyContent] = authenticate.async { implicit request =>
+  def showClosedClaimList: Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      val x = claims.collect { case e: ClosedClaim => e }
-      Ok(claimsClosed(x))
+      Ok(claimsClosed(claims.closedClaims))
     }
   }
 
-  def claimDetail(caseNumber: String): Action[AnyContent] = authenticate.async { implicit request =>
+  def claimDetail(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
     claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
       if (caseExists) {
         financialsApiConnector.getClaimInformation(caseNumber).map { result =>

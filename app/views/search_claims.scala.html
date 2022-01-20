@@ -27,7 +27,7 @@
         unorderedList: components.unordered_list,
         searchInput: components.search_input)
 
-@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: Request[_], messages: Messages)
+@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true) {
 

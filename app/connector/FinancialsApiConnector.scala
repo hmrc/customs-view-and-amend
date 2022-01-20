@@ -16,7 +16,7 @@
 
 package connector
 
-import models.{Claim, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, PendingClaim}
+import models.{AllClaims, Claim, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, PendingClaim}
 import repositories.ClaimsCache
 
 import java.time.LocalDate
@@ -25,13 +25,19 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit executionContext: ExecutionContext) {
 
-  def getClaims(eori: String): Future[Seq[Claim]] = {
+  def getClaims(eori: String): Future[AllClaims] = {
     claimsCache.get(eori).flatMap {
       case Some(value) => Future.successful(value)
       case None =>
         simulateRetrieval().flatMap { claims =>
           claimsCache.set(eori, claims).map { _ => claims }
         }
+    }.map { claims =>
+      AllClaims(
+        claims.collect { case e: PendingClaim => e },
+        claims.collect { case e: InProgressClaim => e },
+        claims.collect { case e: ClosedClaim => e }
+      )
     }
   }
 

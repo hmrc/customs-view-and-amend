@@ -1,17 +1,17 @@
 # microservice specific routes
 
-->         /hmrc-frontend                 hmrcfrontend.Routes
-GET        /                              controllers.ClaimsOverview.show
+->          /hmrc-frontend                 hmrcfrontend.Routes
+GET         /                              controllers.ClaimsOverview.show
 
-GET        /claims-in-progress            controllers.ClaimsOverview.showInProgressClaimList
-GET        /pending-claims                controllers.ClaimsOverview.showPendingClaimList
-GET        /closed-claims                 controllers.ClaimsOverview.showClosedClaimList
-GET        /:claim/detail                 controllers.ClaimsOverview.claimDetail(claim: String)
+GET         /claims-in-progress            controllers.ClaimsOverview.showInProgressClaimList
+GET         /pending-claims                controllers.ClaimsOverview.showPendingClaimList
+GET         /closed-claims                 controllers.ClaimsOverview.showClosedClaimList
+GET         /:claim/detail                 controllers.ClaimsOverview.claimDetail(claim: String)
+GET         /verify-your-email             controllers.EmailController.showUnverified()
+
+GET         /search                        controllers.ClaimSearch.onPageLoad()
+POST        /search                        controllers.ClaimSearch.search()
 
 
-GET        /search                        controllers.ClaimSearch.onPageLoad()
-POST       /search                        controllers.ClaimSearch.search()
-
-
-GET        /not-subscribed-for-cds        controllers.UnauthorisedController.onPageLoad
-GET        /assets/*file                  controllers.Assets.versioned(path = "/public", file: Asset)
+GET         /not-subscribed-for-cds        controllers.UnauthorisedController.onPageLoad
+GET         /assets/*file                  controllers.Assets.versioned(path = "/public", file: Asset)

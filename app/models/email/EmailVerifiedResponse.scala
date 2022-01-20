@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,13 +12,20 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
+package models.email
 
-@(claims: Seq[PendingClaim])(implicit request: IdentifierRequest[_], messages: Messages)
+import play.api.libs.json.{Json, OFormat}
 
-@layout(pageTitle = Some(messages("claim.list.pending.title")), fullWidth = true) {
-    @h1("claim.list.pending.title", classes = "govuk-heading-xl")
-    @claimTable(claims, Pending)
+case class EmailVerifiedResponse(verifiedEmail: Option[String])
+
+object EmailVerifiedResponse {
+  implicit val format: OFormat[EmailVerifiedResponse] = Json.format[EmailVerifiedResponse]
 }
+
+sealed trait EmailResponses
+
+case object UnverifiedEmail extends EmailResponses
+
+case class UndeliverableEmail(email: String) extends EmailResponses

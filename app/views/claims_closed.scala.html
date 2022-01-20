@@ -16,7 +16,7 @@
 
 @this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table)
 
-@(claims: Seq[ClosedClaim])(implicit request: Request[_], messages: Messages)
+@(claims: Seq[ClosedClaim])(implicit request: IdentifierRequest[_], messages: Messages)
 
 @layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true) {
     @h1("claim.list.closed.title", classes = "govuk-heading-xl")

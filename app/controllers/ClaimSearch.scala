@@ -17,11 +17,12 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import controllers.actions.IdentifierAction
+import controllers.actions.{EmailAction, IdentifierAction}
 import forms.SearchFormProvider
+import models.IdentifierRequest
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.search_claims
 
@@ -32,20 +33,22 @@ class ClaimSearch @Inject()(connector: FinancialsApiConnector,
                             mcc: MessagesControllerComponents,
                             searchForm: SearchFormProvider,
                             searchClaim: search_claims,
-                            authenticate: IdentifierAction)(implicit executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
+                            authenticate: IdentifierAction,
+                            verifyEmail: EmailAction)(implicit executionContext: ExecutionContext) extends FrontendController(mcc) with I18nSupport {
 
   val formProvider: Form[String] = searchForm()
+  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def onPageLoad(): Action[AnyContent] = authenticate.async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = actions.async { implicit request =>
       Future.successful(Ok(searchClaim(formProvider)))
   }
 
-  def search(): Action[AnyContent] = authenticate.async { implicit request =>
+  def search(): Action[AnyContent] = actions.async { implicit request =>
     formProvider.bindFromRequest().fold(
-      _ => Future.successful(BadRequest(searchClaim(formProvider))),
+      _ => Future.successful(Ok(searchClaim(formProvider))),
       query =>
-        connector.getClaims(request.eori).map { claims =>
-          Ok(searchClaim(formProvider, claims.find(_.caseNumber == query), Some(query)))
+        connector.getClaims(request.eori).map { allClaims =>
+          Ok(searchClaim(formProvider, allClaims.findClaim(query), Some(query)))
         }
     )
   }
