@@ -26,7 +26,7 @@
 
 @()(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-    @layout(pageTitle = Some(messages("cf.not-subscribed-to-cds.detail.title")), backLink = None) {
+    @layout(pageTitle = Some(messages("cf.not-subscribed-to-cds.detail.title")), backLink = None, companyBannerEnabled = false, navigationBannerEnabled = false) {
         @h1("cf.not-subscribed-to-cds.detail.heading",id = None, classes = "govuk-heading-l")
         @h2("cf.not-subscribed-to-cds.detail.how-to-get-access-info", id = None)
         @newTabLink("cf.not-subscribed-to-cds.detail.eori-link", appConfig.registerCdsUrl, preLinkMessage = Some("cf.not-subscribed-to-cds.detail.eori-info"))

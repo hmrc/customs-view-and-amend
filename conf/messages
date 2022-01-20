@@ -51,6 +51,7 @@ claim.list.table.heading.pending = Respond by date
 claim.list.table.heading.removal = Removal date
 
 claim.search.title = Find a claim
+claim.search.result = Your search returned
 claim.search.p1 = Enter a case number or Movement Reference Number (MRN)
 claim.search.hint = For example, NDRC-1234 or 22GBJD4DCMAM33DOI2.
 claim.search.none.p1 = Your search using <strong>{0}</strong> has not returned any matching results.
@@ -111,3 +112,13 @@ cf.undeliverable.email.list.1=updates on changes to the Customs Declaration Serv
 cf.undeliverable.email.list.2=urgent updates about goods in customs
 cf.undeliverable.email.list.3=some financial notifications, including Direct Debit notices and VAT
 cf.undeliverable.email.link-text=Verify or change email address
+
+# Not subscribed to CDS
+cf.not-subscribed-to-cds.detail.title=Not registered with CDS
+cf.not-subscribed-to-cds.detail.heading=To continue with this you need to get access to Customs Declaration Services (CDS)
+cf.not-subscribed-to-cds.detail.eori-info=You''ll need an
+cf.not-subscribed-to-cds.detail.eori-link=Economic Operator and Registration Identification (EORI) number (opens in a new window or tab)
+cf.not-subscribed-to-cds.detail.get-access-info=If you already have an EORI number, you can
+cf.not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
+cf.not-subscribed-to-cds.detail.how-to-get-access-info=How to get access to CDS
+cf.not-subscribed-to-cds.detail.process-application-info=It can take up to two hours for HMRC to process your application.

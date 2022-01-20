@@ -27,7 +27,7 @@
 )
 @(nextPage: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("cf.undeliverable.email.title"))) {
+@layout(pageTitle = Some(messages("cf.undeliverable.email.title")), companyBannerEnabled = false, navigationBannerEnabled = false) {
 
     @h1(msg = "cf.undeliverable.email.heading", classes = "govuk-heading-xl govuk-!-margin-bottom-4")
 

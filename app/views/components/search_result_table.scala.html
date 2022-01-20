@@ -19,7 +19,7 @@
 @(claim: Claim)(implicit messages: Messages)
 
 <table class="govuk-table">
-    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">Your search returned 1 claim</caption>
+    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">@messages("claim.search.result")</caption>
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
             <th>@messages("claim.list.table.heading.case")</th>

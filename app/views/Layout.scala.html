@@ -43,6 +43,8 @@
         deskpro: Boolean = true,
         welshToggle: Boolean = true,
         userResearchBanner: Boolean = true,
+        navigationBannerEnabled: Boolean = true,
+        companyBannerEnabled: Boolean = true,
         eori: Option[String] = None,
         companyName: Option[String] = None
 )(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages)
@@ -63,8 +65,12 @@
 }
 
 @beforeContent = {
-    @navigationPanel()
-    @eoriBanner(Some(request.eori), request.companyName)
+    @if(navigationBannerEnabled) {
+        @navigationPanel()
+    }
+    @if(companyBannerEnabled) {
+        @eoriBanner(Some(request.eori), request.companyName)
+    }
     @hmrcLanguageSelectHelper()
 }
 

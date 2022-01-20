@@ -32,8 +32,6 @@ case class ClaimDetail(caseNumber: String,
                        claimantsEmail: String
                       ) extends DateFormatters {
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
-
-
 }
 
 object ClaimDetail {

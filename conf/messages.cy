@@ -21,3 +21,13 @@ cf.undeliverable.email.list.1=diweddariadau ar newidiadau i’r Gwasanaeth Datga
 cf.undeliverable.email.list.2=diweddariadau brys am nwyddau yn y tollau
 cf.undeliverable.email.list.3=rhai hysbysiadau ariannol, gan gynnwys hysbysiadau Debyd Uniongyrchol a TAW
 cf.undeliverable.email.link-text=Dilysu neu newid y cyfeiriad e-bost
+
+# Not subscribed to CDS
+cf.not-subscribed-to-cds.detail.title=Heb gofrestru â’r Gwasanaeth Datgan Tollau
+cf.not-subscribed-to-cds.detail.heading=Er mwyn mynd yn eich blaen, mae angen i chi gael mynediad at y Gwasanaeth Datgan Tollau (CDS)
+cf.not-subscribed-to-cds.detail.eori-info=Bydd angen y canlynol arnoch:
+cf.not-subscribed-to-cds.detail.eori-link=Rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (EORI) (yn agor ffenestr neu dab newydd)
+cf.not-subscribed-to-cds.detail.get-access-info=Os oes gennych rif EORI eisoes, gallwch
+cf.not-subscribed-to-cds.detail.get-access-link=cael mynediad at CDS (yn agor ffenestr neu dab newydd)
+cf.not-subscribed-to-cds.detail.how-to-get-access-info=Sut i gael mynediad at CDS
+cf.not-subscribed-to-cds.detail.process-application-info=Gall gymryd hyd at awr i CThEM brosesu’ch cais.
