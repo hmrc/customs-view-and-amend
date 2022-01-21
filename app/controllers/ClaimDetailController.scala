@@ -16,9 +16,9 @@
 
 package controllers
 
+import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
-import controllers.actions.{EmailAction, IdentifierAction}
 import models.IdentifierRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}

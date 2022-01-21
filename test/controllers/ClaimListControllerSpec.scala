@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-package config
+package controllers
 
-import actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import com.google.inject.AbstractModule
-import repositories.{ClaimsCache, DefaultClaimsCache}
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+class ClaimListControllerSpec {
 
-class Module extends AbstractModule {
-  override def configure(): Unit = {
-    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
-    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
-  }
 }

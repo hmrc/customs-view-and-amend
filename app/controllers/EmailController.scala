@@ -16,8 +16,8 @@
 
 package controllers
 
+import actions.IdentifierAction
 import config.AppConfig
-import controllers.actions.IdentifierAction
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import play.api.{Logger, LoggerLike}

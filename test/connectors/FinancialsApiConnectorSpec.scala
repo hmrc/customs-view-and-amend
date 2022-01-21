@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package config
+package connectors
 
-import actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import com.google.inject.AbstractModule
-import repositories.{ClaimsCache, DefaultClaimsCache}
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import utils.SpecBase
 
-class Module extends AbstractModule {
-  override def configure(): Unit = {
-    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
-    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
+class FinancialsApiConnectorSpec extends SpecBase {
+
+  "test" should {
+    "do something" in {
+      pending
+    }
   }
+
 }

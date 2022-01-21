@@ -16,7 +16,7 @@
 
 package viewmodels
 import config.AppConfig
-import models.{Claim, ClosedClaim, InProgressClaim, PendingClaim}
+import models.{ClosedClaim, InProgressClaim, PendingClaim}
 
 case class PendingClaimListViewModel(pendingClaims: Seq[PendingClaim], page: Option[Int])(implicit appConfig: AppConfig) extends Paginated[PendingClaim] {
   override val allItems: Seq[PendingClaim] = pendingClaims

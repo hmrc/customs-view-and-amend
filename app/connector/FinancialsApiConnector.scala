@@ -16,7 +16,7 @@
 
 package connector
 
-import models.{AllClaims, C285, Claim, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, PendingClaim}
+import models._
 import repositories.ClaimsCache
 
 import java.time.LocalDate
@@ -25,6 +25,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit executionContext: ExecutionContext) {
 
+  //TODO handle error cases from API (maybe use eithers)
   def getClaims(eori: String): Future[AllClaims] = {
     claimsCache.get(eori).flatMap {
       case Some(value) => Future.successful(value)
@@ -41,6 +42,7 @@ class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit execut
     }
   }
 
+  //TODO handle error cases from API (maybe use eithers)
   def getClaimInformation(caseNumber: String): Future[ClaimDetail] = Future.successful(
     ClaimDetail(
       caseNumber,
@@ -54,27 +56,17 @@ class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit execut
       "sarah.philips@acmecorp.com"
     ))
 
-  def simulateRetrieval(): Future[Seq[Claim]] =
-    Future.successful(Seq(
-      ClosedClaim("NDRC-6666", LocalDate.of(2021, 2, 1), LocalDate.of(2022, 1, 1)),
-      ClosedClaim("NDRC-4592", LocalDate.of(2021, 1, 1), LocalDate.of(2022, 5, 1)),
-      ClosedClaim("NDRC-8318", LocalDate.of(2021, 4, 1), LocalDate.of(2022, 2, 1)),
-      ClosedClaim("NDRC-2318", LocalDate.of(2021, 1, 1), LocalDate.of(2022, 9, 1)),
-      ClosedClaim("NDRC-8496", LocalDate.of(2021, 6, 1), LocalDate.of(2022, 7, 1)),
-      PendingClaim("NDRC-1965", LocalDate.of(2021, 1, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-7321", LocalDate.of(2021, 3, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-3398", LocalDate.of(2021, 4, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-7792", LocalDate.of(2021, 1, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-3216", LocalDate.of(2021, 2, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-7876", LocalDate.of(2021, 3, 1), LocalDate.of(2021, 2, 18)),
-      PendingClaim("NDRC-1294", LocalDate.of(2021, 7, 1), LocalDate.of(2021, 2, 18)),
-      InProgressClaim("NDRC-7935", LocalDate.of(2021, 1, 1), newMessage = true),
-      InProgressClaim("NDRC-8975", LocalDate.of(2021, 3, 1), newMessage = true),
-      InProgressClaim("NDRC-3789", LocalDate.of(2021, 7, 1), newMessage = true),
-      InProgressClaim("NDRC-3753", LocalDate.of(2021, 8, 1), newMessage = true),
-      InProgressClaim("NDRC-4567", LocalDate.of(2021, 1, 1), newMessage = true),
-      InProgressClaim("NDRC-0476", LocalDate.of(2021, 6, 1), newMessage = true),
-      InProgressClaim("NDRC-8874", LocalDate.of(2021, 8, 1), newMessage = true)
-    ))
+  def simulateRetrieval(): Future[Seq[Claim]] = {
+    val closedClaims: Seq[ClosedClaim] = (1 to 2).map { value =>
+      ClosedClaim(s"NDRC-${1000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+    }
+    val pendingClaims: Seq[PendingClaim] = (1 to 2).map { value =>
+      PendingClaim(s"NDRC-${2000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+    }
+    val inProgressClaim: Seq[InProgressClaim] = (1 to 2).map { value =>
+      InProgressClaim(s"NDRC-${3000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), newMessage = true)
+    }
+    Future.successful(closedClaims ++ pendingClaims ++ inProgressClaim)
+  }
 
 }

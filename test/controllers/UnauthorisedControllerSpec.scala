@@ -14,18 +14,22 @@
  * limitations under the License.
  */
 
-package config
+package controllers
 
-import actions.{AuthenticatedIdentifierAction, IdentifierAction}
-import com.google.inject.AbstractModule
-import repositories.{ClaimsCache, DefaultClaimsCache}
-import uk.gov.hmrc.auth.core.AuthConnector
-import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.test.Helpers._
+import utils.SpecBase
 
-class Module extends AbstractModule {
-  override def configure(): Unit = {
-    bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
-    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
-    bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
+class UnauthorisedControllerSpec extends SpecBase {
+
+  "onPageLoad" should {
+    "return OK" in {
+      val app = application.build()
+
+      running(app) {
+        val result = route(app, fakeRequest("GET", routes.UnauthorisedController.onPageLoad.url)).value
+        status(result) mustBe OK
+      }
+    }
   }
 }

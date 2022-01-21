@@ -38,7 +38,7 @@
 
 )
 
-@(      pageTitle: Option[String] = None,
+@(pageTitle: Option[String] = None,
         backLink: Option[String] = None,
         helpAndSupport: Boolean = true,
         fullWidth: Boolean = false,
@@ -53,53 +53,60 @@
 
 <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
 
-@phaseBannerContent = {
-    @messages("feedback.before")
-    <a class='govuk-link' href='/contact/beta-feedback-unauthenticated?service=CDS-FIN'>@messages("feedback.link")</a>
-    @messages("feedback.after")
-}
-
-@fullPageTitle = @{
-    pageTitle match {
-        case Some(text) => Some(s"$text - ${messages("service.name")} - GOV.UK")
-        case _ => Some(s"${messages("service.name")} - GOV.UK")
+    @phaseBannerContent = {
+        @messages("feedback.before")
+        <a class='govuk-link' href='/contact/beta-feedback-unauthenticated?service=CDS-FIN'>@messages("feedback.link")</a>
+        @messages("feedback.after")
     }
-}
 
-@beforeContent = {
-    @if(navigationBannerEnabled) { @navigationPanel() }
-    @if(companyBannerEnabled) { @eoriBanner(Some(request.eori), request.companyName) }
-    @hmrcLanguageSelectHelper()
-    @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
+    @fullPageTitle = @{
+        pageTitle match {
+            case Some(text) => Some(s"$text - ${messages("service.name")} - GOV.UK")
+            case _ => Some(s"${messages("service.name")} - GOV.UK")
+        }
+    }
 
-}
+    @beforeContent = {
+        @if(navigationBannerEnabled) {
+            @navigationPanel()
+        }
+        @if(companyBannerEnabled) {
+            @eoriBanner(Some(request.eori), request.companyName)
+        }
+        @hmrcLanguageSelectHelper()
+        @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
+
+    }
 
     @additionalHead = {
-    @hmrcTimeoutDialog(TimeoutDialog(
-        title = Some(messages("timeout.title")),
-        timeout = Some(appConfig.timeout),
-        countdown = Some(appConfig.countdown),
-        keepAliveUrl = Some(request.uri),
-        signOutUrl = Some(routes.LogoutController.logout.url),
-        timeoutUrl = Some(routes.LogoutController.logoutNoSurvey.url)
-    ))
+        @hmrcTimeoutDialog(TimeoutDialog(
+            title = Some(messages("timeout.title")),
+            timeout = Some(appConfig.timeout),
+            countdown = Some(appConfig.countdown),
+            keepAliveUrl = Some(request.uri),
+            signOutUrl = Some(routes.LogoutController.logout.url),
+            timeoutUrl = Some(routes.LogoutController.logoutNoSurvey.url)
+        ))
     }
 
-@mainContent = {
-    @contentBlock
-    @if(deskpro) { @hmrcReportTechnicalIssueHelper() }
-}
+    @mainContent = {
+        @contentBlock
+        @if(deskpro) {
+            @hmrcReportTechnicalIssueHelper()
+        }
+    }
 
-@hmrcLayout(
-    userResearchBannerUrl = if (userResearchBanner) Some("appConfig.helpMakeGovUkBetterUrl") else None,
-    pageTitle = fullPageTitle,
-    serviceUrl = Some(appConfig.homepage),
-    signOutUrl = Some(routes.LogoutController.logout.url),
-    nonce = CSPNonce.get,
-    backLinkUrl = backLink,
-    mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
-    beforeContentBlock = Some(beforeContent),
-    phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
-    isWelshTranslationAvailable = welshToggle,
-    accessibilityStatementUrl = Some("/accessibility-statement/customs-financials")
-)(mainContent)
+    @hmrcLayout(
+        userResearchBannerUrl = if(userResearchBanner) Some("appConfig.helpMakeGovUkBetterUrl") else None,
+        pageTitle = fullPageTitle,
+        serviceUrl = Some(appConfig.homepage),
+        signOutUrl = Some(routes.LogoutController.logout.url),
+        nonce = CSPNonce.get,
+        backLinkUrl = backLink,
+        mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
+        additionalHeadBlock = Some(additionalHead),
+        beforeContentBlock = Some(beforeContent),
+        phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
+        isWelshTranslationAvailable = welshToggle,
+        accessibilityStatementUrl = Some("/accessibility-statement/customs-financials")
+    )(mainContent)

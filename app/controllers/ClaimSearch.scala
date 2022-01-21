@@ -16,9 +16,9 @@
 
 package controllers
 
+import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
-import controllers.actions.{EmailAction, IdentifierAction}
 import forms.SearchFormProvider
 import models.IdentifierRequest
 import play.api.data.Form

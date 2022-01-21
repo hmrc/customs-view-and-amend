@@ -27,14 +27,22 @@
         @h2("claims.overview.summary", classes = "govuk-heading-l")
 
         @card(
-            messages("claims.overview.progress.h3", allClaims.inProgressClaims.size),
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.progress.plural.h3", allClaims.inProgressClaims.size)
+            } else {
+                messages("claims.overview.progress.single.h3", allClaims.inProgressClaims.size)
+            },
             messages("claims.overview.progress.p1"),
             allClaims.inProgressClaims.nonEmpty,
             messages("claims.overview.progress.link"),
             controllers.routes.ClaimListController.showInProgressClaimList(None).url
         )
         @card(
-            messages("claims.overview.pending.h3", allClaims.pendingClaims.size),
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.pending.plural.h3", allClaims.pendingClaims.size)
+            } else {
+                messages("claims.overview.pending.single.h3", allClaims.pendingClaims.size)
+            },
             messages("claims.overview.pending.p1"),
             allClaims.pendingClaims.nonEmpty,
             messages("claims.overview.pending.link"),
@@ -42,7 +50,11 @@
             insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
         )
         @card(
-            messages("claims.overview.closed.h3", allClaims.closedClaims.size),
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.closed.plural.h3", allClaims.closedClaims.size)
+            } else {
+                messages("claims.overview.closed.single.h3", allClaims.closedClaims.size)
+            },
             messages("claims.overview.closed.p1"),
             allClaims.closedClaims.nonEmpty,
             messages("claims.overview.closed.link"),

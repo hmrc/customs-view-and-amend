@@ -16,16 +16,22 @@ service.banner.search = Find a claim
 claims.overview.title = Your claims for repayment of customs charges
 claims.overview.summary = Summary
 
-claims.overview.progress.h3 = You have {0} claims in progress
+claims.overview.progress.plural.h3 = You have {0} claims in progress
+claims.overview.progress.single.h3 = You have {0} claim in progress
+
 claims.overview.progress.p1 = Claims currently being reviewed by HMRC.
 claims.overview.progress.link = View claims in progress
 
-claims.overview.pending.h3 = You have {0} claims that are pending
+claims.overview.pending.plural.h3 = You have {0} claims pending
+claims.overview.pending.single.h3 = You have {0} claim pending
+
 claims.overview.pending.p1 = A HMRC caseworker has asked you for additional information.
 claims.overview.pending.indent = You have {0} unread messages.
 claims.overview.pending.link = View claims pending
 
-claims.overview.closed.h3 = You have {0} closed claims
+claims.overview.closed.plural.h3 = You have {0} closed claims
+claims.overview.closed.single.h3 = You have {0} closed claim
+
 claims.overview.closed.p1 = Claims closed when HMRC has not received a response in time, are rejected or resolved.
 claims.overview.closed.p2 = Closed claims will be removed one month from date of closure.
 claims.overview.closed.link = View closed claims
@@ -39,18 +45,18 @@ claim.detail.mrn = MRN
 claim.detail.type = Claim type
 claim.detail.type.c285 = C285
 claim.detail.type.security = Security
-claim.detail.claimant.eori = Claimant's EORI
+claim.detail.claimant.eori = Claimant''s EORI number
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant's name
 claim.detail.email = Claimant's email address
 
-claim.list.closed.title = Claims that are closed
+claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.
 
-claim.list.pending.title = Claims that are pending
-claim.list.progress.title = Claims that are in progress
+claim.list.pending.title = Claims pending
+claim.list.progress.title = Claims in progress
 claim.list.table.heading = All claims
 
 claim.list.table.heading.case = Case number
@@ -58,6 +64,10 @@ claim.list.table.heading.start = Claim start date
 claim.list.table.heading.status = Claim status
 claim.list.table.heading.pending = Respond by date
 claim.list.table.heading.removal = Removal date
+
+claim.list.table.hidden.closed = Showing all closed claims
+claim.list.table.hidden.pending = Showing all pending claims
+claim.list.table.hidden.progress = Showing all claims in progress
 
 claim.search.title = Find a claim
 claim.search.result = Your search returned
@@ -68,7 +78,7 @@ claim.search.none.p2 = Try searching again by:
 claim.search.none.bullet.1 = double-checking your case number or MRN
 
 case.pending = Pending
-case.inProgress = In Progress
+case.inProgress = In progress
 case.closed = Closed
 
 # Date Format
@@ -149,3 +159,11 @@ cf.pager.summary.of=of
 cf.pager.summary.to=to
 cf.pager.summary.accessibility=set of pages
 cf.pager.transactions=claims
+
+# Timeout Messages
+# ----------------------------------------------------------
+timeout.title = You’re about to be signed out
+timeout.message = For security reasons, you will be signed out of this service in
+timeout.keepAlive = Stay signed in
+timeout.signOut = Sign out
+# ----------------------------------------------------------

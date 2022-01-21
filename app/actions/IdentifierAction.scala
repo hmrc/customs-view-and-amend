@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package controllers.actions
+package actions
 
 import config.AppConfig
 import connector.DataStoreConnector
