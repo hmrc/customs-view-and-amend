@@ -35,6 +35,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val timeout: Int = config.get[Int]("timeout.timeout")
   lazy val countdown: Int = config.get[Int]("timeout.countdown")
 
+  lazy val itemsPerPage: Int = config.get[Int]("pagination.itemsPerPage")
+
 
   val customsDataStore: String = servicesConfig.baseUrl("customs-data-store") +
     config.get[String]("microservice.services.customs-data-store.context")

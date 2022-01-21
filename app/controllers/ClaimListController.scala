@@ -23,6 +23,7 @@ import models.IdentifierRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import viewmodels.{ClosedClaimListViewModel, InProgressClaimListViewModel, PendingClaimListViewModel}
 import views.html.{claims_closed, claims_in_progress, claims_pending}
 
 import javax.inject.Inject
@@ -40,21 +41,21 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def showInProgressClaimList: Action[AnyContent] = actions.async { implicit request =>
+  def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsInProgress(claims.inProgressClaims))
+      Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page)))
     }
   }
 
-  def showPendingClaimList: Action[AnyContent] = actions.async { implicit request =>
+  def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsPending(claims.pendingClaims))
+      Ok(claimsPending(PendingClaimListViewModel(claims.pendingClaims, page)))
     }
   }
 
-  def showClosedClaimList: Action[AnyContent] = actions.async { implicit request =>
+  def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsClosed(claims.closedClaims))
+      Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page)))
     }
   }
 }

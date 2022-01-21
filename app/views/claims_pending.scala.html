@@ -14,13 +14,17 @@
  * limitations under the License.
  *@
 
+@import viewmodels.PendingClaimListViewModel
 @import config.AppConfig
+@import views.html.components.pager
 
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table)
 
-@(claims: Seq[PendingClaim])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(model: PendingClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.pending.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.pending.title", classes = "govuk-heading-xl")
-    @claimTable(claims, Pending)
+    @claimTable(model.visibleItems, Pending)
+    @pager(model)
+
 }

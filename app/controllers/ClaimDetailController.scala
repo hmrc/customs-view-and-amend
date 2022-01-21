@@ -25,6 +25,7 @@ import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerCompon
 import repositories.ClaimsCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
+import views.html.errors.not_found
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,7 +35,8 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       financialsApiConnector: FinancialsApiConnector,
                                       verifyEmail: EmailAction,
                                       claimsCache: ClaimsCache,
-                                      claimDetail: claim_detail)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+                                      claimDetail: claim_detail,
+                                      notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
@@ -46,9 +48,8 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
           Ok(claimDetail(result))
         }
       } else {
-        Future.successful(NotFound)
+        Future.successful(NotFound(notFound()))
       }
     }
   }
-
 }

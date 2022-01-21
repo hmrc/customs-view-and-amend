@@ -31,14 +31,14 @@
             messages("claims.overview.progress.p1"),
             allClaims.inProgressClaims.nonEmpty,
             messages("claims.overview.progress.link"),
-            controllers.routes.ClaimListController.showInProgressClaimList.url
+            controllers.routes.ClaimListController.showInProgressClaimList(None).url
         )
         @card(
             messages("claims.overview.pending.h3", allClaims.pendingClaims.size),
             messages("claims.overview.pending.p1"),
             allClaims.pendingClaims.nonEmpty,
             messages("claims.overview.pending.link"),
-            controllers.routes.ClaimListController.showPendingClaimList.url,
+            controllers.routes.ClaimListController.showPendingClaimList(None).url,
             insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
         )
         @card(
@@ -46,7 +46,7 @@
             messages("claims.overview.closed.p1"),
             allClaims.closedClaims.nonEmpty,
             messages("claims.overview.closed.link"),
-            controllers.routes.ClaimListController.showClosedClaimList.url,
+            controllers.routes.ClaimListController.showClosedClaimList(None).url,
             p2 = Some(messages("claims.overview.closed.p2"))
         )
     } else {

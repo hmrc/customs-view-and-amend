@@ -15,12 +15,16 @@
  *@
 
 @import config.AppConfig
+@import viewmodels.ClosedClaimListViewModel
+@import views.html.components.pager
+
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table, p: components.p)
 
-@(claims: Seq[ClosedClaim])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(model: ClosedClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.closed.title", classes = "govuk-heading-xl")
     @p("claim.list.closed.p1")
-    @claimTable(claims, Closed)
+    @claimTable(model.visibleItems, Closed)
+    @pager(model)
 }

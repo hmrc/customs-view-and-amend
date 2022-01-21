@@ -15,12 +15,15 @@
  *@
 
 @import config.AppConfig
+@import viewmodels.InProgressClaimListViewModel
+@import views.html.components.pager
 
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table)
 
-@(claims: Seq[InProgressClaim])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(model: InProgressClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.progress.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.progress.title", classes = "govuk-heading-xl")
-    @claimTable(claims, InProgress)
+    @claimTable(model.visibleItems, InProgress)
+    @pager(model)
 }

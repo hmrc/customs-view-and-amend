@@ -130,3 +130,22 @@ cf.not-subscribed-to-cds.detail.get-access-info=If you already have an EORI numb
 cf.not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
 cf.not-subscribed-to-cds.detail.how-to-get-access-info=How to get access to CDS
 cf.not-subscribed-to-cds.detail.process-application-info=It can take up to two hours for HMRC to process your application.
+
+# Page Not Found Error
+cf.error.not-found.link.message = customs view and amend
+cf.error.not-found.title=Page not found
+cf.error.not-found.heading=Page not found
+cf.error.not-found.message.address-typed-wrong=If you typed the web address, check it is correct.
+cf.error.not-found.message.address-pasted-wrong=If you pasted the web address, check you copied the entire address.
+cf.error.not-found.message.go-to-home-page-text1=Or go to the
+cf.error.not-found.message.go-to-home-page-text2=home page.
+
+#Pagination
+# ----------------------------------------------------------
+cf.pager.prev=Previous
+cf.pager.next=Next
+cf.pager.summary=Showing
+cf.pager.summary.of=of
+cf.pager.summary.to=to
+cf.pager.summary.accessibility=set of pages
+cf.pager.transactions=claims
