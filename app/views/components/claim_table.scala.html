@@ -14,9 +14,11 @@
  * limitations under the License.
  *@
 
-@this(claimListRows: claimListRows)
+@this(claimListRows: claimListRows, h2: components.h2)
 
 @(claims: Seq[Claim], claimType: ClaimStatus)(implicit messages: Messages)
+
+@h2("claim.list.table.heading")
 
 <table class="govuk-table">
     <thead class="govuk-table__head">

@@ -36,9 +36,9 @@ case class ClaimDetail(caseNumber: String,
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
   def backLink(): String =
     claimStatus match {
-      case InProgress => controllers.routes.ClaimsOverview.showInProgressClaimList.url
-      case Pending => controllers.routes.ClaimsOverview.showPendingClaimList.url
-      case Closed => controllers.routes.ClaimsOverview.showClosedClaimList.url
+      case InProgress => controllers.routes.ClaimListController.showInProgressClaimList.url
+      case Pending => controllers.routes.ClaimListController.showPendingClaimList.url
+      case Closed => controllers.routes.ClaimListController.showClosedClaimList.url
     }
 }
 

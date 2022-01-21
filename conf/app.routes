@@ -3,10 +3,10 @@
 ->          /hmrc-frontend                 hmrcfrontend.Routes
 GET         /                              controllers.ClaimsOverview.show
 
-GET         /claims-in-progress            controllers.ClaimsOverview.showInProgressClaimList
-GET         /pending-claims                controllers.ClaimsOverview.showPendingClaimList
-GET         /closed-claims                 controllers.ClaimsOverview.showClosedClaimList
-GET         /:claim/detail                 controllers.ClaimsOverview.claimDetail(claim: String)
+GET         /claims-in-progress            controllers.ClaimListController.showInProgressClaimList
+GET         /pending-claims                controllers.ClaimListController.showPendingClaimList
+GET         /closed-claims                 controllers.ClaimListController.showClosedClaimList
+GET         /:claim/detail                 controllers.ClaimDetailController.claimDetail(claim: String)
 GET         /verify-your-email             controllers.EmailController.showUnverified()
 
 GET         /search                        controllers.ClaimSearch.onPageLoad()

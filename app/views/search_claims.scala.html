@@ -44,7 +44,7 @@
       @if(claim.isEmpty){
           @p(messages("claim.search.none.p1", q))
           @p("claim.search.none.p2")
-          @unorderedList("claim.search.none.bullet.1", "claim.search.none.bullet.2")
+          @unorderedList("claim.search.none.bullet.1")
       } else {
           @claim.map(v => {
               searchResult(v)

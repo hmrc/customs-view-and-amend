@@ -23,6 +23,7 @@
 
 @(title: String,
         p1: String,
+        linkEnabled: Boolean = true,
         linkMessage: String,
         linkLocation: String,
         insetMessage: Option[String] = None,
@@ -34,5 +35,5 @@
     @p(p1)
     @insetMessage.map(inset(_))
     @p2.map(p(_))
-    @link(linkMessage, linkLocation, pWrapped = false)
+    @if(linkEnabled){@link(linkMessage, linkLocation, pWrapped = false)}
 </div>

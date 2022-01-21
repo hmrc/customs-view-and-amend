@@ -30,6 +30,9 @@ claims.overview.closed.p1 = Claims closed when HMRC has not received a response 
 claims.overview.closed.p2 = Closed claims will be removed one month from date of closure.
 claims.overview.closed.link = View closed claims
 
+claims.overview.no-claims.p1 = You have no claims to view.
+claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appear.
+
 claim.detail.title = Case number {0}
 claim.detail.p1 = Claim details:
 claim.detail.mrn = MRN
@@ -48,6 +51,7 @@ claim.list.closed.p1 = Claims will be removed from this list on the removal date
 
 claim.list.pending.title = Claims that are pending
 claim.list.progress.title = Claims that are in progress
+claim.list.table.heading = All claims
 
 claim.list.table.heading.case = Case number
 claim.list.table.heading.start = Claim start date
@@ -59,10 +63,9 @@ claim.search.title = Find a claim
 claim.search.result = Your search returned
 claim.search.p1 = Enter a case number or Movement Reference Number (MRN)
 claim.search.hint = For example, NDRC-1234 or 22GBJD4DCMAM33DOI2.
-claim.search.none.p1 = Your search using <strong>{0}</strong> has not returned any matching results.
+claim.search.none.p1 = <strong>There are no matching results for {0}</strong>.
 claim.search.none.p2 = Try searching again by:
-claim.search.none.bullet.1 = MRN
-claim.search.none.bullet.2 = double-checking your NDRC case number
+claim.search.none.bullet.1 = double-checking your case number or MRN
 
 case.pending = Pending
 case.inProgress = In Progress

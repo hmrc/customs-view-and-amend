@@ -25,7 +25,7 @@ import java.time.LocalDate
 sealed trait Claim extends DateFormatters {
   val caseNumber: String
   val claimStartDate: LocalDate
-  val url: String = controllers.routes.ClaimsOverview.claimDetail(caseNumber).url
+  val url: String = controllers.routes.ClaimDetailController.claimDetail(caseNumber).url
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
 }
 object Claim {

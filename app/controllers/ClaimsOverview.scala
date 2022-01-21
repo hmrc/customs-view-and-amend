@@ -19,15 +19,13 @@ package controllers
 import config.AppConfig
 import connector.FinancialsApiConnector
 import controllers.actions.{EmailAction, IdentifierAction}
-import models.{ClosedClaim, IdentifierRequest, InProgressClaim, PendingClaim}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
-import repositories.ClaimsCache
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{claim_detail, claims_closed, claims_in_progress, claims_overview, claims_pending}
+import views.html.claims_overview
 
 import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 class ClaimsOverview @Inject()(
                                 mcc: MessagesControllerComponents,
@@ -35,56 +33,13 @@ class ClaimsOverview @Inject()(
                                 verifyEmail: EmailAction,
                                 financialsApiConnector: FinancialsApiConnector,
                                 claimsOverview: claims_overview,
-                                claimsClosed: claims_closed,
-                                claimsPending: claims_pending,
-                                claimsInProgress: claims_in_progress,
-                                claimsCache: ClaimsCache,
-                                claimDetail: claim_detail
                               )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
-
-  //TODO sepearate this file
-  //TODO add case class with each claim type sequence
-  //TODO write tests
-  //TODO refactor views to be a bit more sensible
-  //TODO add missing messages e.g. UNAUTHORIZED
-
-  def show: Action[AnyContent] = actions.async { implicit request =>
+  def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { allClaims =>
-      //TODO add number of notifications
+      //TODO add number of notifications - CR pending
       Ok(claimsOverview(0, allClaims))
-    }
-  }
-
-  def showInProgressClaimList: Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsInProgress(claims.inProgressClaims))
-    }
-  }
-
-  def showPendingClaimList: Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsPending(claims.pendingClaims))
-    }
-  }
-
-  def showClosedClaimList: Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsClosed(claims.closedClaims))
-    }
-  }
-
-  def claimDetail(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
-    claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
-      if (caseExists) {
-        financialsApiConnector.getClaimInformation(caseNumber).map { result =>
-          Ok(claimDetail(result))
-        }
-      } else {
-        Future.successful(Ok("No Result Found"))
-      }
     }
   }
 }

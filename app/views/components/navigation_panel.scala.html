@@ -19,14 +19,11 @@
 @()(implicit messages: Messages)
 
 <div class="govuk-phase-banner notifications-bar">
-    <p class="govuk-phase-banner__content">
 <ul class="govuk-list">
-    <li>@link("service.banner.home", routes.ClaimsOverview.show.url, pWrapped = false)</li>
-    <li>@link("service.banner.start", "#", pWrapped = false)</li>
-    <li>@link("service.banner.search", routes.ClaimSearch.onPageLoad().url, pWrapped = false)</li>
+    <li>@link("service.banner.home", routes.ClaimsOverview.show.url, pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
+    <li>@link("service.banner.start", "#", pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
+    <li>@link("service.banner.search", routes.ClaimSearch.onPageLoad().url, pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
 </ul>
-
-    </p>
 </div>
 
 

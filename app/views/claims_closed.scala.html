@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table, p: components.p)
+@this(layout: Layout, h1: components.h1, claimTable: components.claim_table, p: components.p)
 
 @(claims: Seq[ClosedClaim])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
