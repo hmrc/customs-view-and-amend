@@ -34,6 +34,7 @@ lazy val scoverageSettings = {
     ScoverageKeys.coverageExcludedPackages := List("<empty>"
       , "Reverse.*"
       , ".*views.*"
+      , ".*config.*"
       , ".*(BuildInfo|Routes|testOnly).*").mkString(";"),
     ScoverageKeys.coverageMinimumStmtTotal := 90,
     ScoverageKeys.coverageFailOnMinimum := true,

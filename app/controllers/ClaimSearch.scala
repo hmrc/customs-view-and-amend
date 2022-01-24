@@ -46,7 +46,7 @@ class ClaimSearch @Inject()(connector: FinancialsApiConnector,
 
   def search(): Action[AnyContent] = actions.async { implicit request =>
     formProvider.bindFromRequest().fold(
-      _ => Future.successful(Ok(searchClaim(formProvider))),
+      _ => Future.successful(BadRequest(searchClaim(formProvider))),
       query =>
         connector.getClaims(request.eori).map { allClaims =>
           Ok(searchClaim(formProvider, allClaims.findClaim(query), Some(query)))

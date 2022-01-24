@@ -18,7 +18,7 @@ package connectors
 
 import connector.DataStoreConnector
 import models.company.{CompanyAddress, CompanyInformationResponse}
-import models.email.{EmailResponse, UnverifiedEmail}
+import models.email.{EmailResponse, UndeliverableEmail, UndeliverableInformation, UndeliverableInformationEvent, UnverifiedEmail}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
@@ -28,6 +28,7 @@ import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import utils.SpecBase
 
+import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class DataStoreConnectorSpec extends SpecBase {
@@ -54,6 +55,40 @@ class DataStoreConnectorSpec extends SpecBase {
       running(app) {
         val response = connector.getEmail(eori)
         await(response) mustBe Left(UnverifiedEmail)
+      }
+    }
+
+    "return a UnverifiedEmail when unexpected response occurs" in new Setup {
+      val eori = "GB11111"
+
+      val emailResponse: EmailResponse = EmailResponse(None, None, None)
+
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.successful(emailResponse))
+
+      running(app) {
+        val response = connector.getEmail(eori)
+        val result = await(response)
+        result mustBe Left(UnverifiedEmail)
+      }
+    }
+
+    "return an UndeliverableEmail" in new Setup {
+      val eori = "GB11111"
+
+      val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(UndeliverableInformation(
+        "test",
+        "test",
+        "test",
+        LocalDateTime.now(),
+        UndeliverableInformationEvent("someId", "someEvent", "some@email.com", "test", None, None, "EORI")
+      )))
+
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.successful(emailResponse))
+
+      running(app) {
+        val response = connector.getEmail(eori)
+        val result = await(response)
+        result mustBe Left(UndeliverableEmail("email@email.com"))
       }
     }
 

@@ -31,7 +31,7 @@ sealed trait Claim extends DateFormatters {
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
-case class InProgressClaim(caseNumber: String, claimStartDate: LocalDate, newMessage: Boolean) extends Claim
+case class InProgressClaim(caseNumber: String, claimStartDate: LocalDate) extends Claim
 
 object InProgressClaim {
   implicit val format: OFormat[InProgressClaim] = Json.format[InProgressClaim]

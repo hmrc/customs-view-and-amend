@@ -43,9 +43,7 @@ class AuthenticatedIdentifierAction @Inject()(
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
-    authorised().retrieve(Retrievals.credentials and Retrievals.name and Retrievals.email
-      and Retrievals.affinityGroup and Retrievals.internalId and Retrievals.allEnrolments) {
-      case Some(_) ~ _ ~ _ ~ Some(_) ~ Some(_) ~ allEnrolments =>
+    authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
         allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
           case Some(eori) =>
             dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>

@@ -64,7 +64,7 @@ class FinancialsApiConnector @Inject()(claimsCache: ClaimsCache)(implicit execut
       PendingClaim(s"NDRC-${2000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
     }
     val inProgressClaim: Seq[InProgressClaim] = (1 to 2).map { value =>
-      InProgressClaim(s"NDRC-${3000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), newMessage = true)
+      InProgressClaim(s"NDRC-${3000 + value}", LocalDate.of(2021, 2, 1).plusDays(value))
     }
     Future.successful(closedClaims ++ pendingClaims ++ inProgressClaim)
   }

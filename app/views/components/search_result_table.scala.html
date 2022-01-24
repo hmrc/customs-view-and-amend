@@ -42,7 +42,7 @@
             claim match {
                 case e@ClosedClaim(caseNumber, claimStartDate, removalDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.closed"), Some(e.formattedRemovalDate()))
                 case e@PendingClaim(caseNumber, claimStartDate, newMessage) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.pending"), Some(e.formattedRespondByDate()))
-                case e@InProgressClaim(caseNumber, claimStartDate, newMessage) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.inProgress"), None)
+                case e@InProgressClaim(caseNumber, claimStartDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.inProgress"), None)
             }
         }
         </tr>

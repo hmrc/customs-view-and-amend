@@ -44,6 +44,6 @@ class DataStoreConnector @Inject()(http: HttpClient, appConfig: AppConfig)(impli
   def getCompanyName(eori: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/$eori/company-information"
       http.GET[CompanyInformationResponse](dataStoreEndpoint).map(response => Some(response.name))
-    }.recover { case e => None }
+    }.recover { case _ => None }
 
 }

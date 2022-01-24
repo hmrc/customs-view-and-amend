@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{C285, ClaimDetail, InProgress}
+import models.{C285, ClaimDetail, Closed, InProgress, Pending, PendingClaim}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -30,11 +30,37 @@ import scala.concurrent.Future
 class ClaimDetailControllerSpec extends SpecBase {
 
   "claimDetail" should {
-    "return OK when a claim has been found" in new Setup {
+    "return OK when a in progress claim has been found" in new Setup {
       when(mockClaimsCache.hasCaseNumber(any, any))
         .thenReturn(Future.successful(true))
       when(mockFinancialsApiConnector.getClaimInformation(any))
         .thenReturn(Future.successful(claimDetail))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "return OK when a pending claim has been found" in new Setup {
+      when(mockClaimsCache.hasCaseNumber(any, any))
+        .thenReturn(Future.successful(true))
+      when(mockFinancialsApiConnector.getClaimInformation(any))
+        .thenReturn(Future.successful(claimDetail.copy(claimStatus = Pending)))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "return OK when a closed claim has been found" in new Setup {
+      when(mockClaimsCache.hasCaseNumber(any, any))
+        .thenReturn(Future.successful(true))
+      when(mockFinancialsApiConnector.getClaimInformation(any))
+        .thenReturn(Future.successful(claimDetail.copy(claimStatus = Closed)))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)

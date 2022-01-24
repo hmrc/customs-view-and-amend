@@ -25,7 +25,7 @@ import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
 import uk.gov.hmrc.auth.core.authorise.Predicate
-import uk.gov.hmrc.auth.core.retrieve.Retrieval
+import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
@@ -38,7 +38,58 @@ class AuthActionSpec extends SpecBase {
     def onPageLoad(): Action[AnyContent] = authAction { _ => Results.Ok }
   }
 
+  implicit class Ops[A](a: A) {
+    def ~[B](b: B): A ~ B = new ~(a, b)
+  }
+
   "Auth Action" when {
+    "successfully passes all checks" should {
+      "call block" in {
+        val mockAuthConnector = mock[AuthConnector]
+
+        when(mockDataStoreConnector.getCompanyName(any)(any))
+          .thenReturn(Future.successful(None))
+
+        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
+          .thenReturn(Future.successful(
+              Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "test")), "Active")))))
+
+        val app = application.overrides().build()
+        val config = app.injector.instanceOf[AppConfig]
+        val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
+
+        val authAction = new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+        val controller = new Harness(authAction)
+
+        running(app) {
+          val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
+          status(result) mustBe OK
+        }
+      }
+    }
+
+    "the user does not have the correct enrolment" should {
+      "return unauthorised" in {
+        val mockAuthConnector = mock[AuthConnector]
+        
+        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
+          .thenReturn(Future.successful(
+            Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("INVALID", "test")), "Active")))))
+
+        val app = application.overrides().build()
+        val config = app.injector.instanceOf[AppConfig]
+        val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
+
+        val authAction = new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+        val controller = new Harness(authAction)
+
+        running(app) {
+          val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
+          status(result) mustBe SEE_OTHER
+        }
+      }
+    }
+
     "the user hasn't logged in" should {
 
       "redirect the user to log in " in {
