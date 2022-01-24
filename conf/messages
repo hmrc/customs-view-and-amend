@@ -39,7 +39,7 @@ claims.overview.closed.link = View closed claims
 claims.overview.no-claims.p1 = You have no claims to view.
 claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appear.
 
-claim.detail.title = Case number {0}
+claim.detail.title = Case reference {0}
 claim.detail.p1 = Claim details:
 claim.detail.mrn = MRN
 claim.detail.type = Claim type
@@ -59,7 +59,7 @@ claim.list.pending.title = Claims pending
 claim.list.progress.title = Claims in progress
 claim.list.table.heading = All claims
 
-claim.list.table.heading.case = Case number
+claim.list.table.heading.case = Case reference
 claim.list.table.heading.start = Claim start date
 claim.list.table.heading.status = Claim status
 claim.list.table.heading.pending = Respond by date
@@ -71,11 +71,11 @@ claim.list.table.hidden.progress = Showing all claims in progress
 
 claim.search.title = Find a claim
 claim.search.result = Your search returned
-claim.search.p1 = Enter a case number or Movement Reference Number (MRN)
+claim.search.p1 = Enter a case reference or Movement Reference Number (MRN)
 claim.search.hint = For example, NDRC-1234 or 22GBJD4DCMAM33DOI2.
 claim.search.none.p1 = <strong>There are no matching results for {0}</strong>.
 claim.search.none.p2 = Try searching again by:
-claim.search.none.bullet.1 = double-checking your case number or MRN
+claim.search.none.bullet.1 = double-checking your case reference or MRN
 
 case.pending = Pending
 case.inProgress = In progress
