@@ -1,0 +1,50 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@this(claimListRows: claimListRows)
+
+@(claim: Claim)(implicit messages: Messages)
+
+<table class="govuk-table">
+    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m">@messages("claim.search.result")</caption>
+    <thead class="govuk-table__head">
+        <tr class="govuk-table__row">
+            <th>@messages("claim.list.table.heading.case")</th>
+            <th>@messages("claim.list.table.heading.start")</th>
+            <th>@messages("claim.list.table.heading.status")</th>
+            @{
+                claim match {
+                    case e:ClosedClaim =>
+                        <th>{messages("claim.list.table.heading.removal")}</th>
+                    case e:PendingClaim =>
+                        <th>{messages("claim.list.table.heading.pending")}</th>
+                    case _ => Html("")
+                }
+            }
+        </tr>
+    </thead>
+    <tbody class="govuk-table__body">
+        <tr class="govuk-table__row">
+        @{
+            claim match {
+                case e@ClosedClaim(caseNumber, _, claimStartDate, removalDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.closed"), Some(e.formattedRemovalDate()))
+                case e@PendingClaim(caseNumber, _, claimStartDate, newMessage) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.pending"), Some(e.formattedRespondByDate()))
+                case e@InProgressClaim(caseNumber, _, claimStartDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.inProgress"), None)
+            }
+        }
+        </tr>
+    </tbody>
+</table>

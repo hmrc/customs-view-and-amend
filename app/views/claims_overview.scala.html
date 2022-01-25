@@ -1,0 +1,68 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+
+@this(layout: Layout, card: components.card, h1: components.h1, h2: components.h2, p: components.p)
+
+@(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = Some(messages("claims.overview.title"))) {
+    @h1("claims.overview.title", classes = "govuk-heading-xl")
+
+    @if(allClaims.collectAll.nonEmpty) {
+        @h2("claims.overview.summary", classes = "govuk-heading-l")
+
+        @card(
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.progress.plural.h3", allClaims.inProgressClaims.size)
+            } else {
+                messages("claims.overview.progress.single.h3", allClaims.inProgressClaims.size)
+            },
+            messages("claims.overview.progress.p1"),
+            allClaims.inProgressClaims.nonEmpty,
+            messages("claims.overview.progress.link"),
+            controllers.routes.ClaimListController.showInProgressClaimList(None).url
+        )
+        @card(
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.pending.plural.h3", allClaims.pendingClaims.size)
+            } else {
+                messages("claims.overview.pending.single.h3", allClaims.pendingClaims.size)
+            },
+            messages("claims.overview.pending.p1"),
+            allClaims.pendingClaims.nonEmpty,
+            messages("claims.overview.pending.link"),
+            controllers.routes.ClaimListController.showPendingClaimList(None).url,
+            insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
+        )
+        @card(
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages("claims.overview.closed.plural.h3", allClaims.closedClaims.size)
+            } else {
+                messages("claims.overview.closed.single.h3", allClaims.closedClaims.size)
+            },
+            messages("claims.overview.closed.p1"),
+            allClaims.closedClaims.nonEmpty,
+            messages("claims.overview.closed.link"),
+            controllers.routes.ClaimListController.showClosedClaimList(None).url,
+            p2 = Some(messages("claims.overview.closed.p2"))
+        )
+    } else {
+        @p("claims.overview.no-claims.p1")
+        @p("claims.overview.no-claims.p2")
+    }
+}

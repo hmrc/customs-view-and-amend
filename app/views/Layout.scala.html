@@ -1,0 +1,112 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
+@import views.html.helper.CSPNonce
+@import uk.gov.hmrc.govukfrontend.views.Aliases._
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLanguageSelectHelper
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
+@import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
+
+@this(
+        appConfig: AppConfig,
+        hmrcLayout: HmrcLayout,
+        govukBackLink: GovukBackLink,
+        hmrcTimeoutDialog: HmrcTimeoutDialog,
+        hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
+        navigationPanel: components.navigation_panel,
+        eoriBanner: components.eori_banner,
+        hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
+        twoThirdsMainContent: TwoThirdsMainContent
+
+)
+
+@(pageTitle: Option[String] = None,
+        backLink: Option[String] = None,
+        helpAndSupport: Boolean = true,
+        fullWidth: Boolean = false,
+        deskpro: Boolean = true,
+        welshToggle: Boolean = true,
+        userResearchBanner: Boolean = true,
+        navigationBannerEnabled: Boolean = true,
+        companyBannerEnabled: Boolean = true,
+        eori: Option[String] = None,
+        companyName: Option[String] = None
+)(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+
+<link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
+
+    @phaseBannerContent = {
+        @messages("feedback.before")
+        <a class='govuk-link' href='/contact/beta-feedback-unauthenticated?service=CDS-FIN'>@messages("feedback.link")</a>
+        @messages("feedback.after")
+    }
+
+    @fullPageTitle = @{
+        pageTitle match {
+            case Some(text) => Some(s"$text - ${messages("service.name")} - GOV.UK")
+            case _ => Some(s"${messages("service.name")} - GOV.UK")
+        }
+    }
+
+    @beforeContent = {
+        @if(navigationBannerEnabled) {
+            @navigationPanel()
+        }
+        @if(companyBannerEnabled) {
+            @eoriBanner(Some(request.eori), request.companyName)
+        }
+        @hmrcLanguageSelectHelper()
+        @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
+
+    }
+
+    @additionalHead = {
+        @hmrcTimeoutDialog(TimeoutDialog(
+            title = Some(messages("timeout.title")),
+            timeout = Some(appConfig.timeout),
+            countdown = Some(appConfig.countdown),
+            keepAliveUrl = Some(request.uri),
+            signOutUrl = Some(routes.LogoutController.logout.url),
+            timeoutUrl = Some(routes.LogoutController.logoutNoSurvey.url)
+        ))
+    }
+
+    @mainContent = {
+        @contentBlock
+        @if(deskpro) {
+            @hmrcReportTechnicalIssueHelper()
+        }
+    }
+
+    @hmrcLayout(
+        userResearchBannerUrl = if(userResearchBanner) Some("appConfig.helpMakeGovUkBetterUrl") else None,
+        pageTitle = fullPageTitle,
+        serviceUrl = Some(appConfig.homepage),
+        signOutUrl = Some(routes.LogoutController.logout.url),
+        nonce = CSPNonce.get,
+        backLinkUrl = backLink,
+        mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
+        additionalHeadBlock = Some(additionalHead),
+        beforeContentBlock = Some(beforeContent),
+        phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
+        isWelshTranslationAvailable = welshToggle,
+        accessibilityStatementUrl = Some("/accessibility-statement/customs-financials")
+    )(mainContent)
