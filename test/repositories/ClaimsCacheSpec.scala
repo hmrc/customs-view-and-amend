@@ -21,8 +21,8 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import utils.SpecBase
 
-import scala.concurrent.ExecutionContext.Implicits.global
 import java.time.LocalDate
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ClaimsCacheSpec extends SpecBase {
 

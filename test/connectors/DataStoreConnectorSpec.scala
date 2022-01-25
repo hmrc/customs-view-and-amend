@@ -18,7 +18,7 @@ package connectors
 
 import connector.DataStoreConnector
 import models.company.{CompanyAddress, CompanyInformationResponse}
-import models.email.{EmailResponse, UndeliverableEmail, UndeliverableInformation, UndeliverableInformationEvent, UnverifiedEmail}
+import models.email._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json

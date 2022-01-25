@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{C285, ClaimDetail, Closed, InProgress, Pending, PendingClaim, Security}
+import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import play.api.{Application, inject}

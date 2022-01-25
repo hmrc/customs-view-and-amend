@@ -17,13 +17,13 @@
 package connectors
 
 import connector.FinancialsApiConnector
-import models.responses.{AllClaimsDetail, AllClaimsResponse, SpecificClaimResponse}
 import models._
+import models.responses.{AllClaimsDetail, AllClaimsResponse, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.ClaimsCache
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import utils.SpecBase
 
 import java.time.LocalDate

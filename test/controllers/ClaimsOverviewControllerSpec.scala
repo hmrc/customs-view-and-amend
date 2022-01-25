@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{AllClaims, C285, ClosedClaim, InProgressClaim, PendingClaim}
+import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest

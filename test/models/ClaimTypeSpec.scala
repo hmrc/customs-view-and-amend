@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json.{JsError, JsString, JsSuccess}
+import play.api.libs.json.{JsString, JsSuccess}
 import utils.SpecBase
 
 class ClaimTypeSpec extends SpecBase {

@@ -16,11 +16,9 @@
 
 package actions
 
-import connector.DataStoreConnector
 import models.IdentifierRequest
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.inject
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core.retrieve.Email
