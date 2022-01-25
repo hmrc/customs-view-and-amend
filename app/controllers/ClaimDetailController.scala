@@ -19,7 +19,7 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
-import models.IdentifierRequest
+import models.{C285, ClaimType, IdentifierRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import repositories.ClaimsCache
@@ -41,11 +41,12 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def claimDetail(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
+  def claimDetail(caseNumber: String, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
     claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
       if (caseExists) {
-        financialsApiConnector.getClaimInformation(caseNumber).map { result =>
-          Ok(claimDetail(result))
+        financialsApiConnector.getClaimInformation(caseNumber, claimType).map {
+          case Some(value) => Ok(claimDetail(value))
+          case None => NotFound(notFound())
         }
       } else {
         Future.successful(NotFound(notFound()))

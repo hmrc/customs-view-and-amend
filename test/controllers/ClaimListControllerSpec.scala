@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{AllClaims, ClosedClaim, InProgressClaim, PendingClaim}
+import models.{AllClaims, C285, ClosedClaim, InProgressClaim, PendingClaim}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -31,7 +31,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showInProgressClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -44,7 +44,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showPendingClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -57,7 +57,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showClosedClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -73,13 +73,13 @@ class ClaimListControllerSpec extends SpecBase {
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
 
     val closedClaims: Seq[ClosedClaim] = (1 to 100).map { value =>
-      ClosedClaim(s"NDRC-${1000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+      ClosedClaim(s"NDRC-${1000 + value}", C285, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
     }
     val pendingClaims: Seq[PendingClaim] = (1 to 100).map { value =>
-      PendingClaim(s"NDRC-${2000 + value}", LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+      PendingClaim(s"NDRC-${2000 + value}", C285, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
     }
     val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
-      InProgressClaim(s"NDRC-${3000 + value}", LocalDate.of(2021, 2, 1).plusDays(value))
+      InProgressClaim(s"NDRC-${3000 + value}", C285, LocalDate.of(2021, 2, 1).plusDays(value))
     }
 
     val allClaims: AllClaims = AllClaims(

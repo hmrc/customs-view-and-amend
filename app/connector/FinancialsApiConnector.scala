@@ -18,12 +18,12 @@ package connector
 
 import config.AppConfig
 import models._
-import play.api.libs.json.{Format, Json, OFormat}
+import models.requests.{ClaimsRequest, SpecificClaimRequest}
+import models.responses.{AllClaimsResponse, SpecificClaimResponse}
 import repositories.ClaimsCache
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
-import java.time.LocalDate
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -33,51 +33,20 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
 
   private val baseUrl = appConfig.customsFinancialsApi
   private val getClaimsUrl = s"$baseUrl/get-claims"
-  private val getSpecificClaimUrl = s"$baseUrl/get-specific-claims"
-
-  case class ClaimsRequest(eori: String)
-
-  object ClaimsRequest {
-    implicit val format: Format[ClaimsRequest] = Json.format[ClaimsRequest]
-  }
-
-  case class SpecificClaimRequest(cdfPayService: String, cdfPayCaseNumber: String)
-
-  object SpecificClaimRequest {
-    implicit val format: Format[SpecificClaimRequest] = Json.format[SpecificClaimRequest]
-  }
-
-  case class CDFPayCaseDetail(CDFPayCaseNumber: String,
-                              CDFPayService: String,
-                              caseStatus: String,
-                              declarantEORI: String,
-                              importerEORI: String,
-                              claimantEORI: Option[String],
-                              claimAmountTotal: Option[String],
-                              totalCaseReimburseAmnt: Option[String]) {
-
-    def toClaim: Claim =
-      caseStatus match {
-        case "Open" => InProgressClaim(CDFPayCaseNumber, LocalDate.of(2000, 1, 1))
-        case "Pending Decision Letter" => PendingClaim(CDFPayCaseNumber, LocalDate.of(2000, 1, 1), LocalDate.of(2000, 1, 1))
-        case "Resolved-Approved" => ClosedClaim(CDFPayCaseNumber, LocalDate.of(2000, 1, 1), LocalDate.of(2000, 2, 1))
-        case _ => throw new RuntimeException("Unhandled error")
-      }
-  }
-
-  object CDFPayCaseDetail {
-    implicit val format: OFormat[CDFPayCaseDetail] = Json.format[CDFPayCaseDetail]
-  }
-
-  case class ClaimsResponse(claims: Seq[CDFPayCaseDetail])
-
-  object ClaimsResponse {
-    implicit val format: OFormat[ClaimsResponse] = Json.format[ClaimsResponse]
-  }
+  private val getSpecificClaimUrl = s"$baseUrl/get-specific-claim"
 
   def getClaims(eori: String)(implicit hc: HeaderCarrier): Future[AllClaims] = {
-    httpClient.POST[ClaimsRequest, ClaimsResponse](getClaimsUrl, ClaimsRequest(eori)).map { response =>
-      val claims: Seq[Claim] = response.claims.map(_.toClaim)
+    for {
+      cachedClaims <- claimsCache.get(eori)
+      claims <- cachedClaims match {
+        case Some(claims) => Future.successful(claims)
+        case None => httpClient.POST[ClaimsRequest, AllClaimsResponse](
+          getClaimsUrl, ClaimsRequest(eori)).flatMap { claimsResponse =>
+          val claims = claimsResponse.claims.map(_.toClaim)
+          claimsCache.set(eori, claims).map { _ => claims }
+        }
+      }
+    } yield {
       AllClaims(
         claims.collect { case e: PendingClaim => e },
         claims.collect { case e: InProgressClaim => e },
@@ -86,17 +55,11 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
     }
   }
 
-  //TODO handle error cases from API (maybe use eithers)
-  def getClaimInformation(caseNumber: String): Future[ClaimDetail] = Future.successful(
-    ClaimDetail(
-      caseNumber,
-      Seq("21GB03I52858073821"),
-      "GB746502538945",
-      InProgress,
-      C285,
-      LocalDate.of(2021, 10, 23),
-      1200,
-      "Sarah Philips",
-      "sarah.philips@acmecorp.com"
-    ))
+  def getClaimInformation(caseNumber: String, claimType: ClaimType)(implicit hc: HeaderCarrier): Future[Option[ClaimDetail]] = {
+    httpClient.POST[SpecificClaimRequest, SpecificClaimResponse](getSpecificClaimUrl, SpecificClaimRequest(claimType, caseNumber))
+      .map(v => Some(v.toClaimDetail(claimType)))
+      .recover {
+        case _ => None
+      }
+  }
 }

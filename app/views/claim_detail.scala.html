@@ -21,15 +21,29 @@
 @(claimDetail: ClaimDetail)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = Some(claimDetail.backLink())) {
-    @h1(messages("claim.detail.title", claimDetail.caseNumber))
-    @p("claim.detail.p1")
-    @summaryList(
+ @h1(messages("claim.detail.title", claimDetail.caseNumber))
+ @p("claim.detail.p1")
+ @{
+  claimDetail.claimantsEori match {
+   case Some(claimantEori) =>
+    summaryList(
      ("claim.detail.mrn", claimDetail.mrn.head),
-     ("claim.detail.claimant.eori", claimDetail.claimantsEori),
+     ("claim.detail.claimant.eori", claimantEori),
      ("claim.detail.type", claimDetail.claimType.messageKey),
      ("claim.detail.status", claimDetail.claimStatus.messageKey),
      ("claim.detail.start.date", claimDetail.formattedStartDate()),
      ("claim.detail.value", claimDetail.valueOfClaim.toString),
      ("claim.detail.name", claimDetail.claimantsName)
     )
+   case None =>
+    summaryList(
+     ("claim.detail.mrn", claimDetail.mrn.head),
+     ("claim.detail.type", claimDetail.claimType.messageKey),
+     ("claim.detail.status", claimDetail.claimStatus.messageKey),
+     ("claim.detail.start.date", claimDetail.formattedStartDate()),
+     ("claim.detail.value", claimDetail.valueOfClaim.toString),
+     ("claim.detail.name", claimDetail.claimantsName)
+    )
+  }
+ }
 }

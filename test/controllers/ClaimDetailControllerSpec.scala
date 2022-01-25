@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{C285, ClaimDetail, Closed, InProgress, Pending, PendingClaim}
+import models.{C285, ClaimDetail, Closed, InProgress, Pending, PendingClaim, Security}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -33,11 +33,11 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a in progress claim has been found" in new Setup {
       when(mockClaimsCache.hasCaseNumber(any, any))
         .thenReturn(Future.successful(true))
-      when(mockFinancialsApiConnector.getClaimInformation(any))
-        .thenReturn(Future.successful(claimDetail))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -46,11 +46,11 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a pending claim has been found" in new Setup {
       when(mockClaimsCache.hasCaseNumber(any, any))
         .thenReturn(Future.successful(true))
-      when(mockFinancialsApiConnector.getClaimInformation(any))
-        .thenReturn(Future.successful(claimDetail.copy(claimStatus = Pending)))
+      when(mockFinancialsApiConnector.getClaimInformation(any,any)(any))
+        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", C285).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -59,13 +59,26 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a closed claim has been found" in new Setup {
       when(mockClaimsCache.hasCaseNumber(any, any))
         .thenReturn(Future.successful(true))
-      when(mockFinancialsApiConnector.getClaimInformation(any))
-        .thenReturn(Future.successful(claimDetail.copy(claimStatus = Closed)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
         val result = route(app, request).value
         status(result) mustBe OK
+      }
+    }
+
+    "return NOT_FOUND when claim not found from the API" in new Setup {
+      when(mockClaimsCache.hasCaseNumber(any, any))
+        .thenReturn(Future.successful(true))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any)(any))
+        .thenReturn(Future.successful(None))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
       }
     }
 
@@ -74,7 +87,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(false))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -88,7 +101,7 @@ class ClaimDetailControllerSpec extends SpecBase {
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
       Seq("21GB03I52858073821"),
-      "GB746502538945",
+      Some("GB746502538945"),
       InProgress,
       C285,
       LocalDate.of(2021, 10, 23),

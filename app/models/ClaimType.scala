@@ -17,6 +17,7 @@
 package models
 
 import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
+import play.api.mvc.PathBindable
 
 sealed trait ClaimType {
   val messageKey: String
@@ -25,16 +26,34 @@ sealed trait ClaimType {
 case object C285 extends ClaimType {
   override val messageKey: String = "claim.detail.type.c285"
 }
+
 case object Security extends ClaimType {
   override val messageKey: String = "claim.detail.type.security"
 }
 
 object ClaimType {
+  implicit def pathBindable: PathBindable[ClaimType] = new PathBindable[ClaimType] {
+    override def bind(key: String, value: String): Either[String, ClaimType] =
+      value match {
+        case "NDRC" => Right(C285)
+        case "SCTY" => Right(Security)
+        case _ => Left("Invalid claim type")
+      }
+
+    override def unbind(key: String, value: ClaimType): String = {
+      value match {
+        case C285 => "NDRC"
+        case Security => "SCTY"
+      }
+    }
+  }
+
+
   implicit val format: Format[ClaimType] = new Format[ClaimType] {
     override def writes(o: ClaimType): JsValue =
       o match {
-        case C285 => JsString("Security")
-        case Security => JsString("C285")
+        case C285 => JsString("NDRC")
+        case Security => JsString("SCTY")
       }
 
     override def reads(json: JsValue): JsResult[ClaimType] =

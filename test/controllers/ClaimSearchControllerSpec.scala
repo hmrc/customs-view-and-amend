@@ -17,7 +17,7 @@
 package controllers
 
 import connector.FinancialsApiConnector
-import models.{AllClaims, ClosedClaim, InProgressClaim, PendingClaim}
+import models.{AllClaims, C285, ClosedClaim, InProgressClaim, PendingClaim}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
@@ -49,7 +49,7 @@ class ClaimSearchControllerSpec extends SpecBase {
       }
 
       "return a search result when the field is not empty" in new Setup {
-        when(mockFinancialsApiConnector.getClaims(any))
+        when(mockFinancialsApiConnector.getClaims(any)(any))
           .thenReturn(Future.successful(allClaims))
 
         val request: FakeRequest[AnyContentAsFormUrlEncoded] =
@@ -65,9 +65,9 @@ class ClaimSearchControllerSpec extends SpecBase {
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
 
     val allClaims: AllClaims = AllClaims(
-      pendingClaims = Seq(PendingClaim("NDRC-0001", LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
-      inProgressClaims = Seq(InProgressClaim("NDRC-0002", LocalDate.of(2019, 1, 1))),
-      closedClaims = Seq(ClosedClaim("NDRC-0003", LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1)))
+      pendingClaims = Seq(PendingClaim("NDRC-0001", C285, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
+      inProgressClaims = Seq(InProgressClaim("NDRC-0002", C285, LocalDate.of(2019, 1, 1))),
+      closedClaims = Seq(ClosedClaim("NDRC-0003", C285, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1)))
     )
 
     val app: Application = application.overrides(
