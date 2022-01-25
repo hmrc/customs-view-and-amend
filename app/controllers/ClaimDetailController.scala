@@ -19,7 +19,7 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
-import models.{C285, ClaimType, IdentifierRequest}
+import models.{ClaimType, IdentifierRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import repositories.ClaimsCache
