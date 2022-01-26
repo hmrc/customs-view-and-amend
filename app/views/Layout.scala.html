@@ -97,7 +97,7 @@
     }
 
     @hmrcLayout(
-        userResearchBannerUrl = if(userResearchBanner) Some("appConfig.helpMakeGovUkBetterUrl") else None,
+        userResearchBannerUrl = if(userResearchBanner) Some(appConfig.helpMakeGovUkBetterUrl) else None,
         pageTitle = fullPageTitle,
         serviceUrl = Some(appConfig.homepage),
         signOutUrl = Some(routes.LogoutController.logout.url),
