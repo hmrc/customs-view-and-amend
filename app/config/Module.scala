@@ -25,7 +25,7 @@ import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 class Module extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
-    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector])
     bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
+    bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector]).asEagerSingleton()
   }
 }
