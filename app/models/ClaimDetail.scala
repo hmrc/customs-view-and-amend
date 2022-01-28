@@ -24,11 +24,12 @@ import java.time.LocalDate
 
 case class ClaimDetail(caseNumber: String,
                        mrn: Seq[String],
+                       lrn: String,
                        claimantsEori: Option[String],
                        claimStatus: ClaimStatus,
                        claimType: ClaimType,
                        claimStartDate: LocalDate,
-                       valueOfClaim: Int,
+                       valueOfClaim: BigDecimal,
                        claimantsName: String,
                        claimantsEmail: String
                       ) extends DateFormatters {

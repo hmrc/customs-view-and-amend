@@ -55,14 +55,17 @@ class DefaultClaimsCache @Inject()(mongo: MongoComponent, config: Configuration)
   override def get(id: String): Future[Option[Seq[Claim]]] =
     collection.find(equal("_id", id)).toSingle().toFutureOption().map(_.map(_.claims))
 
-  override def hasCaseNumber(id: String, caseNumber: String): Future[Boolean] =
-    collection.find(equal("claims.caseNumber", caseNumber)).toSingle().toFutureOption().map(_.nonEmpty)
+  override def getSpecificCase(id: String, caseNumber: String): Future[Option[ClaimsMongo]] =
+    collection.find(equal("claims.caseNumber", caseNumber)).toSingle().toFutureOption()
 }
+
+sealed trait Failure
+case object NoCaseFound extends Failure
 
 trait ClaimsCache {
     def set(id: String, claims: Seq[Claim]): Future[Boolean]
     def get(id: String): Future[Option[Seq[Claim]]]
-    def hasCaseNumber(id: String, caseNumber: String): Future[Boolean]
+    def getSpecificCase(id: String, caseNumber: String): Future[Option[ClaimsMongo]]
 }
 
 case class ClaimsMongo(claims: Seq[Claim], lastUpdated: LocalDateTime)

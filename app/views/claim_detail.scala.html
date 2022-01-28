@@ -15,35 +15,67 @@
  *@
 
 @import config.AppConfig
+@import uk.gov.hmrc.govukfrontend.views.Aliases._
+@import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
+@import views.helpers.Formatters
 
-@this(layout: Layout, h1: components.h1, p: components.p, summaryList: components.summaryList)
+@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList)
 
-@(claimDetail: ClaimDetail)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = Some(claimDetail.backLink())) {
- @h1(messages("claim.detail.title", claimDetail.caseNumber))
- @p("claim.detail.p1")
- @{
-  claimDetail.claimantsEori match {
-   case Some(claimantEori) =>
-    summaryList(
-     ("claim.detail.mrn", claimDetail.mrn.head),
-     ("claim.detail.claimant.eori", claimantEori),
-     ("claim.detail.type", claimDetail.claimType.messageKey),
-     ("claim.detail.status", claimDetail.claimStatus.messageKey),
-     ("claim.detail.start.date", claimDetail.formattedStartDate()),
-     ("claim.detail.value", claimDetail.valueOfClaim.toString),
-     ("claim.detail.name", claimDetail.claimantsName)
-    )
-   case None =>
-    summaryList(
-     ("claim.detail.mrn", claimDetail.mrn.head),
-     ("claim.detail.type", claimDetail.claimType.messageKey),
-     ("claim.detail.status", claimDetail.claimStatus.messageKey),
-     ("claim.detail.start.date", claimDetail.formattedStartDate()),
-     ("claim.detail.value", claimDetail.valueOfClaim.toString),
-     ("claim.detail.name", claimDetail.claimantsName)
-    )
-  }
- }
+@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if (searched) Some(routes.ClaimSearch.onPageLoad().url) else Some(claimDetail.backLink())) {
+    @h1(messages("claim.detail.title", claimDetail.caseNumber))
+    @p("claim.detail.p1")
+
+    @govukSummaryList(SummaryList(
+        attributes = Map("id" -> "claim-summary"),
+        rows = Seq(
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.mrn"))),
+                Value(content = HtmlContent(claimDetail.mrn.head)),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.lrn"))),
+                Value(content = HtmlContent(claimDetail.lrn)),
+                actions = None
+            )),
+            claimDetail.claimantsEori.map { eori =>
+            SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.claimant.eori"))),
+                Value(content = HtmlContent(eori)),
+                actions = None
+            )},
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.type"))),
+                Value(content = HtmlContent(messages(claimDetail.claimType.messageKey))),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.status"))),
+                Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.start.date"))),
+                Value(content = HtmlContent(claimDetail.formattedStartDate())),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.value"))),
+                Value(content = HtmlContent(Formatters.formatCurrencyAmount(claimDetail.valueOfClaim))),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.name"))),
+                Value(content = HtmlContent(claimDetail.claimantsName)),
+                actions = None
+            )),
+            Some(SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.email"))),
+                Value(content = HtmlContent(email)),
+                actions = None
+            ))
+        ).flatten
+    ))
 }

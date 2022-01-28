@@ -16,13 +16,14 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction}
+import actions.IdentifierAction
+import cats.data.EitherT.fromOptionF
 import config.AppConfig
-import connector.FinancialsApiConnector
-import models.{ClaimType, IdentifierRequest}
+import connector.{DataStoreConnector, FinancialsApiConnector}
+import models.{ClaimDetail, ClaimType}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
-import repositories.ClaimsCache
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
+import repositories.{ClaimsCache, ClaimsMongo}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
 import views.html.errors.not_found
@@ -32,25 +33,20 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       authenticate: IdentifierAction,
+                                      dataStoreConnector: DataStoreConnector,
                                       financialsApiConnector: FinancialsApiConnector,
-                                      verifyEmail: EmailAction,
                                       claimsCache: ClaimsCache,
                                       claimDetail: claim_detail,
                                       notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
-
-  def claimDetail(caseNumber: String, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
-    claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
-      if (caseExists) {
-        financialsApiConnector.getClaimInformation(caseNumber, claimType).map {
-          case Some(value) => Ok(claimDetail(value))
-          case None => NotFound(notFound())
-        }
-      } else {
-        Future.successful(NotFound(notFound()))
-      }
-    }
+  def claimDetail(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
+    (for {
+      _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
+      email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
+      claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, claimType), NotFound(notFound()))
+    } yield {
+      Ok(claimDetail(claim, searched, email.value))
+    }).merge
   }
 }

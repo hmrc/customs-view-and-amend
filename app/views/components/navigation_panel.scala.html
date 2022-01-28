@@ -14,14 +14,16 @@
  * limitations under the License.
  *@
 
+@import config.AppConfig
+
 @this(link: link)
 
-@()(implicit messages: Messages)
+@()(implicit messages: Messages, appConfig: AppConfig)
 
 <div class="govuk-phase-banner notifications-bar">
 <ul class="govuk-list">
     <li>@link("service.banner.home", routes.ClaimsOverview.show.url, pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
-    <li>@link("service.banner.start", "#", pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
+    <li>@link("service.banner.start", appConfig.claimServiceUrl, pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
     <li>@link("service.banner.search", routes.ClaimSearch.onPageLoad().url, pWrapped = false, linkClass = "govuk-link govuk-link--no-visited-state")</li>
 </ul>
 </div>

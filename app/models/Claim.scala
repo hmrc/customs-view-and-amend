@@ -26,7 +26,7 @@ sealed trait Claim extends DateFormatters {
   val caseNumber: String
   val claimType: ClaimType
   val claimStartDate: LocalDate
-  val url: String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType).url
+  def url(searched: Boolean): String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
 }
 object Claim {

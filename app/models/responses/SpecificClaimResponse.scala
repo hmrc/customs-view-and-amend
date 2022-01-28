@@ -40,11 +40,12 @@ case class SpecificClaimResponse(
   def toClaimDetail(claimType: ClaimType) = ClaimDetail(
     CDFPayCaseNumber,
     Seq("AWAITING API SPEC"),
+    "AWAITING API SPEC",
     claimantEORI,
     transformCaseStatus,
     claimType,
     LocalDate.of(9999,1,1),
-    123456789,
+    123456789.23,
     "AWAITING API SPEC",
     "AWAITING API SPEC"
   )
