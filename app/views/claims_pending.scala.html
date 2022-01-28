@@ -22,9 +22,9 @@
 
 @(model: PendingClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.pending.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(messages("claim.list.pending.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.pending.title", classes = "govuk-heading-xl")
-    @claimTable(model.visibleItems, Pending)
+    @claimTable(model.visibleItems, Pending, searched = false)
     @pager(model)
 
 }

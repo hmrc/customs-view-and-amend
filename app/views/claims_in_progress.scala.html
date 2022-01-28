@@ -22,8 +22,8 @@
 
 @(model: InProgressClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.progress.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(messages("claim.list.progress.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.progress.title", classes = "govuk-heading-xl")
-    @claimTable(model.visibleItems, InProgress)
+    @claimTable(model.visibleItems, InProgress, searched = false)
     @pager(model)
 }

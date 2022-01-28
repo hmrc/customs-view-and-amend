@@ -29,8 +29,8 @@ claims.overview.pending.p1 = A HMRC caseworker has asked you for additional info
 claims.overview.pending.indent = You have {0} unread messages.
 claims.overview.pending.link = View claims pending
 
-claims.overview.closed.plural.h3 = You have {0} closed claims
-claims.overview.closed.single.h3 = You have {0} closed claim
+claims.overview.closed.plural.h3 = You have {0} claims closed
+claims.overview.closed.single.h3 = You have {0} claim closed
 
 claims.overview.closed.p1 = Claims closed when HMRC has not received a response in time, are rejected or resolved.
 claims.overview.closed.p2 = Closed claims will be removed one month from date of closure.
@@ -41,16 +41,17 @@ claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appe
 
 claim.detail.title = Case reference {0}
 claim.detail.p1 = Claim details:
-claim.detail.mrn = MRN
+claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
+claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
+claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
 claim.detail.type = Claim type
 claim.detail.type.c285 = C285
 claim.detail.type.security = Security
-claim.detail.claimant.eori = Claimant''s EORI number
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
-claim.detail.name = Claimant's name
-claim.detail.email = Claimant's email address
+claim.detail.name = Claimant''s name
+claim.detail.email = Email address
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.

@@ -41,11 +41,11 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def claimDetail(caseNumber: String, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
+  def claimDetail(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = actions.async { implicit request =>
     claimsCache.hasCaseNumber(request.eori, caseNumber).flatMap { caseExists =>
       if (caseExists) {
         financialsApiConnector.getClaimInformation(caseNumber, claimType).map {
-          case Some(value) => Ok(claimDetail(value))
+          case Some(value) => Ok(claimDetail(value, searched))
           case None => NotFound(notFound())
         }
       } else {

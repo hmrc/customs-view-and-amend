@@ -28,6 +28,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val loginUrl: String = config.get[String]("urls.login")
   lazy val loginContinueUrl: String = config.get[String]("urls.loginContinue")
   lazy val homepage: String = config.get[String]("urls.homepage")
+  lazy val claimServiceUrl: String = config.get[String]("urls.claimService")
   lazy val signOutUrl: String = config.get[String]("urls.signOut")
   lazy val feedbackService = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
     config.getOptional[String]("feedback.source").getOrElse("/CDS-FIN")

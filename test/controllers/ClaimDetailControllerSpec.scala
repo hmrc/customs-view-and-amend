@@ -37,7 +37,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimDetail)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -50,7 +50,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", C285).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", C285, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -63,7 +63,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -76,7 +76,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security, searched = true).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -87,7 +87,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(false))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", Security, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -101,6 +101,7 @@ class ClaimDetailControllerSpec extends SpecBase {
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
       Seq("21GB03I52858073821"),
+      "SomeLrn",
       Some("GB746502538945"),
       InProgress,
       C285,

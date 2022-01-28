@@ -22,9 +22,9 @@
 
 @(model: ClosedClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.closed.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(messages("claim.list.closed.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.closed.title", classes = "govuk-heading-xl")
     @p("claim.list.closed.p1")
-    @claimTable(model.visibleItems, Closed)
+    @claimTable(model.visibleItems, Closed, searched = false)
     @pager(model)
 }

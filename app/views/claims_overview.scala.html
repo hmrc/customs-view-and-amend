@@ -38,7 +38,7 @@
             controllers.routes.ClaimListController.showInProgressClaimList(None).url
         )
         @card(
-            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+            if(allClaims.pendingClaims.size > 1 || allClaims.pendingClaims.isEmpty){
                 messages("claims.overview.pending.plural.h3", allClaims.pendingClaims.size)
             } else {
                 messages("claims.overview.pending.single.h3", allClaims.pendingClaims.size)
@@ -50,7 +50,7 @@
             insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
         )
         @card(
-            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+            if(allClaims.closedClaims.size > 1 || allClaims.closedClaims.isEmpty){
                 messages("claims.overview.closed.plural.h3", allClaims.closedClaims.size)
             } else {
                 messages("claims.overview.closed.single.h3", allClaims.closedClaims.size)

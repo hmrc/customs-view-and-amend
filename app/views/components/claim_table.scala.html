@@ -16,7 +16,7 @@
 
 @this(claimListRows: claimListRows, h2: components.h2)
 
-@(claims: Seq[Claim], claimType: ClaimStatus)(implicit messages: Messages)
+@(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
 
 <table class="govuk-table">
     @{
@@ -33,7 +33,6 @@
         <tr class="govuk-table__row">
             <th>@messages("claim.list.table.heading.case")</th>
             <th>@messages("claim.list.table.heading.start")</th>
-            <th>@messages("claim.list.table.heading.status")</th>
             @{
                 claimType match {
                     case Closed =>
@@ -50,9 +49,9 @@
         <tr class="govuk-table__row">
         @{
             claim match {
-                case e@ClosedClaim(caseNumber, _, claimStartDate, removalDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.closed"), Some(e.formattedRemovalDate()))
-                case e@PendingClaim(caseNumber, _, claimStartDate, respondByDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.pending"), Some(e.formattedRespondByDate()))
-                case e@InProgressClaim(caseNumber, _, claimStartDate) => claimListRows(e.url, caseNumber, e.formattedStartDate(), messages("case.inProgress"), None)
+                case e@ClosedClaim(caseNumber, _, claimStartDate, removalDate) => claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, Some(e.formattedRemovalDate()))
+                case e@PendingClaim(caseNumber, _, claimStartDate, respondByDate) => claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, Some(e.formattedRespondByDate()))
+                case e@InProgressClaim(caseNumber, _, claimStartDate) => claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None)
             }
         }
         </tr>
