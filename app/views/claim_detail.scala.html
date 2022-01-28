@@ -21,7 +21,7 @@
 
 @this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList)
 
-@(claimDetail: ClaimDetail, searched: Boolean)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if (searched) Some(routes.ClaimSearch.onPageLoad().url) else Some(claimDetail.backLink())) {
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
@@ -73,7 +73,7 @@
             )),
             Some(SummaryListRow(
                 Key(content = HtmlContent(messages("claim.detail.email"))),
-                Value(content = HtmlContent(claimDetail.claimantsEmail)),
+                Value(content = HtmlContent(email)),
                 actions = None
             ))
         ).flatten

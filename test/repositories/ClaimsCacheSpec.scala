@@ -64,7 +64,7 @@ class ClaimsCacheSpec extends SpecBase {
     "return true if case number present in database" in new Setup {
       for {
         _ <- database.set("someId", claims)
-        result <- database.hasCaseNumber("someId", "NDRC-2022")
+        result <- database.getSpecificCase("someId", "NDRC-2022")
         _ <- database.collection.drop().toFuture()
       } yield {
         result mustBe true
@@ -74,7 +74,7 @@ class ClaimsCacheSpec extends SpecBase {
     "return false if case number present in database" in new Setup {
       for {
         _ <- database.set("someId", claims)
-        result <- database.hasCaseNumber("someId", "INVALID")
+        result <- database.getSpecificCase("someId", "INVALID")
         _ <- database.collection.drop().toFuture()
       } yield {
         result mustBe false
