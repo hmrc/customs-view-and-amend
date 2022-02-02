@@ -36,7 +36,7 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
     val nonce = Nonce.random
     for {
       successfulWrite <- uploadedFilesCache.initializeRecord(caseNumber, nonce, Seq.empty)
-      payload = UploadDocumentsWrapper.createPayload(nonce, caseNumber, claimType, searched, Seq.empty)
+      payload = UploadDocumentsWrapper.createPayload(nonce, caseNumber, claimType, searched)
       result <- if (successfulWrite) { sendRequest(payload) } else Future.successful(None)
     } yield result
   }

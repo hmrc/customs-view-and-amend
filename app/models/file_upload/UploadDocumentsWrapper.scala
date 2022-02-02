@@ -20,7 +20,7 @@ import config.AppConfig
 import models.ClaimType
 import play.api.libs.json.{Json, OFormat}
 
-case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
+case class UploadDocumentsWrapper(config: UploadDocumentsConfig)
 
 object UploadDocumentsWrapper {
 
@@ -28,7 +28,6 @@ object UploadDocumentsWrapper {
                     caseNumber: String,
                     claimType: ClaimType,
                     searched: Boolean,
-                    previouslyUploaded: Seq[UploadedFile] = Seq.empty
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
@@ -48,8 +47,7 @@ object UploadDocumentsWrapper {
           pageTitleClasses = None,
           allowedFilesTypesHint = None
         ))
-      ),
-      existingFiles = previouslyUploaded
+      )
     )
   }
 
