@@ -19,13 +19,17 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import views.helpers.Formatters
 
-@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList)
+@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, link: components.newTabLink)
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if (searched) Some(routes.ClaimSearch.onPageLoad().url) else Some(claimDetail.backLink())) {
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
     @p("claim.detail.p1")
+
+    @*
+    @link("Edit Uploaded files", routes.FileUploadController.editExistingUploads(claimDetail.caseNumber, claimDetail.claimType, searched).url)
+    *@
 
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
@@ -78,4 +82,7 @@
             ))
         ).flatten
     ))
+
+    @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched).url)
+
 }

@@ -52,6 +52,7 @@ claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant''s name
 claim.detail.email = Email address
+claim.detail.upload = Upload files (Opens in a new tab)
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.

@@ -35,6 +35,17 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")
 
+  private lazy val fileUploadHost: String = config.get[String]("file-upload.host")
+  private lazy val fileUploadCallBackHost: String = config.get[String]("file-upload.callBackHost")
+
+
+  lazy val fileUploadInitializeUrl: String = s"$fileUploadHost/upload-documents/initialize"
+  lazy val fileUploadBackLink: String = config.get[String]("file-upload.back")
+  lazy val fileUploadContinueLink: String = config.get[String]("file-upload.continue")
+  lazy val fileUploadCallBack: String = config.get[String]("file-upload.callBack")
+
+  def backLinkUrl(relativeLocation: String) = s"$fileUploadCallBackHost$relativeLocation"
+  def fileUploadUrl(relativeLocation: String) = s"$fileUploadHost$relativeLocation"
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")
   lazy val countdown: Int = config.get[Int]("timeout.countdown")
