@@ -14,22 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcNewTabLink
-@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.newtablink.NewTabLink
 @import config.AppConfig
 
-@this(hmrcNewTabLink: HmrcNewTabLink)
+@this(layout: Layout, confirmation: components.confirmation)
 
-@(linkMessage: String, href: String, preLinkMessage: Option[String] = None)(implicit messages: Messages, appConfig: AppConfig)
+@(claimNumber: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-<p class="govuk-body">
-    @preLinkMessage.map(messages(_))
-    @hmrcNewTabLink(
-        NewTabLink(
-            language = Some(messages.lang.toString),
-            classList = Some("govuk-link"),
-            href=Some(href),
-            text=messages(linkMessage)
-        )
-    )
-</p>
+@layout(pageTitle = Some(messages("claim.list.progress.title"))) {
+    @confirmation(claimNumber)
+}

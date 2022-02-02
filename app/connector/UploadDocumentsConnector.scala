@@ -41,17 +41,6 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
     } yield result
   }
 
-
-  def modifyExistingFileUpload(caseNumber: String, claimType: ClaimType, searched: Boolean)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    val nonce = Nonce.random
-    for {
-      previouslyUploaded <- uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber)
-      successfulWrite <- uploadedFilesCache.initializeRecord(caseNumber, nonce, previouslyUploaded)
-      payload = UploadDocumentsWrapper.createPayload(nonce, caseNumber, claimType, searched, previouslyUploaded)
-      result <- if (successfulWrite) { sendRequest(payload) } else Future.successful(None)
-    } yield result
-  }
-
   private def sendRequest(uploadDocumentsWrapper: UploadDocumentsWrapper)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     httpClient.POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializeUrl, uploadDocumentsWrapper).map { response =>
       response.status match {

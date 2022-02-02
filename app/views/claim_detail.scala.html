@@ -27,10 +27,6 @@
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
     @p("claim.detail.p1")
 
-    @*
-    @link("Edit Uploaded files", routes.FileUploadController.editExistingUploads(claimDetail.caseNumber, claimDetail.claimType, searched).url)
-    *@
-
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
         rows = Seq(

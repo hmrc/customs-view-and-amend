@@ -33,7 +33,7 @@ object UploadDocumentsWrapper {
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
         nonce = nonce,
-        continueUrl = appConfig.backLinkUrl(controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url),
+        continueUrl = appConfig.backLinkUrl(controllers.routes.FileUploadController.continue(caseNumber).url),
         backlinkUrl = appConfig.backLinkUrl(controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url),
         callbackUrl = appConfig.fileUploadCallBack,
         cargo = UploadCargo(caseNumber),
@@ -47,8 +47,7 @@ object UploadDocumentsWrapper {
           showLanguageSelection = None,
           pageTitleClasses = None,
           allowedFilesTypesHint = None
-        )),
-        features = Some(UploadDocumentsFeatures(showUploadMultiple = Some(false)))
+        ))
       ),
       existingFiles = previouslyUploaded
     )

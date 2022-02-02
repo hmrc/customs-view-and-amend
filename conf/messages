@@ -52,7 +52,15 @@ claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant''s name
 claim.detail.email = Email address
-claim.detail.upload = Upload files (Opens in a new tab)
+claim.detail.upload = Upload files (opens in a new tab)
+
+claim.upload.confirmation.h1 = Claim amendment sent
+claim.upload.confirmation.case = Case number
+claim.upload.confirmation.h2 = What happens next?
+claim.upload.confirmation.p1 = Your claim amendment will be reviewed by HMRC and we will aim to email or write a letter to you to tell you the outcome within 30 working days. We will contact you to either:
+claim.upload.confirmation.li.1 = confirm your claim and bank transfer
+claim.upload.confirmation.li.2 = ask for more information
+claim.upload.confirmation.li.3 = explain why your claim was rejected
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.

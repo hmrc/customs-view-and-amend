@@ -28,6 +28,7 @@ import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerCompon
 import repositories.{ClaimsCache, ClaimsMongo, UploadedFilesCache}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.errors.not_found
+import views.html.upload_confirmation
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -40,7 +41,8 @@ class FileUploadController @Inject()(
                                       financialsApiConnector: FinancialsApiConnector,
                                       claimsCache: ClaimsCache,
                                       uploadedFilesCache: UploadedFilesCache,
-                                      notFound: not_found
+                                      notFound: not_found,
+                                      confirmation: upload_confirmation
                                     )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
@@ -54,15 +56,6 @@ class FileUploadController @Inject()(
     } yield result).merge
   }
 
-  //TODO: determine whether or not we'll need this
-  def editExistingUploads(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = actions.async { implicit request =>
-    (for {
-      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
-      _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
-      result <- fromOptionF(uploadDocumentsConnector.modifyExistingFileUpload(caseNumber, claimType, searched).map(_.map(relativeUrl => Redirect(appConfig.fileUploadUrl(relativeUrl)))), NotFound(notFound()))
-    } yield result).merge
-  }
-
   def updateFiles(): Action[UploadedFileMetadata] = Action.async(parse.json[UploadedFileMetadata]) { implicit request =>
     request.body.cargo match {
       case Some(value) => uploadedFilesCache.updateRecord(value.caseNumber, request.body).map { _ => NoContent }
@@ -70,7 +63,8 @@ class FileUploadController @Inject()(
     }
   }
 
-  def continue(): Action[AnyContent] = actions.async { implicit request =>
-    Future.successful(Ok("Upload complete"))
+  def continue(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
+    //TODO integrate with DEC64 for file upload
+    Future.successful(Ok(confirmation(caseNumber)))
   }
 }
