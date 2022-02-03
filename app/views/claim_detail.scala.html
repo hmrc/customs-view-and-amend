@@ -79,6 +79,15 @@
         ).flatten
     ))
 
-    @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched).url)
+    <div class="no-js-link">
+        @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = false).url)
+    </div>
+    <div class="js-link">
+    @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = true).url)
+    </div>
+
+
+
+
 
 }

@@ -28,6 +28,7 @@ object UploadDocumentsWrapper {
                     caseNumber: String,
                     claimType: ClaimType,
                     searched: Boolean,
+                    multipleUpload: Boolean
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
@@ -46,7 +47,8 @@ object UploadDocumentsWrapper {
           showLanguageSelection = None,
           pageTitleClasses = None,
           allowedFilesTypesHint = None
-        ))
+        )),
+        features = Some(UploadDocumentsFeatures(Some(multipleUpload)))
       )
     )
   }

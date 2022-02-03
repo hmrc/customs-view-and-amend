@@ -48,11 +48,11 @@ class FileUploadController @Inject()(
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def start(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = actions.async { implicit request =>
+  def start(caseNumber: String, claimType: ClaimType, searched: Boolean, multipleUpload: Boolean): Action[AnyContent] = actions.async { implicit request =>
     (for {
       _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
-      result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched).map(_.map(relativeUrl => Redirect(appConfig.fileUploadUrl(relativeUrl)))), NotFound(notFound()))
+      result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched, multipleUpload).map(_.map(relativeUrl => Redirect(appConfig.fileUploadUrl(relativeUrl)))), NotFound(notFound()))
     } yield result).merge
   }
 
