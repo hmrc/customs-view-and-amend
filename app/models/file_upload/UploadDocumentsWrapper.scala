@@ -33,6 +33,7 @@ object UploadDocumentsWrapper {
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
         nonce = nonce,
+        initialNumberOfEmptyRows = Some(1),
         continueUrl = appConfig.backLinkUrl(controllers.routes.FileUploadController.continue(caseNumber).url),
         backlinkUrl = appConfig.backLinkUrl(controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url),
         callbackUrl = appConfig.fileUploadCallBack,

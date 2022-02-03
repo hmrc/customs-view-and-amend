@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import views.helpers.Formatters
 
-@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, link: components.newTabLink)
+@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, link: components.link)
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -31,7 +31,7 @@
         attributes = Map("id" -> "claim-summary"),
         rows = Seq(
             Some(SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.mrn"))),
+                Key(content = HtmlContent(messages("claim.detail.mrn")), classes = "govuk-!-width-two-thirds"),
                 Value(content = HtmlContent(claimDetail.mrn.head)),
                 actions = None
             )),
@@ -79,12 +79,15 @@
         ).flatten
     ))
 
-    <div class="no-js-link">
-        @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = false).url)
-    </div>
-    <div class="js-link">
-    @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = true).url)
-    </div>
+    @if(claimDetail.isPending) {
+        <div class="no-js-link">
+            @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = false).url)
+        </div>
+        <div class="js-link">
+            @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = true).url)
+        </div>
+    }
+
 
 
 

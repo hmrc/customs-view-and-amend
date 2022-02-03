@@ -59,7 +59,8 @@
             allClaims.closedClaims.nonEmpty,
             messages("claims.overview.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
-            p2 = Some(messages("claims.overview.closed.p2"))
+            p2 = Some(messages("claims.overview.closed.p2")),
+            cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9"
         )
     } else {
         @p("claims.overview.no-claims.p1")
