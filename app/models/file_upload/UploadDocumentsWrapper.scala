@@ -39,15 +39,13 @@ object UploadDocumentsWrapper {
         callbackUrl = appConfig.fileUploadCallBack,
         cargo = UploadCargo(caseNumber),
         content = Some(UploadDocumentsContent(
-          serviceName = Some("Customs view and amend"),
+          serviceName = Some(appConfig.fileUploadServiceName),
           serviceUrl = Some(appConfig.homepage),
-          accessibilityStatementUrl = Some("/accessibility-statement/customs-financials"),
-          phaseBanner = Some("beta"),
-          phaseBannerUrl = Some("/contact/beta-feedback-unauthenticated?service=CDS-FIN"),
+          accessibilityStatementUrl = Some(appConfig.fileUploadAccessibilityUrl),
+          phaseBanner = Some(appConfig.fileUploadPhase),
+          phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
           userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
-          showLanguageSelection = None,
-          pageTitleClasses = None,
-          allowedFilesTypesHint = None
+          contactFrontendServiceId = Some(appConfig.contactFrontendServiceId)
         )),
         features = Some(UploadDocumentsFeatures(Some(multipleUpload)))
       )

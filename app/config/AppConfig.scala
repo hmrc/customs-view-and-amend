@@ -32,6 +32,7 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val signOutUrl: String = config.get[String]("urls.signOut")
   lazy val feedbackService = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
     config.getOptional[String]("feedback.source").getOrElse("/CDS-FIN")
+  lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
 
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")
 
@@ -43,6 +44,10 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val fileUploadBackLink: String = config.get[String]("file-upload.back")
   lazy val fileUploadContinueLink: String = config.get[String]("file-upload.continue")
   lazy val fileUploadCallBack: String = config.get[String]("file-upload.callBack")
+  lazy val fileUploadServiceName: String = config.get[String]("file-upload.serviceName")
+  lazy val fileUploadPhase: String = config.get[String]("file-upload.phaseBanner")
+  lazy val fileUploadPhaseUrl: String = config.get[String]("file-upload.phaseBannerUrl")
+  lazy val fileUploadAccessibilityUrl: String = config.get[String]("file-upload.accessibilityStatement")
 
   def backLinkUrl(relativeLocation: String) = s"$fileUploadCallBackHost$relativeLocation"
   def fileUploadUrl(relativeLocation: String) = s"$fileUploadHost$relativeLocation"

@@ -52,7 +52,8 @@ class FileUploadController @Inject()(
     (for {
       _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
-      result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched, multipleUpload).map(_.map(relativeUrl => Redirect(appConfig.fileUploadUrl(relativeUrl)))), NotFound(notFound()))
+      result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched, multipleUpload)
+        .map(_.map(relativeUrl => Redirect(appConfig.fileUploadUrl(relativeUrl)))), NotFound(notFound()))
     } yield result).merge
   }
 
