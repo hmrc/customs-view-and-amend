@@ -19,6 +19,7 @@ package repositories
 import models.{C285, InProgressClaim}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
+import play.api.test.Helpers._
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -28,57 +29,57 @@ class ClaimsCacheSpec extends SpecBase {
 
   "set and get" should {
     "populate data into the mongo" in new Setup {
-      for {
+      await(for {
         _ <- database.set("someId", claims)
         result <- database.get("someId")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result mustBe claims
-      }
+        result.value mustBe claims
+      })
     }
   }
 
   "get" should {
     "return data if populated in the mongo" in new Setup {
-      for {
+      await(for {
         _ <- database.set("someId", claims)
         result <- database.get("someId")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result mustBe claims
-      }
+        result.value mustBe claims
+      })
     }
 
     "return None if no data populated in the mongo" in new Setup {
-      for {
+      await(for {
         _ <- database.set("someId", claims)
         result <- database.get("empty")
         _ <- database.collection.drop().toFuture()
       } yield {
         result mustBe None
-      }
+      })
     }
   }
 
   "hasCaseNumber" should {
     "return true if case number present in database" in new Setup {
-      for {
+      await(for {
         _ <- database.set("someId", claims)
         result <- database.getSpecificCase("someId", "NDRC-2022")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result mustBe true
-      }
+        result.nonEmpty mustBe true
+      })
     }
 
     "return false if case number present in database" in new Setup {
-      for {
+      await(for {
         _ <- database.set("someId", claims)
         result <- database.getSpecificCase("someId", "INVALID")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result mustBe false
-      }
+        result.nonEmpty mustBe false
+      })
     }
   }
 

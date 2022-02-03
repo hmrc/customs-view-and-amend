@@ -52,10 +52,10 @@ class DefaultUploadedFilesCache @Inject()(mongo: MongoComponent, config: Configu
       )
     )) with UploadedFilesCache {
 
-  override def initializeRecord(caseNumber: String, nonce: Nonce, previouslyUploaded: Seq[UploadedFile]): Future[Boolean] = {
+  override def initializeRecord(caseNumber: String, nonce: Nonce): Future[Boolean] = {
     collection.replaceOne(
       equal("caseNumber", caseNumber),
-      UploadedFilesMongo(caseNumber, UploadedFileMetadata(nonce, previouslyUploaded, None), LocalDateTime.now()),
+      UploadedFilesMongo(caseNumber, UploadedFileMetadata(nonce, Seq.empty, None), LocalDateTime.now()),
       ReplaceOptions().upsert(true)
     ).toFuture().map(_.wasAcknowledged())
   }
@@ -78,7 +78,7 @@ class DefaultUploadedFilesCache @Inject()(mongo: MongoComponent, config: Configu
 }
 
 trait UploadedFilesCache {
-    def initializeRecord(caseNumber: String, nonce: Nonce, previouslyUploaded: Seq[UploadedFile]): Future[Boolean]
+    def initializeRecord(caseNumber: String, nonce: Nonce): Future[Boolean]
     def updateRecord(caseNumber: String, uploadedFileMetadata: UploadedFileMetadata): Future[Boolean]
     def retrieveCurrentlyUploadedFiles(caseNumber: String): Future[Seq[UploadedFile]]
 }

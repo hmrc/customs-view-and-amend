@@ -38,8 +38,6 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   private lazy val fileUploadHost: String = config.get[String]("file-upload.host")
   private lazy val fileUploadCallBackHost: String = config.get[String]("file-upload.callBackHost")
-
-
   lazy val fileUploadInitializeUrl: String = s"$fileUploadHost/upload-documents/initialize"
   lazy val fileUploadBackLink: String = config.get[String]("file-upload.back")
   lazy val fileUploadContinueLink: String = config.get[String]("file-upload.continue")

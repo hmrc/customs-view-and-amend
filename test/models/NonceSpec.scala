@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,25 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models
 
-@(claimNumber: String)(implicit messages: Messages)
+import models.file_upload.Nonce
+import models.file_upload.Nonce.{Any, Strict}
+import utils.SpecBase
 
+class NonceSpec extends SpecBase {
 
-<div class="govuk-panel govuk-panel--confirmation">
- <h1 class="govuk-panel__title">@messages("claim.upload.confirmation.h1")</h1>
- <div>
-  <div class="govuk-panel__body">@messages("claim.upload.confirmation.case") <br>
-   <strong>@claimNumber</strong>
-  </div>
- </div>
-</div>
+  "equals" should {
+    "return the correct responses" in {
+      val nonceAny: Any.type = Nonce.Any
+      val nonce: Nonce = Nonce(10)
+      val invalidValue: String = "something else"
 
-
-
+      new Strict(10).equals(nonceAny) shouldBe true
+      new Strict(10).equals(nonce) shouldBe true
+      new Strict(10).equals(invalidValue) shouldBe false
+    }
+  }
+}

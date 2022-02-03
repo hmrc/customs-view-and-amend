@@ -61,6 +61,7 @@ claim.upload.confirmation.p1 = Your claim amendment will be reviewed by HMRC and
 claim.upload.confirmation.li.1 = confirm your claim and bank transfer
 claim.upload.confirmation.li.2 = ask for more information
 claim.upload.confirmation.li.3 = explain why your claim was rejected
+claim.upload.confirmation.link = View all pending claims
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.

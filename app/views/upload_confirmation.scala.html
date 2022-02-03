@@ -16,10 +16,19 @@
 
 @import config.AppConfig
 
-@this(layout: Layout, confirmation: components.confirmation)
+@this(layout: Layout,
+        confirmation: components.confirmation,
+        link: components.link,
+        h2: components.h2,
+        p: components.p,
+        ul: components.unordered_list)
 
 @(claimNumber: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.progress.title"))) {
     @confirmation(claimNumber)
+    @h2("claim.upload.confirmation.h2")
+    @p("claim.upload.confirmation.p1")
+    @ul("claim.upload.confirmation.li.1", "claim.upload.confirmation.li.2", "claim.upload.confirmation.li.3")
+    @link("claim.upload.confirmation.link", routes.ClaimListController.showPendingClaimList(None).url)
 }

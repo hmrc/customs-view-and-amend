@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,22 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models
 
-@(claimNumber: String)(implicit messages: Messages)
+import models.file_upload.{Nonce, SimpleDecimalFormat}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.libs.json.{JsError, JsResult, JsString}
+import utils.SpecBase
 
+class SimpleDecimalFormatSpec extends SpecBase {
 
-<div class="govuk-panel govuk-panel--confirmation">
- <h1 class="govuk-panel__title">@messages("claim.upload.confirmation.h1")</h1>
- <div>
-  <div class="govuk-panel__body">@messages("claim.upload.confirmation.case") <br>
-   <strong>@claimNumber</strong>
-  </div>
- </div>
-</div>
-
-
-
+  "SimpleDecimalFormat" should {
+    "return an error when a JsNumber not passed" in {
+      val json = JsString("invalid")
+      val result: JsResult[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value)).reads(json)
+      result.isError mustBe true
+    }
+  }
+}
