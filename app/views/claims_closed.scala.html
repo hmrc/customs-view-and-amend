@@ -18,13 +18,13 @@
 @import viewmodels.ClosedClaimListViewModel
 @import views.html.components.pager
 
-@this(layout: Layout, h1: components.h1, claimTable: components.claim_table, p: components.p)
+@this(layout: Layout, h1: components.h1, h2: components.h2, claimTable: components.claim_table, p: components.p)
 
 @(model: ClosedClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.closed.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
     @h1("claim.list.closed.title", classes = "govuk-heading-xl govuk-!-margin-top-2 govuk-!-margin-bottom-6")
-    @p("claim.list.closed.p1", "govuk-body govuk-!-margin-bottom-9")
+    @h2("claim.list.closed.p1", classes = "govuk-heading-s govuk-!-margin-bottom-7 govuk-!-font-weight-regular")
     @claimTable(model.visibleItems, Closed, searched = false)
     @pager(model)
 }

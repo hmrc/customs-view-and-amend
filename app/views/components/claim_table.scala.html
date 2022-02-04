@@ -22,11 +22,11 @@
     @{
         claimType match {
             case Closed =>
-                <caption class="govuk-visually-hidden">{messages("claim.list.table.hidden.closed")}</caption>
+                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.closed")}</caption>
             case Pending =>
-                <caption class="govuk-visually-hidden">{messages("claim.list.table.hidden.pending")}</caption>
+                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption>
             case InProgress =>
-                <caption class="govuk-visually-hidden">{messages("claim.list.table.hidden.progress")}</caption>
+                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.progress")}</caption>
         }
     }
     <thead class="govuk-table__head">
