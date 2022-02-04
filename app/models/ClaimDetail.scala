@@ -35,6 +35,12 @@ case class ClaimDetail(caseNumber: String,
                       ) extends DateFormatters {
 
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+
+  def isPending: Boolean = claimStatus match {
+    case Pending => true
+    case _ => false
+  }
+
   def backLink(): String =
     claimStatus match {
       case InProgress => controllers.routes.ClaimListController.showInProgressClaimList(None).url

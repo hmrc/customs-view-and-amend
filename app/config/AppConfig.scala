@@ -32,9 +32,21 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val signOutUrl: String = config.get[String]("urls.signOut")
   lazy val feedbackService = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
     config.getOptional[String]("feedback.source").getOrElse("/CDS-FIN")
+  lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
 
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")
 
+  private lazy val fileUploadHost: String = config.get[String]("file-upload.host")
+  private lazy val fileUploadReturnHost: String = config.get[String]("file-upload.returnHost")
+  lazy val fileUploadInitializeUrl: String = s"${config.get[String]("file-upload.initializeHost")}/upload-documents/initialize"
+  lazy val fileUploadCallBack: String = config.get[String]("file-upload.uploadedFilesCallBackUrl")
+  lazy val fileUploadServiceName: String = config.get[String]("file-upload.serviceName")
+  lazy val fileUploadPhase: String = config.get[String]("file-upload.phaseBanner")
+  lazy val fileUploadPhaseUrl: String = config.get[String]("file-upload.phaseBannerUrl")
+  lazy val fileUploadAccessibilityUrl: String = config.get[String]("file-upload.accessibilityStatement")
+
+  def absoluteLink(relativeLocation: String) = s"$fileUploadReturnHost$relativeLocation"
+  def fileUploadLink(relativeLocation: String) = s"$fileUploadHost$relativeLocation"
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")
   lazy val countdown: Int = config.get[Int]("timeout.countdown")

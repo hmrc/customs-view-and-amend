@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models.file_upload
 
-@()
+import play.api.libs.json.Format
 
-<div class="gem-c-search gem-c-search--on-white govuk-!-width-one-third govuk-!-margin-bottom-7">
-    <div class="gem-c-search__item-wrapper">
-        <input aria-controls="js-search-results-info" class="gem-c-search__item gem-c-search__input js-class-toggle" id="value" name="value" title="Search" type="search" value="">
-        <div class="gem-c-search__item gem-c-search__submit-wrapper">
-            <button class="gem-c-search__submit" type="submit">Search</button>
-        </div>
-    </div>
-</div>
+import scala.util.Random
+
+case class Nonce(value: Int) {
+  override def equals(o: Any): Boolean =
+    o match {
+      case nonce: Nonce => nonce.value == value
+      case _ => false
+    }
+}
+
+object Nonce {
+  final def random: Nonce = Nonce(Random.nextInt())
+  implicit final val formats: Format[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value))
+}

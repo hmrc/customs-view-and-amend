@@ -1,19 +1,25 @@
 # microservice specific routes
-->          /hmrc-frontend                   hmrcfrontend.Routes
-GET         /                                controllers.ClaimsOverview.show
+->          /hmrc-frontend                              hmrcfrontend.Routes
+GET         /                                           controllers.ClaimsOverview.show
 
-GET         /claims-in-progress              controllers.ClaimListController.showInProgressClaimList(page: Option[Int])
-GET         /pending-claims                  controllers.ClaimListController.showPendingClaimList(page: Option[Int])
-GET         /closed-claims                   controllers.ClaimListController.showClosedClaimList(page: Option[Int])
+GET         /claims-in-progress                         controllers.ClaimListController.showInProgressClaimList(page: Option[Int])
+GET         /pending-claims                             controllers.ClaimListController.showPendingClaimList(page: Option[Int])
+GET         /closed-claims                              controllers.ClaimListController.showClosedClaimList(page: Option[Int])
 
-GET         /:claimType/:claim/detail        controllers.ClaimDetailController.claimDetail(claim: String, claimType: models.ClaimType, searched: Boolean)
-GET         /verify-your-email               controllers.EmailController.showUnverified()
+GET         /:claimType/:claim/detail                   controllers.ClaimDetailController.claimDetail(claim: String, claimType: models.ClaimType, searched: Boolean)
+GET         /verify-your-email                          controllers.EmailController.showUnverified()
 
-GET         /search                          controllers.ClaimSearch.onPageLoad()
-POST        /search                          controllers.ClaimSearch.search()
+GET         /:claimType/:claim/start-file-upload        controllers.FileUploadController.start(claim: String, claimType: models.ClaimType, searched: Boolean, multipleUpload: Boolean)
+GET         /:claim/upload-confirmation                 controllers.FileUploadController.continue(claim: String)
 
-GET         /logout-survey                   controllers.LogoutController.logout
-GET         /logout                          controllers.LogoutController.logoutNoSurvey
++ nocsrf
+POST        /update-files                               controllers.FileUploadController.updateFiles()
 
-GET         /not-subscribed-for-cds          controllers.UnauthorisedController.onPageLoad
-GET         /assets/*file                    controllers.Assets.versioned(path = "/public", file: Asset)
+GET         /search                                     controllers.ClaimSearch.onPageLoad()
+POST        /search                                     controllers.ClaimSearch.search()
+
+GET         /logout-survey                              controllers.LogoutController.logout
+GET         /logout                                     controllers.LogoutController.logoutNoSurvey
+
+GET         /not-subscribed-for-cds                     controllers.UnauthorisedController.onPageLoad
+GET         /assets/*file                               controllers.Assets.versioned(path = "/public", file: Asset)

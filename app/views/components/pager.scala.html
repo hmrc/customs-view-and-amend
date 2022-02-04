@@ -19,7 +19,7 @@
 @(model: Paginated[_])(implicit messages: Messages)
 
 @if(!model.dataFitsOnOnePage) {
-    <div class="govuk-body">
+    <div class="govuk-body govuk-!-margin-bottom-8">
     <nav class="govuk-pagination" id="pagination-label">
         <p class="govuk-visually-hidden">Pagination navigation</p>
         <ul class="govuk-pagination__list">

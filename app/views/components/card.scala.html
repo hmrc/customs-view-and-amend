@@ -27,10 +27,11 @@
         linkMessage: String,
         linkLocation: String,
         insetMessage: Option[String] = None,
-        p2: Option[String] = None
+        p2: Option[String] = None,
+        cardClass: String = "custom-card govuk-!-padding-4"
 )(implicit messages: Messages)
 
-<div class="custom-card govuk-!-padding-4">
+<div class="@cardClass">
     @h3(title, classes = "govuk-heading-m govuk-!-margin-bottom-4")
     @p(p1)
     @insetMessage.map(inset(_))

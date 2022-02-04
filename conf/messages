@@ -14,26 +14,26 @@ service.banner.start = Start a new claim
 service.banner.search = Find a claim
 
 claims.overview.title = Your claims for repayment of customs charges
-claims.overview.summary = Summary
+claims.overview.summary = Claims summary
 
-claims.overview.progress.plural.h3 = You have {0} claims in progress
-claims.overview.progress.single.h3 = You have {0} claim in progress
+claims.overview.progress.plural.h3 = You have {0} in progress
+claims.overview.progress.single.h3 = You have {0} in progress
 
 claims.overview.progress.p1 = Claims currently being reviewed by HMRC.
 claims.overview.progress.link = View claims in progress
 
-claims.overview.pending.plural.h3 = You have {0} claims pending
-claims.overview.pending.single.h3 = You have {0} claim pending
+claims.overview.pending.plural.h3 = You have {0} pending
+claims.overview.pending.single.h3 = You have {0} pending
 
-claims.overview.pending.p1 = A HMRC caseworker has asked you for additional information.
+claims.overview.pending.p1 = Claims that need a response or additional information.
 claims.overview.pending.indent = You have {0} unread messages.
 claims.overview.pending.link = View claims pending
 
-claims.overview.closed.plural.h3 = You have {0} claims closed
-claims.overview.closed.single.h3 = You have {0} claim closed
+claims.overview.closed.plural.h3 = You have {0} closed
+claims.overview.closed.single.h3 = You have {0} closed
 
-claims.overview.closed.p1 = Claims closed when HMRC has not received a response in time, are rejected or resolved.
-claims.overview.closed.p2 = Closed claims will be removed one month from date of closure.
+claims.overview.closed.p1 = Claims that were approved, rejected or did not receive a response in time.
+claims.overview.closed.p2 = Closed claims are removed after one month.
 claims.overview.closed.link = View closed claims
 
 claims.overview.no-claims.p1 = You have no claims to view.
@@ -52,6 +52,16 @@ claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant''s name
 claim.detail.email = Email address
+claim.detail.upload = Upload files
+
+claim.upload.confirmation.h1 = Claim amendment sent
+claim.upload.confirmation.case = Case number
+claim.upload.confirmation.h2 = What happens next?
+claim.upload.confirmation.p1 = Your claim amendment will be reviewed by HMRC and we will aim to email or write a letter to you to tell you the outcome within 30 working days. We will contact you to either:
+claim.upload.confirmation.li.1 = confirm your claim and bank transfer
+claim.upload.confirmation.li.2 = ask for more information
+claim.upload.confirmation.li.3 = explain why your claim was rejected
+claim.upload.confirmation.link = View all pending claims
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.

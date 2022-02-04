@@ -114,6 +114,9 @@ class ClaimDetailControllerSpec extends SpecBase {
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
     val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("caseNumber", C285, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
 
+    when(mockFinancialsApiConnector.getClaims(any)(any))
+      .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
+
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
       Seq("21GB03I52858073821"),

@@ -1,0 +1,34 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import config.AppConfig
+
+@this(layout: Layout,
+        confirmation: components.confirmation,
+        link: components.link,
+        h2: components.h2,
+        p: components.p,
+        ul: components.unordered_list)
+
+@(claimNumber: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+
+@layout(pageTitle = Some(messages("claim.list.progress.title"))) {
+    @confirmation(claimNumber)
+    @h2("claim.upload.confirmation.h2")
+    @p("claim.upload.confirmation.p1")
+    @ul("claim.upload.confirmation.li.1", "claim.upload.confirmation.li.2", "claim.upload.confirmation.li.3")
+    @link("claim.upload.confirmation.link", routes.ClaimListController.showPendingClaimList(None).url)
+}

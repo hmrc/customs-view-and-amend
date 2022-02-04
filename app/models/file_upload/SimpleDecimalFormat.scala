@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,17 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package models.file_upload
 
-@()
+import play.api.libs.json._
 
-<div class="gem-c-search gem-c-search--on-white govuk-!-width-one-third govuk-!-margin-bottom-7">
-    <div class="gem-c-search__item-wrapper">
-        <input aria-controls="js-search-results-info" class="gem-c-search__item gem-c-search__input js-class-toggle" id="value" name="value" title="Search" type="search" value="">
-        <div class="gem-c-search__item gem-c-search__submit-wrapper">
-            <button class="gem-c-search__submit" type="submit">Search</button>
-        </div>
-    </div>
-</div>
+object SimpleDecimalFormat {
+
+  def apply[A](from: BigDecimal => A, to: A => BigDecimal): Format[A] =
+    Format(
+      Reads {
+        case JsNumber(value) => JsSuccess(from(value))
+        case json            => JsError(s"Expected json number but got ${json.getClass.getSimpleName}")
+      },
+      Writes.apply(entity => JsNumber(to(entity)))
+    )
+
+}
