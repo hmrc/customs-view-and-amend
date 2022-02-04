@@ -37,18 +37,16 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")
 
   private lazy val fileUploadHost: String = config.get[String]("file-upload.host")
-  private lazy val fileUploadCallBackHost: String = config.get[String]("file-upload.callBackHost")
-  lazy val fileUploadInitializeUrl: String = s"$fileUploadHost/upload-documents/initialize"
-  lazy val fileUploadBackLink: String = config.get[String]("file-upload.back")
-  lazy val fileUploadContinueLink: String = config.get[String]("file-upload.continue")
-  lazy val fileUploadCallBack: String = config.get[String]("file-upload.callBack")
+  private lazy val fileUploadReturnHost: String = config.get[String]("file-upload.returnHost")
+  lazy val fileUploadInitializeUrl: String = s"${config.get[String]("file-upload.initializeHost")}/upload-documents/initialize"
+  lazy val fileUploadCallBack: String = config.get[String]("file-upload.uploadedFilesCallBackUrl")
   lazy val fileUploadServiceName: String = config.get[String]("file-upload.serviceName")
   lazy val fileUploadPhase: String = config.get[String]("file-upload.phaseBanner")
   lazy val fileUploadPhaseUrl: String = config.get[String]("file-upload.phaseBannerUrl")
   lazy val fileUploadAccessibilityUrl: String = config.get[String]("file-upload.accessibilityStatement")
 
-  def backLinkUrl(relativeLocation: String) = s"$fileUploadCallBackHost$relativeLocation"
-  def fileUploadUrl(relativeLocation: String) = s"$fileUploadHost$relativeLocation"
+  def absoluteLink(relativeLocation: String) = s"$fileUploadReturnHost$relativeLocation"
+  def fileUploadLink(relativeLocation: String) = s"$fileUploadHost$relativeLocation"
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")
   lazy val countdown: Int = config.get[Int]("timeout.countdown")
