@@ -18,7 +18,7 @@ package controllers
 
 import connector.{FinancialsApiConnector, UploadDocumentsConnector}
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
-import models.{AllClaims, C285, ClaimDetail, ClosedClaim, InProgress, InProgressClaim, Pending, PendingClaim}
+import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -85,7 +85,7 @@ class FileUploadControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(POST, routes.FileUploadController.updateFiles().url).withJsonBody(
-          Json.toJson(UploadedFileMetadata(Nonce.toNonce(111), Seq.empty, Some(UploadCargo("NDRC-1000"))))
+          Json.toJson(UploadedFileMetadata(Nonce(111), Seq.empty, Some(UploadCargo("NDRC-1000"))))
         )
         val result = route(app, request).value
         status(result) mustBe NO_CONTENT
@@ -95,7 +95,7 @@ class FileUploadControllerSpec extends SpecBase {
     "return BAD_REQUEST when a valid payload sent but there is no case number in the cargo" in new Setup {
       running(app) {
         val request = fakeRequest(POST, routes.FileUploadController.updateFiles().url).withJsonBody(
-          Json.toJson(UploadedFileMetadata(Nonce.toNonce(111), Seq.empty, None))
+          Json.toJson(UploadedFileMetadata(Nonce(111), Seq.empty, None))
         )
         val result = route(app, request).value
         status(result) mustBe BAD_REQUEST

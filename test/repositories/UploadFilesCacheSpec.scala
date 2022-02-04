@@ -70,7 +70,7 @@ class UploadFilesCacheSpec extends SpecBase {
     "not update a record if the nonce does not match" in new Setup {
       await(for {
         _ <- database.initializeRecord(caseNumber, nonce)
-        successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata.copy(nonce = Nonce.toNonce(123)))
+        successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata.copy(nonce = Nonce(123)))
         result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
         _ <- database.collection.drop().toFuture()
       } yield {
@@ -107,7 +107,7 @@ class UploadFilesCacheSpec extends SpecBase {
     val app: Application = application.build()
 
     val caseNumber: String = "NDRC-2341"
-    val nonce: Nonce = Nonce.toNonce(111)
+    val nonce: Nonce = Nonce(111)
     val uploadedFile: UploadedFile = UploadedFile("reference", "downloadUrl", "someTimestamp", "someChecksum", "someFileName", "mimeType", 10, None, None, None)
     val validUploadedFileMetadata: UploadedFileMetadata = UploadedFileMetadata(nonce, Seq(uploadedFile), None)
 

@@ -18,40 +18,17 @@ package models.file_upload
 
 import play.api.libs.json.Format
 
-import java.nio.charset.StandardCharsets
-import java.util.Base64
-import scala.language.implicitConversions
-import scala.util.{Random, Try}
+import scala.util.Random
 
-/** Random integer value container. */
-sealed trait Nonce {
-  val value: Int
+case class Nonce(value: Int) {
+  override def equals(o: Any): Boolean =
+    o match {
+      case nonce: Nonce => nonce.value == value
+      case _ => false
+    }
 }
 
 object Nonce {
-
-  final def random: Nonce =
-    toNonce(Random.nextInt())
-
-  final def apply(value: Int): Nonce =
-    toNonce(value)
-
-  object Any extends Nonce {
-    final val value: Int = 0
-  }
-
-  final class Strict(val value: Int) extends Nonce {
-    override def equals(obj: scala.Any): Boolean =
-      obj match {
-        case _: Any.type => true
-        case nonce: Nonce => nonce.value == value
-        case _ => false
-      }
-  }
-
-  implicit final val formats: Format[Nonce] =
-    SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value))
-
-  implicit final def toNonce(value: Int): Nonce =
-    new Strict(value)
+  final def random: Nonce = Nonce(Random.nextInt())
+  implicit final val formats: Format[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value))
 }

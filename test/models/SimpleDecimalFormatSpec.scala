@@ -18,7 +18,7 @@ package models
 
 import models.file_upload.{Nonce, SimpleDecimalFormat}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.libs.json.{JsError, JsResult, JsString}
+import play.api.libs.json.{JsResult, JsString}
 import utils.SpecBase
 
 class SimpleDecimalFormatSpec extends SpecBase {
@@ -28,6 +28,16 @@ class SimpleDecimalFormatSpec extends SpecBase {
       val json = JsString("invalid")
       val result: JsResult[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value)).reads(json)
       result.isError mustBe true
+    }
+  }
+
+  "Nonce" should {
+    "equals should return correct values" in {
+      val nonce = Nonce(111)
+      nonce == Nonce(123) shouldBe false
+      nonce == Nonce(111) shouldBe true
+      nonce == "testing" shouldBe false
+
     }
   }
 }
