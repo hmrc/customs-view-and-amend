@@ -21,11 +21,9 @@
 @(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claims.overview.title"))) {
-    @h1("claims.overview.title", classes = "govuk-heading-xl")
+    @h1("claims.overview.summary", classes = "govuk-heading-xl")
 
     @if(allClaims.collectAll.nonEmpty) {
-        @h2("claims.overview.summary", classes = "govuk-heading-l")
-
         @card(
             if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
                 messages("claims.overview.progress.plural.h3", allClaims.inProgressClaims.size)

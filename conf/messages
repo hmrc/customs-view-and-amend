@@ -9,7 +9,7 @@ feedback.before = This is a new service – your
 feedback.link = feedback
 feedback.after = will help us to improve it.
 
-service.banner.home = Home
+service.banner.home = Claims summary
 service.banner.start = Start a new claim
 service.banner.search = Find a claim
 
@@ -76,14 +76,14 @@ claim.list.table.heading.status = Claim status
 claim.list.table.heading.pending = Respond by date
 claim.list.table.heading.removal = Removal date
 
-claim.list.table.hidden.closed = Showing all closed claims
-claim.list.table.hidden.pending = Showing all pending claims
-claim.list.table.hidden.progress = Showing all claims in progress
+claim.list.table.closed = Sorted by closest removal date.
+claim.list.table.pending = Sorted by closest respond by date.
+claim.list.table.progress = Sorted by closest claim start date.
 
 claim.search.title = Find a claim
 claim.search.result = Your search returned
 claim.search.p1 = Enter a case reference or Movement Reference Number (MRN)
-claim.search.hint = For example, NDRC-1234 or 22GBJD4DCMAM33DOI2.
+claim.search.hint = For example, '‘NDRC-1234’' or '‘22GBJD4DCMAM33DOI2’'.
 claim.search.none.p1 = <strong>There are no matching results for {0}</strong>.
 claim.search.none.p2 = Try searching again by:
 claim.search.none.bullet.1 = double-checking your case reference or MRN
