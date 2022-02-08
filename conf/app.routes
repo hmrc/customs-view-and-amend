@@ -16,7 +16,8 @@ GET         /:claim/upload-confirmation                 controllers.FileUploadCo
 POST        /update-files                               controllers.FileUploadController.updateFiles()
 
 GET         /search                                     controllers.ClaimSearch.onPageLoad()
-POST        /search                                     controllers.ClaimSearch.search()
+POST        /search                                     controllers.ClaimSearch.onSubmit()
+GET         /search-result                              controllers.ClaimSearch.searchResult()
 
 GET         /logout-survey                              controllers.LogoutController.logout
 GET         /logout                                     controllers.LogoutController.logoutNoSurvey

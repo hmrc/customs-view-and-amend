@@ -18,7 +18,7 @@ package config
 
 import actions.{AuthenticatedIdentifierAction, IdentifierAction}
 import com.google.inject.AbstractModule
-import repositories.{ClaimsCache, DefaultClaimsCache, DefaultUploadedFilesCache, UploadedFilesCache}
+import repositories.{ClaimsCache, DefaultClaimsCache, DefaultSearchCache, DefaultUploadedFilesCache, SearchCache, UploadedFilesCache}
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.play.bootstrap.auth.DefaultAuthConnector
 
@@ -26,6 +26,7 @@ class Module extends AbstractModule {
   override def configure(): Unit = {
     bind(classOf[IdentifierAction]).to(classOf[AuthenticatedIdentifierAction]).asEagerSingleton()
     bind(classOf[UploadedFilesCache]).to(classOf[DefaultUploadedFilesCache]).asEagerSingleton()
+    bind(classOf[SearchCache]).to(classOf[DefaultSearchCache]).asEagerSingleton()
     bind(classOf[ClaimsCache]).to(classOf[DefaultClaimsCache]).asEagerSingleton()
     bind(classOf[AuthConnector]).to(classOf[DefaultAuthConnector]).asEagerSingleton()
   }

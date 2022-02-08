@@ -14,34 +14,34 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import config.AppConfig
 
 @this(layout: Layout,
-        formHelper: FormWithCSRF,
         h1: components.h1,
         p: components.p,
         hint: components.hint,
+        link: components.link,
         button: components.button,
         searchResult: components.search_result_table,
         unorderedList: components.unordered_list,
-        textInput: components.inputText,
         searchInput: components.search_input)
 
-@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
+@(claim: Option[Claim] = None, query: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-    @formHelper(action = routes.ClaimSearch.onSubmit()) {
-        @textInput(form,
-            id = "search-claim",
-            classes = Some("govuk-!-width-one-third"),
-            name = "value",
-            label = "claim.search.title",
-            hint = Some("claim.search.hint"),
-            isPageHeading = true
+@layout(pageTitle = Some(messages("claim.search.result.title")), fullWidth = true, backLink = Some(routes.ClaimSearch.onPageLoad.url)) {
+
+    @if(claim.isEmpty) {
+        @h1("claim.search.none.title", classes = "govuk-heading-xl")
+        @p(messages("claim.search.none.p1", query))
+        @link("claim.search.none.link",
+            routes.ClaimSearch.onPageLoad.url,
+            preLinkMessage = Some("claim.search.none.link.pre"),
+            postLinkMessage = Some("claim.search.none.link.post")
         )
-
-        @button("claim.search.button")
+    } else {
+        @claim.map(v => {
+            searchResult(v, query)
+        })
     }
 }

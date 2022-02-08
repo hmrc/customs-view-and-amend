@@ -23,7 +23,7 @@
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if (searched) Some(routes.ClaimSearch.onPageLoad().url) else Some(claimDetail.backLink())) {
+@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if (searched) Some(routes.ClaimSearch.searchResult().url) else Some(claimDetail.backLink())) {
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
     @p("claim.detail.p1")
 

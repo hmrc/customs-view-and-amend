@@ -21,6 +21,7 @@ import config.AppConfig
 import connector.FinancialsApiConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import repositories.SearchCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claims_overview
 
@@ -29,6 +30,7 @@ import scala.concurrent.ExecutionContext
 
 class ClaimsOverview @Inject()(
                                 mcc: MessagesControllerComponents,
+                                searchCache: SearchCache,
                                 authenticate: IdentifierAction,
                                 verifyEmail: EmailAction,
                                 financialsApiConnector: FinancialsApiConnector,
@@ -37,8 +39,10 @@ class ClaimsOverview @Inject()(
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { allClaims =>
-      //TODO add number of notifications - CR pending
+    for {
+      _ <- searchCache.removeSearch(request.eori)
+      allClaims <- financialsApiConnector.getClaims(request.eori)
+    } yield {
       Ok(claimsOverview(0, allClaims))
     }
   }

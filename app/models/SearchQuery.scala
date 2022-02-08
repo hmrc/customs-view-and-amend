@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,16 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Button
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+package models
 
-@this(govukButton: GovukButton)
-
-@(msg: String, href: Option[String] = None)(implicit messages: Messages)
-
-<div class="govuk-body">
-@govukButton(Button(content = Text(messages(msg)), href = href))
-</div>
+case class SearchQuery(claim: Option[Claim], query: String)
