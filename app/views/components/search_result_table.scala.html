@@ -14,12 +14,13 @@
  * limitations under the License.
  *@
 
-@this(claimListRows: claimListRows)
+@this(claimListRows: claimListRows, h1: components.h1)
 
-@(claim: Claim)(implicit messages: Messages)
+@(claim: Claim, query: String)(implicit messages: Messages)
 
-<table class="govuk-table govuk-!-width-two-thirds">
-    <caption id="claims-caption" class="govuk-table__caption govuk-heading-m govuk-!-margin-bottom-5">@messages("claim.search.result")</caption>
+@h1("claim.search.result.title")
+<table class="govuk-table">
+    <caption id="claims-caption" class="search-table-caption govuk-!-margin-bottom-5">@Html(messages("claim.search.result", 1, query))</caption>
     <thead class="govuk-table__head">
         <tr class="govuk-table__row">
             <th>@messages("claim.list.table.heading.case")</th>

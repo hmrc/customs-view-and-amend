@@ -23,6 +23,7 @@ import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import play.api.{Application, inject}
+import repositories.SearchCache
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -34,6 +35,8 @@ class ClaimsOverviewControllerSpec extends SpecBase {
     "return OK" in new Setup {
       when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
+      when(mockSearchCache.removeSearch(any))
+        .thenReturn(Future.successful(true))
 
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverview.show.url)
       val result: Future[Result] = route(app, request).value
@@ -43,6 +46,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
   trait Setup {
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
+    val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims = Seq(PendingClaim("NDRC-0001", C285, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
@@ -51,7 +55,8 @@ class ClaimsOverviewControllerSpec extends SpecBase {
     )
 
     val app: Application = application.overrides(
-      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector)
+      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector),
+      inject.bind[SearchCache].toInstance(mockSearchCache)
     ).build()
   }
 
