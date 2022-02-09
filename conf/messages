@@ -91,7 +91,7 @@ claim.search.none.title = No results found
 claim.search.none.p1 = There are <strong>0</strong> matching results for {0}.
 claim.search.none.link = searching again
 claim.search.none.link.pre = Try
-claim.search.none.link.post = by double-checking your case reference or MRN
+claim.search.none.link.post = by double-checking your case reference or MRN.
 
 case.pending = Pending
 case.inProgress = In progress
