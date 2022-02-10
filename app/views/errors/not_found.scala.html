@@ -20,7 +20,7 @@
 
 @()(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("cf.not-subscribed-to-cds.detail.title")), backLink = None, companyBannerEnabled = false) {
+@layout(pageTitle = Some(messages("cf.error.not-found.heading")), backLink = None, companyBannerEnabled = false) {
     @h1("cf.error.not-found.heading")
     @p("cf.error.not-found.message.address-typed-wrong")
     @p("cf.error.not-found.message.address-pasted-wrong")

@@ -16,7 +16,7 @@
 
 package connector
 
-import config.AppConfig
+import config.{AppConfig}
 import models.ClaimType
 import models.file_upload.{Nonce, UploadDocumentsWrapper}
 import play.api.http.Status.CREATED
@@ -42,7 +42,7 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
   }
 
   private def sendRequest(uploadDocumentsWrapper: UploadDocumentsWrapper)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    httpClient.POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializeUrl, uploadDocumentsWrapper).map { response =>
+    httpClient.POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializationUrl, uploadDocumentsWrapper).map { response =>
       response.status match {
         case CREATED => response.header("Location")
         case _ => None

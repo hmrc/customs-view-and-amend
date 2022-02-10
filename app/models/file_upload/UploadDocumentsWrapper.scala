@@ -30,13 +30,17 @@ object UploadDocumentsWrapper {
                     searched: Boolean,
                     multipleUpload: Boolean
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
+    val continueUrl = controllers.routes.FileUploadController.continue(caseNumber)
+    val backLinkUrl = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched)
+    val callBack = controllers.routes.FileUploadController.updateFiles()
+
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
         nonce = nonce,
         initialNumberOfEmptyRows = Some(1),
-        continueUrl = appConfig.absoluteLink(controllers.routes.FileUploadController.continue(caseNumber).url),
-        backlinkUrl = appConfig.absoluteLink(controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url),
-        callbackUrl = appConfig.fileUploadCallBack,
+        continueUrl = s"${appConfig.selfUrl}$continueUrl",
+        backlinkUrl = s"${appConfig.selfUrl}$backLinkUrl",
+        callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBack",
         cargo = UploadCargo(caseNumber),
         content = Some(UploadDocumentsContent(
           serviceName = Some(appConfig.fileUploadServiceName),

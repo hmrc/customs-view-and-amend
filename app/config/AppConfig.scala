@@ -36,21 +36,25 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
 
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")
 
-  private lazy val fileUploadHost: String = config.get[String]("file-upload.host")
-  private lazy val fileUploadReturnHost: String = config.get[String]("file-upload.returnHost")
-  lazy val fileUploadInitializeUrl: String = s"$fileUploadHost/upload-documents/initialize"
-  lazy val fileUploadCallBack: String = config.get[String]("file-upload.uploadedFilesCallBackUrl")
-  lazy val fileUploadServiceName: String = config.get[String]("file-upload.serviceName")
-  lazy val fileUploadPhase: String = config.get[String]("file-upload.phaseBanner")
-  lazy val fileUploadPhaseUrl: String = config.get[String]("file-upload.phaseBannerUrl")
-  lazy val fileUploadAccessibilityUrl: String = config.get[String]("file-upload.accessibilityStatement")
+  lazy val selfUrl: String = servicesConfig.getString("self.url")
+  lazy val fileUploadBaseUrl: String =
+    servicesConfig.baseUrl("upload-documents-frontend")
+  lazy val fileUploadCallbackUrlPrefix: String =
+    servicesConfig.getConfString("upload-documents-frontend.callback-url-prefix", "")
+  lazy val fileUploadContextPath: String =
+    servicesConfig.getConfString("upload-documents-frontend.context-path", "/upload-documents")
+  lazy val fileUploadPublicUrl: String =
+    servicesConfig.getConfString("upload-documents-frontend.public-url", "")
+  lazy val fileUploadInitializationUrl: String = s"$fileUploadBaseUrl$fileUploadContextPath/initialize"
+  lazy val fileUploadWipeOutUrl: String = s"$fileUploadBaseUrl$fileUploadContextPath/wipe-out"
+  lazy val fileUploadServiceName: String = config.get[String]("microservice.services.upload-documents-frontend.serviceName")
+  lazy val fileUploadPhase: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBanner")
+  lazy val fileUploadPhaseUrl: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBannerUrl")
+  lazy val fileUploadAccessibilityUrl: String = config.get[String]("microservice.services.upload-documents-frontend.accessibilityStatement")
 
-  def absoluteLink(relativeLocation: String) = s"$fileUploadReturnHost$relativeLocation"
-  def fileUploadLink(relativeLocation: String) = s"$fileUploadHost$relativeLocation"
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")
   lazy val countdown: Int = config.get[Int]("timeout.countdown")
-
   lazy val itemsPerPage: Int = config.get[Int]("pagination.itemsPerPage")
 
 
