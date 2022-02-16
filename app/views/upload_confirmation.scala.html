@@ -25,10 +25,9 @@
 
 @(claimNumber: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.progress.title"))) {
+@layout(pageTitle = Some(messages("claim.list.progress.title")), navigationBannerEnabled = false) {
     @confirmation(claimNumber)
     @h2("claim.upload.confirmation.h2")
     @p("claim.upload.confirmation.p1")
     @ul("claim.upload.confirmation.li.1", "claim.upload.confirmation.li.2", "claim.upload.confirmation.li.3")
-    @link("claim.upload.confirmation.link", routes.ClaimListController.showPendingClaimList(None).url)
 }

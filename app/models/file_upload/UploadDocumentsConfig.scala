@@ -16,6 +16,7 @@
 
 package models.file_upload
 
+import models.C285FileSelection
 import play.api.libs.json.{Json, OFormat}
 
 
@@ -33,7 +34,7 @@ case class UploadDocumentsConfig(
                                   allowedContentTypes: Option[String] = None,
                                   cargo: UploadCargo,
                                   allowedFileExtensions: Option[String] = None,
-                                  newFileDescription: Option[String] = None,
+                                  newFileDescription: C285FileSelection,
                                   content: Option[UploadDocumentsContent] = None,
                                   features: Option[UploadDocumentsFeatures] = None
                                 )

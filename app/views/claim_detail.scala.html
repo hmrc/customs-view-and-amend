@@ -19,7 +19,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import views.helpers.Formatters
 
-@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, link: components.link)
+@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, newTabLink: components.newTabLink)
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -80,7 +80,7 @@
     ))
 
     @if(claimDetail.isPending) {
-        @link("claim.detail.upload", routes.FileUploadController.start(claimDetail.caseNumber, claimDetail.claimType, searched, multipleUpload = true).url)
+        @newTabLink("claim.detail.upload", routes.FileSelectionController.onPageLoad(claimDetail.caseNumber, claimDetail.claimType, searched, initialRequest = true).url)
     }
 
 

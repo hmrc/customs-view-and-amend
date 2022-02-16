@@ -17,10 +17,10 @@
 package models.file_upload
 
 import config.AppConfig
-import models.ClaimType
+import models.{C285FileSelection, ClaimType}
 import play.api.libs.json.{Json, OFormat}
 
-case class UploadDocumentsWrapper(config: UploadDocumentsConfig)
+case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
 
 object UploadDocumentsWrapper {
 
@@ -28,7 +28,8 @@ object UploadDocumentsWrapper {
                     caseNumber: String,
                     claimType: ClaimType,
                     searched: Boolean,
-                    multipleUpload: Boolean
+                    documentType: C285FileSelection,
+                    previouslyUploaded: Seq[UploadedFile] = Seq.empty
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
     val continueUrl = controllers.routes.FileUploadController.continue(caseNumber)
     val backLinkUrl = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched)
@@ -42,6 +43,7 @@ object UploadDocumentsWrapper {
         backlinkUrl = s"${appConfig.selfUrl}$backLinkUrl",
         callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBack",
         cargo = UploadCargo(caseNumber),
+        newFileDescription = documentType,
         content = Some(UploadDocumentsContent(
           serviceName = Some(appConfig.fileUploadServiceName),
           serviceUrl = Some(appConfig.homepage),
@@ -51,8 +53,9 @@ object UploadDocumentsWrapper {
           userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
           contactFrontendServiceId = Some(appConfig.contactFrontendServiceId)
         )),
-        features = Some(UploadDocumentsFeatures(Some(multipleUpload)))
-      )
+        features = Some(UploadDocumentsFeatures(Some(false)))
+      ),
+      existingFiles = previouslyUploaded
     )
   }
 

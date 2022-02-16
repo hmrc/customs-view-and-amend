@@ -39,7 +39,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))))
 
       running(app) {
-        val result = await(connector.initializeNewFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
+        val result = await(connector.startFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
         result shouldBe Some("/location")
       }
     }
@@ -49,7 +49,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(false))
 
       running(app) {
-        val result = await(connector.initializeNewFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
+        val result = await(connector.startFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
         result shouldBe None
       }
     }
@@ -62,7 +62,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "", Map.empty[String, Seq[String]])))
 
       running(app) {
-        val result = await(connector.initializeNewFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
+        val result = await(connector.startFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
         result shouldBe None
       }
     }
@@ -75,7 +75,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(CREATED, "", Map.empty[String, Seq[String]])))
 
       running(app) {
-        val result = await(connector.initializeNewFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
+        val result = await(connector.startFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
         result shouldBe None
       }
     }
@@ -88,7 +88,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
-        val result = await(connector.initializeNewFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
+        val result = await(connector.startFileUpload("NDRC-1234", C285, searched = true, multipleUpload = true))
         result shouldBe None
       }
     }

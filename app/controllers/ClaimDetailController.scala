@@ -17,14 +17,14 @@
 package controllers
 
 import actions.IdentifierAction
-import cats.data.EitherT
-import cats.data.EitherT.fromOptionF
+import cats.data.EitherT._
 import config.AppConfig
 import connector.{DataStoreConnector, FinancialsApiConnector}
 import models.{ClaimDetail, ClaimType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.{ClaimsCache, ClaimsMongo}
+import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
 import views.html.errors.not_found
@@ -36,15 +36,14 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       authenticate: IdentifierAction,
                                       dataStoreConnector: DataStoreConnector,
                                       financialsApiConnector: FinancialsApiConnector,
-                                      claimsCache: ClaimsCache,
+                                      claimService: ClaimService,
                                       claimDetail: claim_detail,
                                       notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   def claimDetail(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
-      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
-      _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
+      _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, claimType), NotFound(notFound()))
     } yield {

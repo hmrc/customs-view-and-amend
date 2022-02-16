@@ -38,7 +38,7 @@ class FileUploadControllerSpec extends SpecBase {
         .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.initializeNewFileUpload(any, any, any, any)(any))
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
         .thenReturn(Future.successful(Some("/location")))
 
       running(app) {
@@ -65,7 +65,7 @@ class FileUploadControllerSpec extends SpecBase {
     "return NOT_FOUND if the request to initialize the file upload service fails" in new Setup {
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.initializeNewFileUpload(any, any, any, any)(any))
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
         .thenReturn(Future.successful(None))
       when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))

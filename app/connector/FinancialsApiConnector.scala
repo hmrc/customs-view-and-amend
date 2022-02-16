@@ -18,12 +18,15 @@ package connector
 
 import config.AppConfig
 import models._
+import models.file_upload.UploadedFile
 import models.requests.{ClaimsRequest, SpecificClaimRequest}
 import models.responses.{AllClaimsResponse, SpecificClaimResponse}
+import play.api.http.Status.ACCEPTED
 import repositories.ClaimsCache
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
+import java.util.UUID
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -34,6 +37,7 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
   private val baseUrl = appConfig.customsFinancialsApi
   private val getClaimsUrl = s"$baseUrl/get-claims"
   private val getSpecificClaimUrl = s"$baseUrl/get-specific-claim"
+  private val fileUploadUrl = s"$baseUrl/submit-file-upload"
 
   def getClaims(eori: String)(implicit hc: HeaderCarrier): Future[AllClaims] = {
     for {
@@ -61,5 +65,16 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
       .recover {
         case _ => None
       }
+  }
+
+  //TODO: handle securities
+  def fileUpload(eori: String, caseNumber: String, files: Seq[UploadedFile])(implicit hc: HeaderCarrier): Future[Boolean] = {
+    val request = Dec64UploadRequest(UUID.randomUUID().toString, eori, caseNumber, "NDRC", files)
+    httpClient.POST[Dec64UploadRequest, HttpResponse](fileUploadUrl, request).map {
+      case HttpResponse(ACCEPTED, _, _) => true
+      case _ => false
+    }.recover {
+      case _ => false
+    }
   }
 }

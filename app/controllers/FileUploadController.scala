@@ -18,14 +18,15 @@ package controllers
 
 import actions.{EmailAction, IdentifierAction}
 import cats.data.EitherT
-import cats.data.EitherT.fromOptionF
+import cats.data.EitherT._
 import config.AppConfig
 import connector.{FinancialsApiConnector, UploadDocumentsConnector}
-import models.{ClaimType, IdentifierRequest}
+import models.IdentifierRequest
 import models.file_upload.UploadedFileMetadata
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents, Result}
-import repositories.{ClaimsCache, ClaimsMongo, UploadedFilesCache}
+import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents, Request, Result}
+import repositories.{ClaimsMongo, UploadedFilesCache}
+import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.errors.not_found
 import views.html.upload_confirmation
@@ -37,25 +38,16 @@ class FileUploadController @Inject()(
                                       mcc: MessagesControllerComponents,
                                       authenticate: IdentifierAction,
                                       verifyEmail: EmailAction,
-                                      uploadDocumentsConnector: UploadDocumentsConnector,
-                                      financialsApiConnector: FinancialsApiConnector,
-                                      claimsCache: ClaimsCache,
+                                      claimService: ClaimService,
                                       uploadedFilesCache: UploadedFilesCache,
+                                      uploadDocumentsConnector: UploadDocumentsConnector,
+                                      confirmation: upload_confirmation,
                                       notFound: not_found,
-                                      confirmation: upload_confirmation
+                                      financialsApi: FinancialsApiConnector
                                     )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
-
-  def start(caseNumber: String, claimType: ClaimType, searched: Boolean, multipleUpload: Boolean): Action[AnyContent] = actions.async { implicit request =>
-    (for {
-      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
-      _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
-      result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched, multipleUpload)
-        .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))
-    } yield result).merge
-  }
 
   def updateFiles(): Action[UploadedFileMetadata] = Action.async(parse.json[UploadedFileMetadata]) { implicit request =>
     request.body.cargo match {
@@ -65,7 +57,22 @@ class FileUploadController @Inject()(
   }
 
   def continue(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
-    //TODO integrate with DEC64 for file upload
-    Future.successful(Ok(confirmation(caseNumber)))
+    val result: EitherT[Future, Result, Result] = for {
+      _ <- fromOptionF[Future, Result, ClaimsMongo](claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+      files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
+      successfullyUploaded <- liftF(financialsApi.fileUpload(request.eori, caseNumber, files))
+      result <- liftF(clearData(successfullyUploaded, caseNumber))
+    } yield result
+
+    result.merge
+  }
+
+  private def clearData(successfulUpload: Boolean, caseNumber: String)(implicit request: IdentifierRequest[_]): Future[Result] = {
+    if (successfulUpload) {
+      for {
+        _ <- uploadedFilesCache.removeRecord(caseNumber)
+        _ <- uploadDocumentsConnector.wipeData()
+      } yield Ok(confirmation(caseNumber))
+    } else Future.successful(NotFound(notFound()))
   }
 }
