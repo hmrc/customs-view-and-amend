@@ -52,7 +52,7 @@ claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant''s name
 claim.detail.email = Email address
-claim.detail.upload = Upload files (Opens in a new tab link)
+claim.detail.upload = Upload files (opens in a new tab link)
 
 claim.upload.confirmation.h1 = Claim amendment sent
 claim.upload.confirmation.case = Case number
@@ -195,12 +195,12 @@ file.selection.c285.packing-list = Packing list
 file.selection.c285.proof-of-origin = Proof of origin
 file.selection.c285.substitute-entry = Substitute entry
 file.selection.c285.preference-certificate = Preference certificate
-file.selection.c285.letter-of-authority = Letter of authority
-file.selection.c285.correspondence = Correspondence
+file.selection.c285.letter-of-authority = Proof of authority
+file.selection.c285.correspondence = Correspondence between trader and agent
 file.selection.c285.calculation-worksheet = Calculation worksheet
 file.selection.c285.airworthiness-certificates = Airworthiness certificates
 file.selection.c285.technical-specifications = Technical specifications
-file.selection.c285.addition-supporting-documents = Additional supporting documents
+file.selection.c285.other-documents = Other documents
 
 # ----------------------------------------------------------
 

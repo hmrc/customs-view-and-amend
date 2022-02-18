@@ -25,7 +25,8 @@
         p: components.p,
         govukRadios: GovukRadios,
         formHelper: FormWithCSRF,
-        button: components.button
+        button: components.button,
+        details: components.details
 )
 
 @(form: Form[_], caseNumber: String, claimType: ClaimType, searched: Boolean, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
@@ -38,6 +39,10 @@
 
         @h1("File upload description")
         @p("Select a description of the file you want to upload by choosing a defenition from the list. This will help up process your claim more efficiently.")
+        @details(
+            "Examples of supporting documents",
+            C285FileSelection.values.map(fileType => DetailsItem(s"file.selection.c285.${fileType.toString}", "NEEDS POPULATING"))
+        )(messages)
 
         @govukRadios(Radios(
             classes = "govuk-radios",

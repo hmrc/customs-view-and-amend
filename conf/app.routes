@@ -13,6 +13,7 @@ GET         /:claim/upload-confirmation                 controllers.FileUploadCo
 
 GET         /:claimType/:claim/C285/file-selection      controllers.FileSelectionController.onPageLoad(claim: String, claimType: models.ClaimType, searched: Boolean, initialRequest: Boolean)
 POST        /:claimType/:claim/C285/file-selection      controllers.FileSelectionController.onSubmit(claim: String, claimType: models.ClaimType, searched: Boolean)
+GET         /:claimType/:claim/C285/file-upload         controllers.FileSelectionController.something(caseNumber, claimType: models.ClaimType, search: Boolean, )
 
 
 
