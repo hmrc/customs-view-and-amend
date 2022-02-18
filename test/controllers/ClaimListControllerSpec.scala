@@ -31,7 +31,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showInProgressClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -44,7 +44,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showPendingClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -57,7 +57,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showClosedClaimList" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {

@@ -42,19 +42,19 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori, "A").map { claims =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page)))
     }
   }
 
   def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori, "A").map { claims =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       Ok(claimsPending(PendingClaimListViewModel(claims.pendingClaims, page)))
     }
   }
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori, "A").map { claims =>
+    financialsApiConnector.getClaims(request.eori).map { claims =>
       Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page)))
     }
   }

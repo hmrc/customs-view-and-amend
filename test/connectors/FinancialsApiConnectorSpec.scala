@@ -44,10 +44,10 @@ class FinancialsApiConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(true))
 
       running(app) {
-        val result = await(connector.getClaims("someEori", "A"))
-        result.closedClaims shouldBe Seq(ClosedClaim("SEC-2107", Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)))
-        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-2109", C285, LocalDate.of(9999, 1, 1)))
-        result.pendingClaims shouldBe Seq(PendingClaim("SEC-2108", Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1)))
+        val result = await(connector.getClaims("someEori"))
+        result.closedClaims shouldBe Seq(ClosedClaim("SEC-2107", Security, LocalDate.of(2021, 3, 21), LocalDate.of(2021, 12, 20)))
+        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-2109", C285, LocalDate.of(2021, 3, 21)))
+        result.pendingClaims shouldBe Seq(PendingClaim("SEC-2108", Security, LocalDate.of(2021, 3, 21), LocalDate.of(9999, 1, 1)))
       }
     }
 
@@ -60,7 +60,7 @@ class FinancialsApiConnectorSpec extends SpecBase {
         ))))
 
       running(app) {
-        val result = await(connector.getClaims("someEori", "A"))
+        val result = await(connector.getClaims("someEori"))
         result.closedClaims shouldBe Seq(ClosedClaim("SCTY-2345", Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)))
         result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-1234", C285, LocalDate.of(9999, 1, 1)))
         result.pendingClaims shouldBe Seq(PendingClaim("NDRC-6789", C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1)))
@@ -110,10 +110,10 @@ class FinancialsApiConnectorSpec extends SpecBase {
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(Claims(Seq(
-      SCTYCaseDetails("SEC-2108", Some("21LLLLLLLLLL12344"), "20210321", Some("00000000"), "ACS", "Pending", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007")),
-      SCTYCaseDetails("SEC-2107", Some("21LLLLLLLLLL12343"), "20210322", Some("00000000"), "ACS", "Closed", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007"))
+      SCTYCaseDetails("SEC-2108", Some("21LLLLLLLLLL12344"), "20210321", Some("20211220"), "ACS", "Pending", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007")),
+      SCTYCaseDetails("SEC-2107", Some("21LLLLLLLLLL12343"), "20210321", Some("20211220"), "ACS", "Closed", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007"))
       ), Seq(
-        NDRCCaseDetails("NDRC-2109", Some("21LLLLLLLLLLLLLLL9"), "20211120", Some("00000000"), "In Progress", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("3000.20"), Some("784.66"), Some("1200.00"), Some("KWMREF1"), Some("Duplicate Entry")))))
+        NDRCCaseDetails("NDRC-2109", Some("21LLLLLLLLLLLLLLL9"), "20210321", Some("20211220"), "In Progress", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("3000.20"), Some("784.66"), Some("1200.00"), Some("KWMREF1"), Some("Duplicate Entry")))))
 
     val app: Application = GuiceApplicationBuilder().overrides(
       inject.bind[HttpClient].toInstance(mockHttp),

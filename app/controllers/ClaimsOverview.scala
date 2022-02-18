@@ -41,7 +41,7 @@ class ClaimsOverview @Inject()(
   def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
     for {
       _ <- searchCache.removeSearch(request.eori)
-      allClaims <- financialsApiConnector.getClaims(request.eori, "A")
+      allClaims <- financialsApiConnector.getClaims(request.eori)
     } yield {
       Ok(claimsOverview(0, allClaims))
     }

@@ -34,7 +34,7 @@ class FileUploadControllerSpec extends SpecBase {
 
   "start" should {
     "redirect the user to the file upload service on a successful request" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(Some(claimsMongo)))
@@ -52,7 +52,7 @@ class FileUploadControllerSpec extends SpecBase {
     "return NOT_FOUND if the specific case number does not belong to the user" in new Setup {
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(None))
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
 
       running(app) {
@@ -67,7 +67,7 @@ class FileUploadControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimsMongo)))
       when(mockUploadDocumentsConnector.initializeNewFileUpload(any, any, any, any)(any))
         .thenReturn(Future.successful(None))
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
 
       running(app) {

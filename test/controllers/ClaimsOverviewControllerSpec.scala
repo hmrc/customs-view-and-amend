@@ -33,7 +33,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
   "show" should {
     "return OK" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
       when(mockSearchCache.removeSearch(any))
         .thenReturn(Future.successful(true))

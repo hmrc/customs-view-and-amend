@@ -43,7 +43,7 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
 
   def claimDetail(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
-      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori, "A"))
+      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, claimType), NotFound(notFound()))

@@ -64,7 +64,7 @@ class ClaimSearchControllerSpec extends SpecBase {
     }
 
     "return a search result when the field is not empty" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any, any)(any))
+      when(mockFinancialsApiConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       when(mockSearchCache.set(any, any, any))

@@ -50,7 +50,7 @@ class FileUploadController @Inject()(
 
   def start(caseNumber: String, claimType: ClaimType, searched: Boolean, multipleUpload: Boolean): Action[AnyContent] = actions.async { implicit request =>
     (for {
-      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori, "A"))
+      _ <- EitherT.liftF(financialsApiConnector.getClaims(request.eori))
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
       result <- fromOptionF(uploadDocumentsConnector.initializeNewFileUpload(caseNumber, claimType, searched, multipleUpload)
         .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))

@@ -18,8 +18,10 @@ package models.file_upload
 
 import java.time.LocalDate
 
-import models.{C285, Claim, ClosedClaim, InProgressClaim, PendingClaim}
+import models._
 import play.api.libs.json.{Json, OFormat}
+import utils.DateTimeUtil
+import utils.DateTimeUtil.toDateTime
 
 case class NDRCCaseDetails(CDFPayCaseNumber: String,
                            declarationID: Option[String],
@@ -39,9 +41,9 @@ case class NDRCCaseDetails(CDFPayCaseNumber: String,
 
   def toNdrcClaim: Claim =
     caseStatus match {
-      case "In Progress" => InProgressClaim(CDFPayCaseNumber, C285, LocalDate.of(9999, 1, 1))
-      case "Pending" => PendingClaim(CDFPayCaseNumber, C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
-      case "Closed" => ClosedClaim(CDFPayCaseNumber, C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1))
+      case "In Progress" => InProgressClaim(CDFPayCaseNumber, C285, toDateTime(claimStartDate))
+      case "Pending" => PendingClaim(CDFPayCaseNumber, C285, toDateTime(claimStartDate), LocalDate.of(9999, 1, 1))
+      case "Closed" => ClosedClaim(CDFPayCaseNumber, C285, toDateTime(claimStartDate), toDateTime(closedDate.getOrElse("")))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
 }

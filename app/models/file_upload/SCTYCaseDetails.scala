@@ -20,6 +20,7 @@ import java.time.LocalDate
 
 import models._
 import play.api.libs.json.{Json, OFormat}
+import utils.DateTimeUtil.toDateTime
 
 case class SCTYCaseDetails(CDFPayCaseNumber: String,
                            declarationID: Option[String],
@@ -35,11 +36,12 @@ case class SCTYCaseDetails(CDFPayCaseNumber: String,
                            declarantReferenceNumber: Option[String]) {
 
   //TODO: dates need to be added from response when provided
+  //TODO: GET or else
   def toSctyClaim: Claim =
     caseStatus match {
-      case "In Progress" => InProgressClaim(CDFPayCaseNumber, Security, LocalDate.of(9999, 1, 1))
-      case "Pending" => PendingClaim(CDFPayCaseNumber, Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
-      case "Closed" => ClosedClaim(CDFPayCaseNumber, Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1))
+      case "In Progress" => InProgressClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate))
+      case "Pending" => PendingClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate), LocalDate.of(9999, 1, 1))
+      case "Closed" => ClosedClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate), toDateTime(closedDate.getOrElse("")))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
 }
