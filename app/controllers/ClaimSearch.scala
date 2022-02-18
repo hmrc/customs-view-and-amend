@@ -55,7 +55,7 @@ class ClaimSearch @Inject()(connector: FinancialsApiConnector,
       _ => Future.successful(BadRequest(searchClaim(formProvider))),
       query =>
         for {
-          allClaims <- connector.getClaims(request.eori)
+          allClaims <- connector.getClaims(request.eori, "A")
           foundClaim = allClaims.findClaim(query)
           _ <- searchCache.set(request.eori, foundClaim, query)
         } yield {

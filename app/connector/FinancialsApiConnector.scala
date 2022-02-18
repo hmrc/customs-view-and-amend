@@ -35,15 +35,16 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
   private val getClaimsUrl = s"$baseUrl/get-claims"
   private val getSpecificClaimUrl = s"$baseUrl/get-specific-claim"
 
-  def getClaims(eori: String)(implicit hc: HeaderCarrier): Future[AllClaims] = {
+  def getClaims(eori: String, appType: String)(implicit hc: HeaderCarrier): Future[AllClaims] = {
     for {
       cachedClaims <- claimsCache.get(eori)
       claims <- cachedClaims match {
-        case Some(claims) => Future.successful(claims)
+        case Some(claims) =>
+          Future.successful(claims)
         case None => httpClient.POST[ClaimsRequest, AllClaimsResponse](
-          getClaimsUrl, ClaimsRequest(eori)).flatMap { claimsResponse =>
-          val claims = claimsResponse.claims.map(_.toClaim)
-          claimsCache.set(eori, claims).map { _ => claims }
+          getClaimsUrl, ClaimsRequest(eori, appType)).flatMap { claimsResponse =>
+          val claims = claimsResponse.claims.ndrcClaims.map(_.toNdrcClaim) ++ claimsResponse.claims.sctyClaims.map(_.toSctyClaim)
+          claimsCache.set(eori, claims).map(_ => claims)
         }
       }
     } yield {

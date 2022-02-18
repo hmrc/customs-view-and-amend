@@ -16,10 +16,18 @@
 
 package models.responses
 
+import models.file_upload.{NDRCCaseDetails, SCTYCaseDetails}
 import play.api.libs.json.{Json, OFormat}
 
-case class AllClaimsResponse(claims: Seq[AllClaimsDetail])
+case class AllClaimsResponse(claims: Claims)
 
 object AllClaimsResponse {
   implicit val format: OFormat[AllClaimsResponse] = Json.format[AllClaimsResponse]
+}
+
+case class Claims(sctyClaims: Seq[SCTYCaseDetails],
+                  ndrcClaims: Seq[NDRCCaseDetails])
+
+object Claims {
+  implicit val format: OFormat[Claims] = Json.format[Claims]
 }

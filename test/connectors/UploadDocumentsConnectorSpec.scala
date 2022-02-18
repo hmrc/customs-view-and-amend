@@ -100,20 +100,6 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
-      "Pending",
-      "NDRC-1234",
-      Some("someEORI")
-    )
-
-    val allClaimsResponse: AllClaimsResponse = AllClaimsResponse(
-      Seq(
-        AllClaimsDetail("NDRC-1234", C285, "In Progress", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-        AllClaimsDetail("SCTY-2345", Security, "Closed", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-        AllClaimsDetail("NDRC-6789", C285, "Pending", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-      )
-    )
-
     val app: Application = GuiceApplicationBuilder().overrides(
       inject.bind[HttpClient].toInstance(mockHttp),
       inject.bind[UploadedFilesCache].toInstance(mockUploadDocumentsCache)
