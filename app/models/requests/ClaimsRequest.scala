@@ -18,7 +18,7 @@ package models.requests
 
 import play.api.libs.json.{Format, Json}
 
-case class ClaimsRequest(eori: String)
+case class ClaimsRequest(eori: String, appType: String)
 
 object ClaimsRequest {
   implicit val format: Format[ClaimsRequest] = Json.format[ClaimsRequest]

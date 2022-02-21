@@ -43,11 +43,12 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
     for {
       cachedClaims <- claimsCache.get(eori)
       claims <- cachedClaims match {
-        case Some(claims) => Future.successful(claims)
+        case Some(claims) =>
+          Future.successful(claims)
         case None => httpClient.POST[ClaimsRequest, AllClaimsResponse](
-          getClaimsUrl, ClaimsRequest(eori)).flatMap { claimsResponse =>
-          val claims = claimsResponse.claims.map(_.toClaim)
-          claimsCache.set(eori, claims).map { _ => claims }
+          getClaimsUrl, ClaimsRequest(eori, "A")).flatMap { claimsResponse =>
+          val claims = claimsResponse.claims.ndrcClaims.map(_.toClaim) ++ claimsResponse.claims.sctyClaims.map(_.toClaim)
+          claimsCache.set(eori, claims).map(_ => claims)
         }
       }
     } yield {
