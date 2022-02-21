@@ -25,5 +25,4 @@ object DateTimeUtil {
     val parser = DateTimeFormatter.ofPattern("yyyyMMdd")
     LocalDate.parse(dateString, parser)
   }
-
 }

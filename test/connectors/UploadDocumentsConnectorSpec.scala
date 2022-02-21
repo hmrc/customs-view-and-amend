@@ -17,8 +17,7 @@
 package connectors
 
 import connector.UploadDocumentsConnector
-import models.responses.{AllClaimsDetail, AllClaimsResponse, SpecificClaimResponse}
-import models.{C285, Security}
+import models.C285
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}

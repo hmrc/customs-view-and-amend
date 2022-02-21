@@ -16,18 +16,17 @@
 
 package connectors
 
+import java.time.LocalDate
+
 import connector.FinancialsApiConnector
 import models._
-import models.responses.{AllClaimsDetail, AllClaimsResponse, Claims, SpecificClaimResponse}
+import models.responses.{AllClaimsResponse, Claims, NDRCCaseDetails, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.ClaimsCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import utils.SpecBase
-import java.time.LocalDate
-
-import models.file_upload.{NDRCCaseDetails, SCTYCaseDetails}
 
 import scala.concurrent.Future
 
@@ -45,9 +44,9 @@ class FinancialsApiConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getClaims("someEori"))
-        result.closedClaims shouldBe Seq(ClosedClaim("SEC-2107", Security, LocalDate.of(2021, 3, 21), LocalDate.of(2021, 12, 20)))
-        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-2109", C285, LocalDate.of(2021, 3, 21)))
-        result.pendingClaims shouldBe Seq(PendingClaim("SEC-2108", Security, LocalDate.of(2021, 3, 21), LocalDate.of(9999, 1, 1)))
+        result.closedClaims shouldBe Seq(ClosedClaim("SEC-2107", Security, startDate, LocalDate.of(2021, 12, 20)))
+        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-2109", C285, startDate))
+        result.pendingClaims shouldBe Seq(PendingClaim("SEC-2108", Security, startDate, startDate.plusDays(30)))
       }
     }
 
@@ -107,6 +106,8 @@ class FinancialsApiConnectorSpec extends SpecBase {
       "NDRC-1234",
       Some("someEORI")
     )
+
+    val startDate: LocalDate = LocalDate.of(2021, 3, 21)
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(Claims(Seq(

@@ -14,38 +14,37 @@
  * limitations under the License.
  */
 
-package models.file_upload
-
-import java.time.LocalDate
+package models.responses
 
 import models._
 import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.toDateTime
 
-case class SCTYCaseDetails(CDFPayCaseNumber: String,
+case class NDRCCaseDetails(CDFPayCaseNumber: String,
                            declarationID: Option[String],
                            claimStartDate: String,
                            closedDate: Option[String],
-                           reasonForSecurity: String,
                            caseStatus: String,
                            declarantEORI: String,
                            importerEORI: String,
                            claimantEORI: Option[String],
                            totalCustomsClaimAmount: Option[String],
                            totalVATClaimAmount: Option[String],
-                           declarantReferenceNumber: Option[String]) {
+                           totalExciseClaimAmount: Option[String],
+                           declarantReferenceNumber: Option[String],
+                           basisOfClaim: Option[String]) {
 
-  //TODO: dates need to be added from response when provided
-  //TODO: GET or else
-  def toSctyClaim: Claim =
+  def toClaim: Claim = {
+    val startDate = toDateTime(claimStartDate)
     caseStatus match {
-      case "In Progress" => InProgressClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate))
-      case "Pending" => PendingClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate), LocalDate.of(9999, 1, 1))
-      case "Closed" => ClosedClaim(CDFPayCaseNumber, Security, toDateTime(claimStartDate), toDateTime(closedDate.getOrElse("")))
+      case "In Progress" => InProgressClaim(CDFPayCaseNumber, C285, startDate)
+      case "Pending" => PendingClaim(CDFPayCaseNumber, C285, startDate, startDate.plusDays(30))
+      case "Closed" => ClosedClaim(CDFPayCaseNumber, C285, startDate, toDateTime(closedDate.getOrElse("")))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
+  }
 }
 
-object SCTYCaseDetails {
-  implicit val format: OFormat[SCTYCaseDetails] = Json.format[SCTYCaseDetails]
+object NDRCCaseDetails {
+  implicit val format: OFormat[NDRCCaseDetails] = Json.format[NDRCCaseDetails]
 }

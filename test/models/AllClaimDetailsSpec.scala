@@ -16,45 +16,67 @@
 
 package models
 
-import models.responses.AllClaimsDetail
+import models.responses.{NDRCCaseDetails, SCTYCaseDetails}
 import utils.SpecBase
-
 import java.time.LocalDate
 
 class AllClaimDetailsSpec extends SpecBase {
 
-  "toClaim" should {
+  "toClaim for SCTY" should {
     "return InProgressClaim when case status is 'In Progress'" in new Setup {
-      createAllDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("NDRC-0001", C285, LocalDate.of(9999, 1, 1))
+      createSctyDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("SEC-2109", Security, startDate)
     }
 
     "return PendingClaim when case status is 'Pending'" in new Setup {
-      createAllDetailsClaim("Pending").toClaim shouldBe PendingClaim("NDRC-0001", C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
+      createSctyDetailsClaim("Pending").toClaim shouldBe PendingClaim("SEC-2109", Security, startDate, startDate.plusDays(30))
     }
 
     "return ClosedClaim when case status is 'Closed'" in new Setup {
-      createAllDetailsClaim("Closed").toClaim shouldBe ClosedClaim("NDRC-0001", C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1))
+      createSctyDetailsClaim("Closed").toClaim shouldBe ClosedClaim("SEC-2109", Security, startDate, endDate)
     }
 
     "throw an exception when unknown claim type passed" in new Setup {
       intercept[RuntimeException] {
-        createAllDetailsClaim("Unknown").toClaim
+        createSctyDetailsClaim("Unknown").toClaim
+      }.getMessage shouldBe "Unknown Case Status: Unknown"
+    }
+  }
+
+  "toClaim for NDRC" should {
+    "return InProgressClaim when case status is 'In Progress'" in new Setup {
+      createNdrcDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("NDRC-2109", C285, startDate)
+    }
+
+    "return PendingClaim when case status is 'Pending'" in new Setup {
+      createNdrcDetailsClaim("Pending").toClaim shouldBe PendingClaim("NDRC-2109", C285, startDate, startDate.plusDays(30))
+    }
+
+    "return ClosedClaim when case status is 'Closed'" in new Setup {
+      createNdrcDetailsClaim("Closed").toClaim shouldBe ClosedClaim("NDRC-2109", C285, startDate, endDate)
+    }
+
+    "throw an exception when unknown claim type passed" in new Setup {
+      intercept[RuntimeException] {
+        createNdrcDetailsClaim("Unknown").toClaim
       }.getMessage shouldBe "Unknown Case Status: Unknown"
     }
   }
 
   trait Setup {
-    def createAllDetailsClaim(status: String): AllClaimsDetail =
-      AllClaimsDetail(
-        "NDRC-0001",
-        C285,
-        status,
-        "someEori",
-        "someEori1",
-        None,
-        None,
-        None
-      )
-  }
 
+    val startDate: LocalDate = LocalDate.of(2021, 3, 20)
+    val endDate: LocalDate = LocalDate.of(2021, 5, 20)
+
+    def createSctyDetailsClaim(status: String): SCTYCaseDetails =
+      SCTYCaseDetails(CDFPayCaseNumber = "SEC-2109", declarationID = Some("21LLLLLLLLLL12345"),
+      claimStartDate = "20210320", closedDate = Some("20210520"), reasonForSecurity = "ACS", caseStatus = status,
+      declarantEORI = "GB744638982000", importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"),
+      totalCustomsClaimAmount = Some("12000.56"), totalVATClaimAmount = Some("3412.01"), declarantReferenceNumber = Some("broomer007"))
+
+    def createNdrcDetailsClaim(status: String): NDRCCaseDetails = NDRCCaseDetails(CDFPayCaseNumber = "NDRC-2109", declarationID = Some("21LLLLLLLLLLLLLLL9"),
+      claimStartDate = "20210320", closedDate = Some("20210520"), caseStatus = status, declarantEORI = "GB744638982000",
+      importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"), totalCustomsClaimAmount = Some("3000.20"),
+      totalVATClaimAmount = Some("784.66"), totalExciseClaimAmount = Some("1200.00"), declarantReferenceNumber = Some("KWMREF1"),
+      basisOfClaim = Some("Duplicate Entry"))
+  }
 }

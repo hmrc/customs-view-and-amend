@@ -16,7 +16,6 @@
 
 package models.responses
 
-import models.file_upload.{NDRCCaseDetails, SCTYCaseDetails}
 import play.api.libs.json.{Json, OFormat}
 
 case class AllClaimsResponse(claims: Claims)
