@@ -1,5 +1,6 @@
 service.name = Customs view and amend
 back.link = Back
+site.change = Change
 
 cf.header.eori=EORI:
 cf.header.eori.dash= -
@@ -62,6 +63,9 @@ claim.upload.confirmation.li.1 = confirm your claim and bank transfer
 claim.upload.confirmation.li.2 = ask for more information
 claim.upload.confirmation.li.3 = explain why your claim was rejected
 claim.upload.confirmation.link = View all pending claims
+claim.upload.confirmation.email = We have sent a confirmation email to <strong>{0}</strong>
+claim.upload.confirmation.email.description = This email address is the one used when you registered for the Customs Declaration Service (CDS). If you have not received this email, check your SPAM folder or contact HMRC.
+claim.upload.confirmation.close = You can now close this tab.
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.
@@ -217,5 +221,20 @@ file.selection.ce1179.addition-supporting-documents = Additional supporting docu
 file.selection.ce1179.proof-of-export-or-destruction = Proof of export or destruction
 
 # ----------------------------------------------------------
+
+File Selection Generic
+# ----------------------------------------------------------
+file.selection.title = File upload description
+file.selection.p1 = Select a description of the file you want to upload by choosing a definition from the list. This will help up process your claim more efficiently.
+file.selection.button = Continue
+# ----------------------------------------------------------
+
+
+file.upload.cya.title = Check your documents before sending
+file.upload.cya.h2 = Uploaded documents
+file.upload.p1 = By sending these files you are confirming that the details you are providing are correct.
+file.upload.button = Confirm and send
+file.uploaded.visually.hidden = currently uploaded documents.
+
 
 

@@ -27,8 +27,9 @@ import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerCompon
 import repositories.{ClaimsMongo, UploadedFilesCache}
 import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import viewmodels.FileUploadCheckYourAnswersHelper
 import views.html.errors.not_found
-import views.html.upload_confirmation
+import views.html.{upload_check_your_answers, upload_confirmation}
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,28 +40,23 @@ class FileUploadCYAController @Inject()(
                                          verifyEmail: EmailAction,
                                          claimService: ClaimService,
                                          uploadedFilesCache: UploadedFilesCache,
-                                         uploadDocumentsConnector: UploadDocumentsConnector,
-                                         confirmation: upload_confirmation,
+                                         uploadDocumentsCheckYourAnswers: upload_check_your_answers,
                                          notFound: not_found,
-                                         financialsApi: FinancialsApiConnector
                                        )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  //TODO: Create deeplink into file upload CYA (do you want to add another document)
   //TODO: Handle different claim types NDRC / SCTY
   //TODO: Handle different documentType C285 / C&E1179
-  //TODO: Create CYA page
 
-
-  def onPageLoad(caseNumber: String): Action[AnyContent] = actions { implicit request =>
+  def onPageLoad(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
-    } yield result
-
+      helper = new FileUploadCheckYourAnswersHelper(files)
+    } yield Ok(uploadDocumentsCheckYourAnswers(caseNumber, helper))
+    result.merge
   }
-
 }

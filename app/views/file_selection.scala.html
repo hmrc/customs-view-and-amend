@@ -25,24 +25,19 @@
         p: components.p,
         govukRadios: GovukRadios,
         formHelper: FormWithCSRF,
-        button: components.button,
-        details: components.details
+        button: components.button
 )
 
 @(form: Form[_], caseNumber: String, claimType: ClaimType, searched: Boolean, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
-    pageTitle = Some(messages("File upload description")),
+    pageTitle = Some(messages("file.selection.title")),
     navigationBannerEnabled = false) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, claimType, searched)) {
 
-        @h1("File upload description")
-        @p("Select a description of the file you want to upload by choosing a defenition from the list. This will help up process your claim more efficiently.")
-        @details(
-            "Examples of supporting documents",
-            C285FileSelection.values.map(fileType => DetailsItem(s"file.selection.c285.${fileType.toString}", "NEEDS POPULATING"))
-        )(messages)
+        @h1("file.selection.title")
+        @p("file.selection.p1")
 
         @govukRadios(Radios(
             classes = "govuk-radios",
@@ -51,7 +46,7 @@
             errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
         ))
 
-        @button("Continue")
+        @button("file.selection.button")
     }
 
 }

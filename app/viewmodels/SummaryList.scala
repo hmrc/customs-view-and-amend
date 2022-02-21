@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,21 +12,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this()
+package viewmodels
 
-@(title: String, details: Seq[DetailsItem])(messages: Messages)
-
-<details class="govuk-details" data-module="govuk-details">
-    <summary class="govuk-details__summary">
-        <span class="govuk-details__summary-text">@messages(title)</span>
-    </summary>
-    <div class="govuk-details__text">
-        <ul class="govuk-list govuk-list--bullet">
-            @details.map { v =>
-                <li><span class="govuk-body govuk-body govuk-!-font-weight-bold">@{messages(v.key)} -</span> @{messages(v.value)}</li>
-            }
-        </ul>
-    </div>
-</details>
+case class SummaryList(
+                        rows: Seq[SummaryListRow]       = Nil,
+                        classes: String                 = "govuk-!-margin-bottom-9 govuk-summary-list--wide",
+                        attributes: Map[String, String] = Map.empty
+                      )

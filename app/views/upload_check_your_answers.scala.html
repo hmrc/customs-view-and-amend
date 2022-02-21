@@ -15,44 +15,38 @@
  *@
 
 @import models.file_upload.UploadedFile
+@import config.AppConfig
+@import viewmodels.FileUploadCheckYourAnswersHelper
+@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 
 @this(
         layout: Layout,
         h1: components.h1,
+        h2: components.h2,
         p: components.p,
-        govukRadios: GovukRadios,
+        link: components.link,
+        summaryList: components.summaryList,
         formHelper: FormWithCSRF,
         button: components.button,
         details: components.details
 )
 
-@(files: Seq[UploadedFile])(implicit messages: Messages)
+@(caseNumber: String, fileUploadCheckYourAnswersHelper: FileUploadCheckYourAnswersHelper)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
- pageTitle = Some(messages("File upload description")),
- navigationBannerEnabled = false) {
+ pageTitle = Some(messages("file.upload.cya.title")),
+ navigationBannerEnabled = false,
+ backLink = Some(appConfig.fileUploadSummaryUrl)) {
 
- @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, claimType, searched)) {
+ @h1("file.upload.cya.title",  classes = "govuk-heading-xl")
 
-  @h1("Check your documents before sending")
-  @h1("Uploaded documents")
-
-
-  @p("Select a description of the file you want to upload by choosing a defenition from the list. This will help up process your claim more efficiently.")
-  @details(
-   "Examples of supporting documents",
-   C285FileSelection.values.map(fileType => DetailsItem(s"file.selection.c285.${fileType.toString}", "NEEDS POPULATING"))
-  )(messages)
-
-  @govukRadios(Radios(
-   classes = "govuk-radios",
-   name = "value",
-   items = items,
-   errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
-  ))
-
-  @button("Continue")
+ @formHelper(routes.FileUploadController.continue(caseNumber)) {
+  @h2("file.upload.cya.h2")
+  @summaryList(viewmodels.SummaryList(fileUploadCheckYourAnswersHelper.rows))
+  @p("file.upload.p1")
+  @button("file.upload.button")
  }
 
+ @link("CHANGE FILE TYPE (TEMP FOR DEV PURPOSES)", routes.FileSelectionController.onPageLoad(caseNumber, C285, false, false).url)
 }
 

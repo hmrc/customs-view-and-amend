@@ -49,13 +49,13 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
   val c285formProvider: Form[C285FileSelection] = c285FormProvider()
   val ce1179formProvider: Form[CE1179FileSelection] = ce1179FormProvider()
 
+  //TODO process ce1179 / c285
 
   def onPageLoad(caseNumber: String, claimType: ClaimType, searched: Boolean, initialRequest: Boolean): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
-      _ <- liftF(if (initialRequest) claimService.clearUploaded(caseNumber) else Future.unit)
+      _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
     } yield Ok(fileSelection(c285formProvider, caseNumber, claimType, searched, C285FileSelection.options(c285formProvider)))
-
     result.merge
   }
 
@@ -63,16 +63,12 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
     c285formProvider.bindFromRequest().fold(
       formWithErrors =>
         Future.successful(BadRequest(fileSelection(formWithErrors, caseNumber, claimType, searched, C285FileSelection.options(c285formProvider)))),
-      value =>
-        something(caseNumber, claimType, searched, value)
+      documentType =>
+        (for {
+          _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+          result <- fromOptionF(uploadDocumentsConnector.startFileUpload(caseNumber, claimType, searched, documentType)
+            .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))
+        } yield result).merge
     )
   }
-
-  //TODO rename
-  private def something(caseNumber: String, claimType: ClaimType, searched: Boolean, documentType: C285FileSelection)(implicit request: IdentifierRequest[_]): Future[Result] =
-    (for {
-      _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
-      result <- fromOptionF(uploadDocumentsConnector.startFileUpload(caseNumber, claimType, searched, documentType)
-        .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))
-    } yield result).merge
 }

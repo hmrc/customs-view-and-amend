@@ -17,16 +17,18 @@
 package viewmodels
 
 import play.twirl.api.Html
-import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, Value}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.{Actions, Key, Value}
 
 trait SummaryListRowHelper {
 
   def summaryListRow(
+                      label: String,
                       value: String,
                       secondValue: Option[String],
                       actions: Actions): SummaryListRow =
     SummaryListRow(
+      key = Key(content = Text(label)),
       value = Value(content = HtmlContent(value)),
       secondValue = secondValue.map { value => Value(content = HtmlContent(value)) },
       classes = "",

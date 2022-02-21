@@ -31,7 +31,7 @@ object UploadDocumentsWrapper {
                     documentType: C285FileSelection,
                     previouslyUploaded: Seq[UploadedFile] = Seq.empty
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
-    val continueUrl = controllers.routes.FileUploadController.continue(caseNumber)
+    val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber)
     val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber, claimType, searched, initialRequest = false)
     val callBack = controllers.routes.FileUploadController.updateFiles()
 

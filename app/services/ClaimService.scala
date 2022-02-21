@@ -36,10 +36,12 @@ class ClaimService @Inject()(
       result <- claimsCache.getSpecificCase(eori, caseNumber)
     } yield result
 
-  def clearUploaded(caseNumber: String)(implicit hc: HeaderCarrier): Future[Unit] = {
-    for {
-      _ <- uploadedFilesCache.removeRecord(caseNumber)
-      _ <- uploadDocumentsConnector.wipeData()
-    } yield ()
+  def clearUploaded(caseNumber: String, initialRequest: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
+    if (initialRequest) { Future.unit } else {
+      for {
+        _ <- uploadedFilesCache.removeRecord(caseNumber)
+        _ <- uploadDocumentsConnector.wipeData()
+      } yield ()
+    }
   }
 }

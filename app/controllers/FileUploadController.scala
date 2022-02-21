@@ -20,7 +20,7 @@ import actions.{EmailAction, IdentifierAction}
 import cats.data.EitherT
 import cats.data.EitherT._
 import config.AppConfig
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
+import connector.{DataStoreConnector, FinancialsApiConnector, UploadDocumentsConnector}
 import models.IdentifierRequest
 import models.file_upload.UploadedFileMetadata
 import play.api.i18n.I18nSupport
@@ -39,6 +39,7 @@ class FileUploadController @Inject()(
                                       authenticate: IdentifierAction,
                                       verifyEmail: EmailAction,
                                       claimService: ClaimService,
+                                      dataStoreConnector: DataStoreConnector,
                                       uploadedFilesCache: UploadedFilesCache,
                                       uploadDocumentsConnector: UploadDocumentsConnector,
                                       confirmation: upload_confirmation,
@@ -72,7 +73,13 @@ class FileUploadController @Inject()(
       for {
         _ <- uploadedFilesCache.removeRecord(caseNumber)
         _ <- uploadDocumentsConnector.wipeData()
-      } yield Ok(confirmation(caseNumber))
+        email <- dataStoreConnector.getEmail(request.eori)
+      } yield {
+        email match {
+          case Left(_) => NotFound(notFound())
+          case Right(email) => Ok(confirmation(caseNumber, email.value))
+        }
+      }
     } else Future.successful(NotFound(notFound()))
   }
 }
