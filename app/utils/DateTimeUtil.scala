@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package models.responses
+package utils
 
-import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 
-case class AllClaimsResponse(claims: Claims)
+object DateTimeUtil {
 
-object AllClaimsResponse {
-  implicit val format: OFormat[AllClaimsResponse] = Json.format[AllClaimsResponse]
-}
-
-case class Claims(sctyClaims: Seq[SCTYCaseDetails],
-                  ndrcClaims: Seq[NDRCCaseDetails])
-
-object Claims {
-  implicit val format: OFormat[Claims] = Json.format[Claims]
+  def toDateTime(dateString: String): LocalDate = {
+    val parser = DateTimeFormatter.ofPattern("yyyyMMdd")
+    LocalDate.parse(dateString, parser)
+  }
 }

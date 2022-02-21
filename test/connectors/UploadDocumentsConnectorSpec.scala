@@ -17,8 +17,7 @@
 package connectors
 
 import connector.UploadDocumentsConnector
-import models.responses.{AllClaimsDetail, AllClaimsResponse, SpecificClaimResponse}
-import models.{C285, Security}
+import models.C285
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -99,20 +98,6 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     val mockUploadDocumentsCache: UploadedFilesCache = mock[UploadedFilesCache]
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
-
-    val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
-      "Pending",
-      "NDRC-1234",
-      Some("someEORI")
-    )
-
-    val allClaimsResponse: AllClaimsResponse = AllClaimsResponse(
-      Seq(
-        AllClaimsDetail("NDRC-1234", C285, "In Progress", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-        AllClaimsDetail("SCTY-2345", Security, "Closed", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-        AllClaimsDetail("NDRC-6789", C285, "Pending", "someEori1", "someEori2", Some("someEori3"), Some("1000"), Some("1000")),
-      )
-    )
 
     val app: Application = GuiceApplicationBuilder().overrides(
       inject.bind[HttpClient].toInstance(mockHttp),
