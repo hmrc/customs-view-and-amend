@@ -39,7 +39,8 @@ object InProgressClaim {
 }
 
 case class PendingClaim(caseNumber: String, claimType: ClaimType, claimStartDate: LocalDate, respondByDate: LocalDate) extends Claim {
-  def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
+  //TODO: Removed the respond by date until secure messaging timestamp available
+  //def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
 }
 
 object PendingClaim {
