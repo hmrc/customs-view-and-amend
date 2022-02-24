@@ -25,6 +25,7 @@ case class UploadDocumentsConfig(
                                   continueUrl: String,
                                   backlinkUrl: String,
                                   callbackUrl: String,
+                                  continueAfterYesAnswerUrl: Option[String] = None,
                                   continueWhenFullUrl: Option[String] = None,
                                   continueWhenEmptyUrl: Option[String] = None,
                                   minimumNumberOfFiles: Option[Int] = None,

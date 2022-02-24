@@ -21,7 +21,7 @@ import cats.data.EitherT
 import cats.data.EitherT.{fromOptionF, liftF}
 import config.AppConfig
 import connector.{FinancialsApiConnector, UploadDocumentsConnector}
-import models.IdentifierRequest
+import models.{IdentifierRequest, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents, Result}
 import repositories.{ClaimsMongo, UploadedFilesCache}
@@ -48,15 +48,12 @@ class FileUploadCYAController @Inject()(
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  //TODO: Handle different claim types NDRC / SCTY
-  //TODO: Handle different documentType C285 / C&E1179
-
-  def onPageLoad(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
+  def onPageLoad(caseNumber: String, serviceType: ServiceType): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
       helper = new FileUploadCheckYourAnswersHelper(files)
-    } yield Ok(uploadDocumentsCheckYourAnswers(caseNumber, helper))
+    } yield Ok(uploadDocumentsCheckYourAnswers(caseNumber, serviceType, helper))
     result.merge
   }
 }

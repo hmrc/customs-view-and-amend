@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 case class Dec64UploadRequest(id: String,
                               eori: String,
                               caseNumber: String,
-                              applicationName: String,
+                              applicationName: ServiceType,
                               uploadedFiles: Seq[UploadedFile])
 
 object Dec64UploadRequest {

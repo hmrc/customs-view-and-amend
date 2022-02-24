@@ -18,6 +18,7 @@
 @import config.AppConfig
 @import viewmodels.FileUploadCheckYourAnswersHelper
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import models.responses.C285
 
 @this(
         layout: Layout,
@@ -27,11 +28,10 @@
         link: components.link,
         summaryList: components.summaryList,
         formHelper: FormWithCSRF,
-        button: components.button,
-        details: components.details
+        button: components.button
 )
 
-@(caseNumber: String, fileUploadCheckYourAnswersHelper: FileUploadCheckYourAnswersHelper)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(caseNumber: String, serviceType: ServiceType, fileUploadCheckYourAnswersHelper: FileUploadCheckYourAnswersHelper)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
  pageTitle = Some(messages("file.upload.cya.title")),
@@ -40,13 +40,11 @@
 
  @h1("file.upload.cya.title",  classes = "govuk-heading-xl")
 
- @formHelper(routes.FileUploadController.continue(caseNumber)) {
+ @formHelper(routes.FileUploadController.continue(caseNumber, serviceType)) {
   @h2("file.upload.cya.h2")
   @summaryList(viewmodels.SummaryList(fileUploadCheckYourAnswersHelper.rows))
   @p("file.upload.p1")
   @button("file.upload.button")
  }
-
- @link("CHANGE FILE TYPE (TEMP FOR DEV PURPOSES)", routes.FileSelectionController.onPageLoad(caseNumber, C285, false, false).url)
 }
 

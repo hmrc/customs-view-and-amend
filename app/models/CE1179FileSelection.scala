@@ -33,8 +33,8 @@ object CE1179FileSelection extends Enumerable.Implicits {
     ProofOfFaultyUnwantedGoods,
     Correspondence,
     CalculationWorksheet,
-    AdditionalSupportingDocuments,
-    ProofOfExportOrDestruction
+    ProofOfExportOrDestruction,
+    AdditionalSupportingDocuments
   )
 
   implicit val enumerable: Enumerable[CE1179FileSelection] =
@@ -50,7 +50,6 @@ object CE1179FileSelection extends Enumerable.Implicits {
   case object ProofOfExportOrDestruction extends WithName("proof-of-export-or-destruction") with CE1179FileSelection
 
 
-
   def fromString(fileType: String): CE1179FileSelection = {
     values.find(_.toString == fileType) match {
       case Some(value) => value
@@ -63,14 +62,24 @@ object CE1179FileSelection extends Enumerable.Implicits {
       o match {
         case CommercialInvoice => JsString("Commercial Invoice")
         case ImportAndExportDeclaration => JsString("Import and Export Declaration")
-        case _ => JsString("Additional Supporting Documentation") //TODO check whether this file type is correct for the remainder
+        case LetterOfAuthority => JsString("Proof of Authority (to be repaid)")
+        case ProofOfFaultyUnwantedGoods => JsString("Documentary proof that the goods are faulty or not what you ordered")
+        case Correspondence => JsString("Correspondence Trader")
+        case CalculationWorksheet => JsString("Calculation worksheet")
+        case AdditionalSupportingDocuments => JsString("Additional supporting documents")
+        case ProofOfExportOrDestruction => JsString("Proof of export or destruction")
       }
 
     override def reads(json: JsValue): JsResult[CE1179FileSelection] =
       json match {
         case JsString("Commercial Invoice") => JsSuccess(CommercialInvoice)
         case JsString("Import and Export Declaration") => JsSuccess(ImportAndExportDeclaration)
-        case JsString("Additional Supporting Documentation") =>  JsSuccess(AdditionalSupportingDocuments)
+        case JsString("Proof of Authority (to be repaid)") => JsSuccess(LetterOfAuthority)
+        case JsString("Documentary proof that the goods are faulty or not what you ordered") => JsSuccess(ProofOfFaultyUnwantedGoods)
+        case JsString("Correspondence Trader") => JsSuccess(Correspondence)
+        case JsString("Calculation worksheet") => JsSuccess(CalculationWorksheet)
+        case JsString("Additional supporting documents") => JsSuccess(AdditionalSupportingDocuments)
+        case JsString("Proof of export or destruction") => JsSuccess(ProofOfExportOrDestruction)
         case e => JsError(s"Unknown document type: $e")
       }
   }

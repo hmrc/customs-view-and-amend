@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukRadios
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
 @import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+@import models.responses.ClaimType
 
 @this(
         layout: Layout,
@@ -28,13 +29,13 @@
         button: components.button
 )
 
-@(form: Form[_], caseNumber: String, claimType: ClaimType, searched: Boolean, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], serviceType: ServiceType, caseNumber: String, claimType: ClaimType, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     pageTitle = Some(messages("file.selection.title")),
     navigationBannerEnabled = false) {
 
-    @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, claimType, searched)) {
+    @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, serviceType, claimType)) {
 
         @h1("file.selection.title")
         @p("file.selection.p1")
@@ -48,5 +49,4 @@
 
         @button("file.selection.button")
     }
-
 }

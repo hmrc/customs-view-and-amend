@@ -20,13 +20,13 @@ import actions.{EmailAction, IdentifierAction}
 import cats.data.EitherT
 import cats.data.EitherT._
 import config.AppConfig
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
+import connector.UploadDocumentsConnector
 import forms.{C285FormProvider, CE1179FormProvider}
-import models.{C285FileSelection, CE1179FileSelection, ClaimType, IdentifierRequest}
+import models.responses.{C285, ClaimType}
+import models.{C285FileSelection, CE1179FileSelection, IdentifierRequest, ServiceType}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import repositories.{ClaimsCache, ClaimsMongo}
 import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.errors.not_found
@@ -49,24 +49,22 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
   val c285formProvider: Form[C285FileSelection] = c285FormProvider()
   val ce1179formProvider: Form[CE1179FileSelection] = ce1179FormProvider()
 
-  //TODO process ce1179 / c285
-
-  def onPageLoad(caseNumber: String, claimType: ClaimType, searched: Boolean, initialRequest: Boolean): Action[AnyContent] = actions.async { implicit request =>
+  def onPageLoad(caseNumber: String, serviceType: ServiceType, claimType: ClaimType, initialRequest: Boolean): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
-    } yield Ok(fileSelection(c285formProvider, caseNumber, claimType, searched, C285FileSelection.options(c285formProvider)))
+    } yield Ok(fileSelection(c285formProvider, serviceType, caseNumber, claimType, C285FileSelection.options(c285formProvider)))
     result.merge
   }
 
-  def onSubmit(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = actions.async { implicit request =>
+  def onSubmit(caseNumber: String, serviceType: ServiceType, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
     c285formProvider.bindFromRequest().fold(
       formWithErrors =>
-        Future.successful(BadRequest(fileSelection(formWithErrors, caseNumber, claimType, searched, C285FileSelection.options(c285formProvider)))),
+        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, C285FileSelection.options(c285formProvider)))),
       documentType =>
         (for {
           _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
-          result <- fromOptionF(uploadDocumentsConnector.startFileUpload(caseNumber, claimType, searched, documentType)
+          result <- fromOptionF(uploadDocumentsConnector.startFileUpload(caseNumber, claimType, serviceType, documentType)
             .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))
         } yield result).merge
     )

@@ -18,15 +18,8 @@ package models.responses
 
 import play.api.libs.json.{Json, OFormat}
 
-case class SpecificClaimResponse(
-                                  CDFPayService: String,
-                                  CDFPayCaseFound: Boolean,
-                                  NDRCCase: Option[NDRCCase],
-                                  SCTYCase: Option[SCTYCase]
-                                )
+case class EntryDetail(entryNumber: String, mainDeclarationReference: Boolean)
 
-object SpecificClaimResponse {
-  implicit val format: OFormat[SpecificClaimResponse] = Json.format[SpecificClaimResponse]
+object EntryDetail {
+  implicit val format: OFormat[EntryDetail] = Json.format[EntryDetail]
 }
-
-

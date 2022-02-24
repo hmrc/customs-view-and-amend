@@ -21,7 +21,7 @@ import cats.data.EitherT
 import cats.data.EitherT._
 import config.AppConfig
 import connector.{DataStoreConnector, FinancialsApiConnector, UploadDocumentsConnector}
-import models.IdentifierRequest
+import models.{IdentifierRequest, ServiceType}
 import models.file_upload.UploadedFileMetadata
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents, Request, Result}
@@ -57,11 +57,11 @@ class FileUploadController @Inject()(
     }
   }
 
-  def continue(caseNumber: String): Action[AnyContent] = actions.async { implicit request =>
+  def continue(caseNumber: String, serviceType: ServiceType): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF[Future, Result, ClaimsMongo](claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
-      successfullyUploaded <- liftF(financialsApi.fileUpload(request.eori, caseNumber, files))
+      successfullyUploaded <- liftF(financialsApi.fileUpload(request.eori, serviceType, caseNumber, files))
       result <- liftF(clearData(successfullyUploaded, caseNumber))
     } yield result
 

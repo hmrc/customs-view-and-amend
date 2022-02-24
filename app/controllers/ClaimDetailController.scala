@@ -20,7 +20,7 @@ import actions.IdentifierAction
 import cats.data.EitherT._
 import config.AppConfig
 import connector.{DataStoreConnector, FinancialsApiConnector}
-import models.{ClaimDetail, ClaimType}
+import models.{ClaimDetail, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.{ClaimsCache, ClaimsMongo}
@@ -38,14 +38,18 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       financialsApiConnector: FinancialsApiConnector,
                                       claimService: ClaimService,
                                       claimDetail: claim_detail,
+                                      claimsCache: ClaimsCache,
                                       notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  def claimDetail(caseNumber: String, claimType: ClaimType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
+  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
+      _ <- liftF(financialsApiConnector.getClaims(request.eori))
+      claims <- fromOptionF(claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
+      lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
       _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
-      claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, claimType), NotFound(notFound()))
+      claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
     } yield {
       Ok(claimDetail(claim, searched, email.value))
     }).merge

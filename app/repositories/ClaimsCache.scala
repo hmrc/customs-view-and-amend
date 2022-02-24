@@ -56,7 +56,10 @@ class DefaultClaimsCache @Inject()(mongo: MongoComponent, config: Configuration)
     collection.find(equal("_id", id)).toSingle().toFutureOption().map(_.map(_.claims))
 
   override def getSpecificCase(id: String, caseNumber: String): Future[Option[ClaimsMongo]] =
-    collection.find(equal("claims.caseNumber", caseNumber)).toSingle().toFutureOption()
+    collection
+      .find(equal("claims.caseNumber", caseNumber))
+      .toSingle()
+      .toFutureOption()
 }
 
 sealed trait Failure

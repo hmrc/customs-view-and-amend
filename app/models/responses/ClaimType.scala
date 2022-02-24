@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package models
+package models.responses
 
-import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
+import play.api.libs.json._
 import play.api.mvc.PathBindable
 
-sealed trait ClaimType {
-  val messageKey: String
-}
+sealed trait ClaimType
 
-case object C285 extends ClaimType {
-  override val messageKey: String = "claim.detail.type.c285"
-}
+case object C285 extends ClaimType
 
-case object Security extends ClaimType {
-  override val messageKey: String = "claim.detail.type.security"
-}
+case object `C&E1179` extends ClaimType
 
 object ClaimType {
   implicit def pathBindable: PathBindable[ClaimType] = new PathBindable[ClaimType] {
     override def bind(key: String, value: String): Either[String, ClaimType] =
       value match {
-        case "NDRC" => Right(C285)
-        case "SCTY" => Right(Security)
-        case _ => Left("Invalid claim type")
+        case "C285" => Right(C285)
+        case "CE1179" => Right(`C&E1179`)
+        case _ => Left("Invalid service type")
       }
 
     override def unbind(key: String, value: ClaimType): String = {
       value match {
-        case C285 => "NDRC"
-        case Security => "SCTY"
+        case `C&E1179` => "CE1179"
+        case C285 => "C285"
       }
     }
   }
@@ -52,17 +46,19 @@ object ClaimType {
   implicit val format: Format[ClaimType] = new Format[ClaimType] {
     override def writes(o: ClaimType): JsValue =
       o match {
-        case C285 => JsString("NDRC")
-        case Security => JsString("SCTY")
+        case C285 => JsString("C285")
+        case `C&E1179` => JsString("C&E1179")
       }
 
     override def reads(json: JsValue): JsResult[ClaimType] =
       json match {
-        case JsString("SCTY") => JsSuccess(Security)
-        case JsString("NDRC") => JsSuccess(C285)
+        case JsString("C285") => JsSuccess(C285)
+        case JsString("C&E1179") => JsSuccess(`C&E1179`)
         case e => JsError(s"Unexpected claimType from TPI02: $e")
       }
   }
 }
+
+
 
 

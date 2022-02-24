@@ -49,8 +49,8 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
   lazy val fileUploadPhase: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBanner")
   lazy val fileUploadPhaseUrl: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBannerUrl")
   lazy val fileUploadAccessibilityUrl: String = config.get[String]("microservice.services.upload-documents-frontend.accessibilityStatement")
-
-  lazy val fileUploadSummaryUrl = s"$fileUploadPublicUrl/upload-documents/summary"
+  lazy val fileUploadMultiple: Boolean = config.get[Boolean]("microservice.services.upload-documents-frontend.multiple-upload")
+  lazy val fileUploadSummaryUrl: String = s"$fileUploadPublicUrl/upload-documents/summary"
 
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")

@@ -35,7 +35,9 @@ case class UploadDocumentsContent(
                                    showLanguageSelection: Option[Boolean] = None,
                                    pageTitleClasses: Option[String] = None,
                                    allowedFilesTypesHint: Option[String] = None,
-                                   contactFrontendServiceId: Option[String] = None
+                                   contactFrontendServiceId: Option[String] = None,
+                                   yesNoQuestionText: Option[String] = None,
+                                   yesNoQuestionRequiredError: Option[String] = None
                                  )
 
 object UploadDocumentsContent {

@@ -37,11 +37,11 @@ class ClaimService @Inject()(
     } yield result
 
   def clearUploaded(caseNumber: String, initialRequest: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
-    if (initialRequest) { Future.unit } else {
+    if (initialRequest) {
       for {
         _ <- uploadedFilesCache.removeRecord(caseNumber)
         _ <- uploadDocumentsConnector.wipeData()
       } yield ()
-    }
+    } else { Future.unit }
   }
 }

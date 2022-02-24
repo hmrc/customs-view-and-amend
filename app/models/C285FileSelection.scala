@@ -27,58 +27,75 @@ sealed trait C285FileSelection
 object C285FileSelection extends Enumerable.Implicits {
 
   val values: Seq[C285FileSelection] = Seq(
+    TechnicalSpecifications,
+    ProofOfOrigin,
+    PreferenceCertificate,
+    AirworthinessCertificates,
     CommercialInvoice,
     ImportAndExportDeclaration,
-    PackingList,
     AirwayBill,
+    CalculationWorksheet,
     BillOfLading,
+    PackingList,
     SubstituteEntry,
     LetterOfAuthority,
     Correspondence,
-    Other
+    AdditionalSupportingDocuments
   )
 
   implicit val enumerable: Enumerable[C285FileSelection] =
     Enumerable(values.map(v => v.toString -> v): _*)
 
+  case object TechnicalSpecifications extends WithName("technical-specifications") with C285FileSelection
+  case object ProofOfOrigin extends WithName("proof-of-origin") with C285FileSelection
+  case object PreferenceCertificate extends WithName("preference-certificate") with C285FileSelection
+  case object AirworthinessCertificates extends WithName("airworthiness-certificates") with C285FileSelection
   case object CommercialInvoice extends WithName("commercial-invoice") with C285FileSelection
   case object ImportAndExportDeclaration extends WithName("import-export-declaration") with C285FileSelection
   case object AirwayBill extends WithName("air-waybill") with C285FileSelection
+  case object CalculationWorksheet extends WithName("calculation-worksheet") with C285FileSelection
   case object BillOfLading extends WithName("bill-of-lading") with C285FileSelection
   case object PackingList extends WithName("packing-list") with C285FileSelection
   case object SubstituteEntry extends WithName("substitute-entry") with C285FileSelection
   case object LetterOfAuthority extends WithName("letter-of-authority") with C285FileSelection
   case object Correspondence extends WithName("correspondence") with C285FileSelection
-  case object Other extends WithName("other-documents") with C285FileSelection
-
-  def fromString(fileType: String): C285FileSelection = {
-    values.find(_.toString == fileType) match {
-      case Some(value) => value
-      case None => Other
-    }
-  }
+  case object AdditionalSupportingDocuments extends WithName("additional-supporting-documents") with C285FileSelection
 
   implicit val format: Format[C285FileSelection] = new Format[C285FileSelection] {
     override def writes(o: C285FileSelection): JsValue =
       o match {
+        case TechnicalSpecifications => JsString("Technical specifications")
+        case ProofOfOrigin => JsString("Proof of origin")
+        case PreferenceCertificate => JsString("Preference certificate")
+        case AirworthinessCertificates => JsString("Airworthiness certificates")
         case CommercialInvoice => JsString("Commercial Invoice")
         case ImportAndExportDeclaration => JsString("Import and Export Declaration")
         case AirwayBill => JsString("Air Waybill")
+        case CalculationWorksheet => JsString("Calculation worksheet")
         case BillOfLading => JsString("Bill of Lading")
         case PackingList => JsString("Packing List")
         case SubstituteEntry => JsString("Substitute Entry")
-        case _ => JsString("Other documents") //TODO check whether this file type is correct for the remainder
+        case LetterOfAuthority => JsString("Proof of Authority (to be repaid)")
+        case Correspondence => JsString("Correspondence between trader and agent")
+        case AdditionalSupportingDocuments => JsString("Additional supporting documents")
       }
 
     override def reads(json: JsValue): JsResult[C285FileSelection] =
       json match {
+        case JsString("Technical specifications") => JsSuccess(TechnicalSpecifications)
+        case JsString("Proof of origin") => JsSuccess(ProofOfOrigin)
+        case JsString("Preference certificate") => JsSuccess(PreferenceCertificate)
+        case JsString("Airworthiness certificates") => JsSuccess(AirworthinessCertificates)
         case JsString("Commercial Invoice") => JsSuccess(CommercialInvoice)
         case JsString("Import and Export Declaration") => JsSuccess(ImportAndExportDeclaration)
         case JsString("Air Waybill") => JsSuccess(AirwayBill)
+        case JsString("Calculation worksheet") => JsSuccess(CalculationWorksheet)
         case JsString("Bill of Lading") => JsSuccess(BillOfLading)
         case JsString("Packing List") => JsSuccess(PackingList)
         case JsString("Substitute Entry") => JsSuccess(SubstituteEntry)
-        case JsString("Other") =>  JsSuccess(Other)
+        case JsString("Proof of Authority (to be repaid)") => JsSuccess(LetterOfAuthority)
+        case JsString("Correspondence between trader and agent") => JsSuccess(Correspondence)
+        case JsString("Additional supporting documents") => JsSuccess(AdditionalSupportingDocuments)
         case e => JsError(s"Unknown document type: $e")
       }
   }
