@@ -17,9 +17,9 @@
 package connector
 
 import config.AppConfig
+import models.{FileSelection, ServiceType}
 import models.file_upload.{Nonce, UploadDocumentsWrapper}
 import models.responses.ClaimType
-import models.{C285FileSelection, ServiceType}
 import play.api.Logging
 import play.api.http.Status.{CREATED, NO_CONTENT}
 import repositories.UploadedFilesCache
@@ -34,7 +34,7 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
 
 
 
-  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: C285FileSelection)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: FileSelection)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val nonce = Nonce.random
     for {
       previouslyUploaded <- uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber)

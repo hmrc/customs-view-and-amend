@@ -47,7 +47,12 @@ claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
 claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
 claim.detail.type = Claim type
-claim.detail.type.c285 = C285
+claim.detail.type.multiple.C285 = C285 - Multiple declarations
+claim.detail.type.C285 = C285
+claim.detail.type.multiple.CE1179 = C&E1179 - Multiple declarations
+claim.detail.type.CE1179 = C&E1179
+
+
 claim.detail.type.security = Security
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
@@ -189,39 +194,28 @@ timeout.keepAlive = Stay signed in
 timeout.signOut = Sign out
 # ----------------------------------------------------------
 
-#C285 File Selection
+#File Selection
 # ----------------------------------------------------------
 
-file.selection.c285.commercial-invoice = Commercial invoice
-file.selection.c285.import-export-declaration = Import and export declaration
-file.selection.c285.air-waybill = Air waybill
-file.selection.c285.bill-of-lading = Bill of lading
-file.selection.c285.packing-list = Packing list
-file.selection.c285.proof-of-origin = Proof of origin
-file.selection.c285.substitute-entry = Substitute entry
-file.selection.c285.preference-certificate = Preference certificate
-file.selection.c285.letter-of-authority = Proof of authority
-file.selection.c285.correspondence = Correspondence between trader and agent
-file.selection.c285.calculation-worksheet = Calculation worksheet
-file.selection.c285.airworthiness-certificates = Airworthiness certificates
-file.selection.c285.technical-specifications = Technical specifications
-file.selection.c285.additional-supporting-documents = Additional supporting documents
-
+file.selection.commercial-invoice = Commercial invoice
+file.selection.import-export-declaration = Import and export declaration
+file.selection.air-waybill = Air waybill
+file.selection.bill-of-lading = Bill of lading
+file.selection.packing-list = Packing list
+file.selection.proof-of-origin = Proof of origin
+file.selection.substitute-entry = Substitute entry
+file.selection.preference-certificate = Preference certificate
+file.selection.correspondence = Correspondence between trader and agent
+file.selection.airworthiness-certificates = Airworthiness certificates
+file.selection.technical-specifications = Technical specifications
+file.selection.letter-of-authority = Letter of authority
+file.selection.faulty-not-ordered = Documentary proof that the goods are faulty or not what you ordered
+file.selection.correspondence = Correspondence
+file.selection.calculation-worksheet = Calculation worksheet
+file.selection.additional-supporting-documents = Additional supporting documents
+file.selection.proof-of-export-or-destruction = Proof of export or destruction
 # ----------------------------------------------------------
 
-#C&E1179 File Selection
-# ----------------------------------------------------------
-
-file.selection.ce1179.commercial-invoice = Commercial invoice
-file.selection.ce1179.import-export-declaration = Import and export declaration
-file.selection.ce1179.letter-of-authority = Letter of authority
-file.selection.ce1179.faulty-not-ordered = Documentary proof that the goods are faulty or not what you ordered
-file.selection.ce1179.correspondence = Correspondence
-file.selection.ce1179.calculation-worksheet = Calculation worksheet
-file.selection.ce1179.addition-supporting-documents = Additional supporting documents
-file.selection.ce1179.proof-of-export-or-destruction = Proof of export or destruction
-
-# ----------------------------------------------------------
 
 #File Selection Generic
 # ----------------------------------------------------------

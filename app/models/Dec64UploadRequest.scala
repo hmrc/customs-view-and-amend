@@ -16,15 +16,17 @@
 
 package models
 
-import models.file_upload.UploadedFile
-import play.api.libs.json.{Json, OFormat}
+import models.file_upload.Dec64UploadedFile
+import play.api.libs.json.{Json, OWrites}
 
 case class Dec64UploadRequest(id: String,
                               eori: String,
                               caseNumber: String,
-                              applicationName: ServiceType,
-                              uploadedFiles: Seq[UploadedFile])
+                              declarationId: String,
+                              entryNumber: Boolean,
+                              applicationName: String,
+                              uploadedFiles: Seq[Dec64UploadedFile])
 
 object Dec64UploadRequest {
-  implicit val format: OFormat[Dec64UploadRequest] = Json.format[Dec64UploadRequest]
+  implicit val writes: OWrites[Dec64UploadRequest] = Json.writes[Dec64UploadRequest]
 }

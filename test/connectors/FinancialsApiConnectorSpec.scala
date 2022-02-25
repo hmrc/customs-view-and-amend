@@ -44,18 +44,18 @@ class FinancialsApiConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getClaims("someEori"))
-        result.closedClaims shouldBe Seq(ClosedClaim("SEC-2107", Security, startDate, LocalDate.of(2021, 12, 20)))
-        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-2109", C285, startDate))
-        result.pendingClaims shouldBe Seq(PendingClaim("SEC-2108", Security, startDate, startDate.plusDays(30)))
+        result.closedClaims shouldBe Seq(ClosedClaim("MRN", "SEC-2107", NDRC, None, startDate, LocalDate.of(2021, 12, 20)))
+        result.inProgressClaims shouldBe Seq(InProgressClaim("Entry Number", "NDRC-2109", SCTY, None, startDate))
+        result.pendingClaims shouldBe Seq(PendingClaim("MRN", "SEC-2108", NDRC, None, startDate, startDate.plusDays(30)))
       }
     }
 
     "return AllClaims and not call the financials api if cached data present" in new Setup {
       when(mockClaimCache.get(any))
         .thenReturn(Future.successful(Some(Seq(
-          ClosedClaim("SCTY-2345", Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)),
-          InProgressClaim("NDRC-1234", C285, LocalDate.of(9999, 1, 1)),
-          PendingClaim("NDRC-6789", C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
+          ClosedClaim("MRN", "SCTY-2345", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)),
+          InProgressClaim("NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)),
+          PendingClaim("NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
         ))))
 
       running(app) {

@@ -26,7 +26,7 @@ class FileUploadCheckYourAnswersHelper(files: Seq[UploadedFile])(implicit messag
   def rows: Seq[SummaryListRow] = {
     files.groupBy(_.description).map { case (description, uploadedFiles) =>
       summaryListRow(
-        description,
+        description.message,
         uploadedFiles.map(v => s"<p>${v.fileName}</p>").mkString("\n"),
         actions = Actions(
           items = Seq(

@@ -19,24 +19,30 @@ package models
 import play.api.libs.json._
 import play.api.mvc.PathBindable
 
-sealed trait ServiceType
+sealed trait ServiceType {
+  val dec64ServiceType: String
+}
 
-case object NDRC extends ServiceType
-case object Securities extends ServiceType
+case object NDRC extends ServiceType {
+  override val dec64ServiceType: String = "NDRC"
+}
+case object SCTY extends ServiceType {
+  override val dec64ServiceType: String = "Securities"
+}
 
 object ServiceType {
   implicit def pathBindable: PathBindable[ServiceType] = new PathBindable[ServiceType] {
     override def bind(key: String, value: String): Either[String, ServiceType] =
       value match {
         case "NDRC" => Right(NDRC)
-        case "Securities" => Right(Securities)
+        case "SCTY" => Right(SCTY)
         case _ => Left("Invalid service type")
       }
 
     override def unbind(key: String, value: ServiceType): String = {
       value match {
         case NDRC => "NDRC"
-        case Securities => "Securities"
+        case SCTY => "SCTY"
       }
     }
   }
@@ -45,7 +51,7 @@ object ServiceType {
   implicit val format: Format[ServiceType] = new Format[ServiceType] {
     override def reads(json: JsValue): JsResult[ServiceType] =
       json match {
-        case JsString("Securities") => JsSuccess(Securities)
+        case JsString("SCTY") => JsSuccess(SCTY)
         case JsString("NDRC") => JsSuccess(NDRC)
         case e => JsError(s"Unexpected CDFPayService: $e")
       }
@@ -53,7 +59,7 @@ object ServiceType {
     override def writes(o: ServiceType): JsValue =
       o match {
         case NDRC => JsString("NDRC")
-        case Securities => JsString("Securities")
+        case SCTY => JsString("SCTY")
       }
   }
 }

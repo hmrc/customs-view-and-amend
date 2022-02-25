@@ -78,9 +78,8 @@ class FinancialsApiConnector @Inject()(httpClient: HttpClient, claimsCache: Clai
     }
   }
 
-  //TODO: handle securities
-  def fileUpload(eori: String, serviceType: ServiceType, caseNumber: String, files: Seq[UploadedFile])(implicit hc: HeaderCarrier): Future[Boolean] = {
-    val request = Dec64UploadRequest(UUID.randomUUID().toString, eori, caseNumber, serviceType, files)
+  def fileUpload(declarationId: String, entryNumber: Boolean, eori: String, serviceType: ServiceType, caseNumber: String, files: Seq[UploadedFile])(implicit hc: HeaderCarrier): Future[Boolean] = {
+    val request = Dec64UploadRequest(UUID.randomUUID().toString, eori, caseNumber,declarationId, entryNumber, serviceType.dec64ServiceType, files.map(_.toDec64UploadedFile))
     httpClient.POST[Dec64UploadRequest, HttpResponse](fileUploadUrl, request).map {
       case HttpResponse(ACCEPTED, _, _) => true
       case _ => false

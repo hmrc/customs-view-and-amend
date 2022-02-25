@@ -45,6 +45,10 @@ case class ClaimDetail(caseNumber: String,
     entryNumberRegex.findFirstIn(declarationId).isDefined
   }
 
+  def multipleDeclarations: Boolean = {
+    mrn.tail.nonEmpty || entryNumbers.tail.nonEmpty
+  }
+
   def isPending: Boolean = claimStatus match {
     case Pending => true
     case _ => false

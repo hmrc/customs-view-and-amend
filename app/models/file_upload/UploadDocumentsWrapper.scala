@@ -18,7 +18,7 @@ package models.file_upload
 
 import config.AppConfig
 import models.responses.ClaimType
-import models.{C285FileSelection, ServiceType}
+import models.{FileSelection, ServiceType}
 import play.api.libs.json.{Json, OFormat}
 
 case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
@@ -29,7 +29,7 @@ object UploadDocumentsWrapper {
                     caseNumber: String,
                     serviceType: ServiceType,
                     claimType: ClaimType,
-                    documentType: C285FileSelection,
+                    documentType: FileSelection,
                     previouslyUploaded: Seq[UploadedFile] = Seq.empty
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
     val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber, serviceType)

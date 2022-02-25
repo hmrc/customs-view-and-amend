@@ -16,13 +16,20 @@
 
 package forms
 
-import models.CE1179FileSelection
+import models.responses.{C285, ClaimType, `C&E1179`}
+import models.{Enumerable, FileSelection}
 import play.api.data.Form
 
-class CE1179FormProvider extends Mappings {
+class FileSelectionFormProvider(claimType: ClaimType) extends Mappings {
 
-  def apply(): Form[CE1179FileSelection] =
+  implicit val enumerable: Enumerable[FileSelection] =
+    claimType match {
+      case C285 => FileSelection.c285Enumerable
+      case `C&E1179` => FileSelection.`C&E1179Enumerable`
+    }
+
+  def apply(): Form[FileSelection] =
     Form(
-      "value" -> enumerable[CE1179FileSelection]("error.required")
+      "value" -> enumerable[FileSelection]("error.required")
     )
 }

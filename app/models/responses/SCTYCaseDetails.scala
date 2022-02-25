@@ -36,9 +36,9 @@ case class SCTYCaseDetails(CDFPayCaseNumber: String,
   def toClaim: Claim = {
     val startDate = toDateTime(claimStartDate)
     caseStatus match {
-      case "In Progress" => InProgressClaim(CDFPayCaseNumber, Securities, declarantReferenceNumber, startDate)
-      case "Pending" => PendingClaim(CDFPayCaseNumber, Securities, declarantReferenceNumber, startDate, startDate.plusDays(30))
-      case "Closed" => ClosedClaim(CDFPayCaseNumber, Securities, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")))
+      case "In Progress" => InProgressClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate)
+      case "Pending" => PendingClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate, startDate.plusDays(30))
+      case "Closed" => ClosedClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
   }

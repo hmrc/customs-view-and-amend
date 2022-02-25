@@ -21,9 +21,9 @@ import cats.data.EitherT
 import cats.data.EitherT._
 import config.AppConfig
 import connector.UploadDocumentsConnector
-import forms.{C285FormProvider, CE1179FormProvider}
-import models.responses.{C285, ClaimType}
-import models.{C285FileSelection, CE1179FileSelection, IdentifierRequest, ServiceType}
+import forms.FileSelectionFormProvider
+import models.responses.ClaimType
+import models.{FileSelection, IdentifierRequest, ServiceType}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -39,28 +39,26 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
                                         claimService: ClaimService,
                                         mcc: MessagesControllerComponents,
                                         fileSelection: file_selection,
-                                        c285FormProvider: C285FormProvider,
-                                        ce1179FormProvider: CE1179FormProvider,
                                         notFound: not_found,
                                         authenticate: IdentifierAction,
                                         verifyEmail: EmailAction)(implicit executionContext: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
-  val c285formProvider: Form[C285FileSelection] = c285FormProvider()
-  val ce1179formProvider: Form[CE1179FileSelection] = ce1179FormProvider()
 
   def onPageLoad(caseNumber: String, serviceType: ServiceType, claimType: ClaimType, initialRequest: Boolean): Action[AnyContent] = actions.async { implicit request =>
+    val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
-    } yield Ok(fileSelection(c285formProvider, serviceType, caseNumber, claimType, C285FileSelection.options(c285formProvider)))
+    } yield Ok(fileSelection(form, serviceType, caseNumber, claimType, FileSelection.options(form, claimType)))
     result.merge
   }
 
   def onSubmit(caseNumber: String, serviceType: ServiceType, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
-    c285formProvider.bindFromRequest().fold(
+    val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
+    form.bindFromRequest().fold(
       formWithErrors =>
-        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, C285FileSelection.options(c285formProvider)))),
+        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form, claimType)))),
       documentType =>
         (for {
           _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))

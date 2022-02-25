@@ -52,7 +52,7 @@ case class SCTYCase(
   def toClaimDetail(lrn: Option[String]): ClaimDetail = {
     ClaimDetail(
       CDFPayCaseNumber,
-      Securities,
+      SCTY,
       declarationID,
       Seq.empty,
       Seq.empty,
