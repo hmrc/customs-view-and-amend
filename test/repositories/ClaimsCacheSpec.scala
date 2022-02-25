@@ -16,7 +16,7 @@
 
 package repositories
 
-import models.{C285, InProgressClaim}
+import models.{InProgressClaim, NDRC}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.test.Helpers._
@@ -86,7 +86,7 @@ class ClaimsCacheSpec extends SpecBase {
 
   trait Setup {
     val app: Application = application.build()
-    val claims = Seq(InProgressClaim("NDRC-2022", C285, LocalDate.of(2019, 1, 1)))
+    val claims = Seq(InProgressClaim("MRN","NDRC-2022", NDRC, None, LocalDate.of(2019, 1, 1)))
     val database: DefaultClaimsCache = app.injector.instanceOf[DefaultClaimsCache]
   }
 }

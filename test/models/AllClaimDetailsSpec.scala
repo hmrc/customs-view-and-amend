@@ -24,15 +24,15 @@ class AllClaimDetailsSpec extends SpecBase {
 
   "toClaim for SCTY" should {
     "return InProgressClaim when case status is 'In Progress'" in new Setup {
-      createSctyDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("SEC-2109", Security, startDate)
+      createSctyDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("21LLLLLLLLLL12345", "SEC-2109", SCTY, Some("broomer007"), startDate)
     }
 
     "return PendingClaim when case status is 'Pending'" in new Setup {
-      createSctyDetailsClaim("Pending").toClaim shouldBe PendingClaim("SEC-2109", Security, startDate, startDate.plusDays(30))
+      createSctyDetailsClaim("Pending").toClaim shouldBe PendingClaim("21LLLLLLLLLL12345", "SEC-2109", SCTY, Some("broomer007"), startDate, startDate.plusDays(30))
     }
 
     "return ClosedClaim when case status is 'Closed'" in new Setup {
-      createSctyDetailsClaim("Closed").toClaim shouldBe ClosedClaim("SEC-2109", Security, startDate, endDate)
+      createSctyDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLL12345", "SEC-2109", SCTY, Some("broomer007"), startDate, endDate)
     }
 
     "throw an exception when unknown claim type passed" in new Setup {
@@ -44,15 +44,15 @@ class AllClaimDetailsSpec extends SpecBase {
 
   "toClaim for NDRC" should {
     "return InProgressClaim when case status is 'In Progress'" in new Setup {
-      createNdrcDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("NDRC-2109", C285, startDate)
+      createNdrcDetailsClaim("In Progress").toClaim shouldBe InProgressClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate)
     }
 
     "return PendingClaim when case status is 'Pending'" in new Setup {
-      createNdrcDetailsClaim("Pending").toClaim shouldBe PendingClaim("NDRC-2109", C285, startDate, startDate.plusDays(30))
+      createNdrcDetailsClaim("Pending").toClaim shouldBe PendingClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate, startDate.plusDays(30))
     }
 
     "return ClosedClaim when case status is 'Closed'" in new Setup {
-      createNdrcDetailsClaim("Closed").toClaim shouldBe ClosedClaim("NDRC-2109", C285, startDate, endDate)
+      createNdrcDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate, endDate)
     }
 
     "throw an exception when unknown claim type passed" in new Setup {
@@ -68,12 +68,12 @@ class AllClaimDetailsSpec extends SpecBase {
     val endDate: LocalDate = LocalDate.of(2021, 5, 20)
 
     def createSctyDetailsClaim(status: String): SCTYCaseDetails =
-      SCTYCaseDetails(CDFPayCaseNumber = "SEC-2109", declarationID = Some("21LLLLLLLLLL12345"),
+      SCTYCaseDetails(CDFPayCaseNumber = "SEC-2109", declarationID = "21LLLLLLLLLL12345",
       claimStartDate = "20210320", closedDate = Some("20210520"), reasonForSecurity = "ACS", caseStatus = status,
       declarantEORI = "GB744638982000", importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"),
       totalCustomsClaimAmount = Some("12000.56"), totalVATClaimAmount = Some("3412.01"), declarantReferenceNumber = Some("broomer007"))
 
-    def createNdrcDetailsClaim(status: String): NDRCCaseDetails = NDRCCaseDetails(CDFPayCaseNumber = "NDRC-2109", declarationID = Some("21LLLLLLLLLLLLLLL9"),
+    def createNdrcDetailsClaim(status: String): NDRCCaseDetails = NDRCCaseDetails(CDFPayCaseNumber = "NDRC-2109", declarationID = "21LLLLLLLLLLLLLLL9",
       claimStartDate = "20210320", closedDate = Some("20210520"), caseStatus = status, declarantEORI = "GB744638982000",
       importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"), totalCustomsClaimAmount = Some("3000.20"),
       totalVATClaimAmount = Some("784.66"), totalExciseClaimAmount = Some("1200.00"), declarantReferenceNumber = Some("KWMREF1"),

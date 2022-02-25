@@ -44,10 +44,8 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
 
   def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
-      _ <- liftF(financialsApiConnector.getClaims(request.eori))
-      claims <- fromOptionF(claimsCache.getSpecificCase(request.eori, caseNumber), NotFound(notFound()))
+      claims <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
-      _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
     } yield {

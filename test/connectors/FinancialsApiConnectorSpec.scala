@@ -17,10 +17,9 @@
 package connectors
 
 import java.time.LocalDate
-
 import connector.FinancialsApiConnector
 import models._
-import models.responses.{AllClaimsResponse, Claims, NDRCCaseDetails, SCTYCaseDetails, SpecificClaimResponse}
+import models.responses.{AllClaimsResponse, C285, Claims, NDRCCaseDetails, ProcedureDetail, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -44,9 +43,9 @@ class FinancialsApiConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getClaims("someEori"))
-        result.closedClaims shouldBe Seq(ClosedClaim("MRN", "SEC-2107", NDRC, None, startDate, LocalDate.of(2021, 12, 20)))
-        result.inProgressClaims shouldBe Seq(InProgressClaim("Entry Number", "NDRC-2109", SCTY, None, startDate))
-        result.pendingClaims shouldBe Seq(PendingClaim("MRN", "SEC-2108", NDRC, None, startDate, startDate.plusDays(30)))
+        result.closedClaims shouldBe Seq(ClosedClaim("21LLLLLLLLLL12343", "SEC-2107", SCTY, Some("broomer007"), startDate, LocalDate.of(2021, 12, 20)))
+        result.inProgressClaims shouldBe Seq(InProgressClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate))
+        result.pendingClaims shouldBe Seq(PendingClaim("21LLLLLLLLLL12344", "SEC-2108", SCTY, Some("broomer007"), startDate, startDate.plusDays(30)))
       }
     }
 
@@ -54,15 +53,15 @@ class FinancialsApiConnectorSpec extends SpecBase {
       when(mockClaimCache.get(any))
         .thenReturn(Future.successful(Some(Seq(
           ClosedClaim("MRN", "SCTY-2345", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)),
-          InProgressClaim("NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)),
-          PendingClaim("NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
+          InProgressClaim("MRN", "NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)),
+          PendingClaim("MRN", "NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
         ))))
 
       running(app) {
         val result = await(connector.getClaims("someEori"))
-        result.closedClaims shouldBe Seq(ClosedClaim("SCTY-2345", Security, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)))
-        result.inProgressClaims shouldBe Seq(InProgressClaim("NDRC-1234", C285, LocalDate.of(9999, 1, 1)))
-        result.pendingClaims shouldBe Seq(PendingClaim("NDRC-6789", C285, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1)))
+        result.closedClaims shouldBe Seq(ClosedClaim("MRN", "SCTY-2345", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1)))
+        result.inProgressClaims shouldBe Seq(InProgressClaim("MRN", "NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)))
+        result.pendingClaims shouldBe Seq(PendingClaim("MRN", "NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1)))
       }
     }
   }
@@ -73,15 +72,15 @@ class FinancialsApiConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(specificClaimResponse))
 
       running(app) {
-        val result = await(connector.getClaimInformation("NDRC-1234", Security)).value
-        result.claimantsEori.value shouldBe "someEORI"
-        result.claimType shouldBe Security
-        result.mrn shouldBe Seq("AWAITING API SPEC")
-        result.claimStatus shouldBe Pending
-        result.caseNumber shouldBe "NDRC-1234"
-        result.claimStartDate shouldBe LocalDate.of(9999, 1, 1)
-        result.claimantsEmail shouldBe "AWAITING API SPEC"
-        result.claimantsName shouldBe "AWAITING API SPEC"
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None)).value
+        result.claimantsEori.value shouldBe "ClaimaintEori"
+        result.claimType.value shouldBe C285
+        result.mrn shouldBe Seq(ProcedureDetail("MRN", mainDeclarationReference = true))
+        result.claimStatus shouldBe Closed
+        result.caseNumber shouldBe "CaseNumber"
+        result.claimStartDate shouldBe "20221012"
+        result.claimantsEmail.value shouldBe "email@email.com"
+        result.claimantsName.value shouldBe "name"
       }
     }
 
@@ -90,7 +89,7 @@ class FinancialsApiConnectorSpec extends SpecBase {
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
-        val result = await(connector.getClaimInformation("NDRC-1234", Security))
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
         result shouldBe None
       }
     }
@@ -102,19 +101,20 @@ class FinancialsApiConnectorSpec extends SpecBase {
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
-      "Pending",
-      "NDRC-1234",
-      Some("someEORI")
+      "NDRC",
+      CDFPayCaseFound = true,
+      Some(ndrcCase),
+      None
     )
 
     val startDate: LocalDate = LocalDate.of(2021, 3, 21)
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(Claims(Seq(
-      SCTYCaseDetails("SEC-2108", Some("21LLLLLLLLLL12344"), "20210321", Some("20211220"), "ACS", "Pending", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007")),
-      SCTYCaseDetails("SEC-2107", Some("21LLLLLLLLLL12343"), "20210321", Some("20211220"), "ACS", "Closed", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007"))
+      SCTYCaseDetails("SEC-2108", "21LLLLLLLLLL12344", "20210321", Some("20211220"), "ACS", "Pending", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007")),
+      SCTYCaseDetails("SEC-2107", "21LLLLLLLLLL12343", "20210321", Some("20211220"), "ACS", "Closed", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("12000.56"), Some("3412.01"), Some("broomer007"))
       ), Seq(
-        NDRCCaseDetails("NDRC-2109", Some("21LLLLLLLLLLLLLLL9"), "20210321", Some("20211220"), "In Progress", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("3000.20"), Some("784.66"), Some("1200.00"), Some("KWMREF1"), Some("Duplicate Entry")))))
+        NDRCCaseDetails("NDRC-2109", "21LLLLLLLLLLLLLLL9", "20210321", Some("20211220"), "In Progress", "GB744638982000", "GB744638982000", Some("GB744638982000"), Some("3000.20"), Some("784.66"), Some("1200.00"), Some("KWMREF1"), Some("Duplicate Entry")))))
 
     val app: Application = GuiceApplicationBuilder().overrides(
       inject.bind[HttpClient].toInstance(mockHttp),

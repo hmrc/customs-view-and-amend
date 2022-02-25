@@ -16,14 +16,16 @@
 
 package controllers
 
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
+import connector.{DataStoreConnector, FinancialsApiConnector, UploadDocumentsConnector}
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
 import models._
+import models.responses.{C285, ProcedureDetail}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.{ClaimsCache, ClaimsMongo, UploadedFilesCache}
+import services.ClaimService
 import uk.gov.hmrc.auth.core.retrieve.Email
 import utils.SpecBase
 
@@ -31,52 +33,6 @@ import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class FileUploadControllerSpec extends SpecBase {
-
-  "start" should {
-    "redirect the user to the file upload service on a successful request" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
-      when(mockClaimsCache.getSpecificCase(any, any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
-        .thenReturn(Future.successful(Some("/location")))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.start("NDRC-100", C285, searched = true, multipleUpload = true).url)
-        val result = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10100/location"
-      }
-    }
-
-    "return NOT_FOUND if the specific case number does not belong to the user" in new Setup {
-      when(mockClaimsCache.getSpecificCase(any, any))
-        .thenReturn(Future.successful(None))
-      when(mockFinancialsApiConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.start("NDRC-100", C285, searched = true, multipleUpload = true).url)
-        val result = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
-
-    "return NOT_FOUND if the request to initialize the file upload service fails" in new Setup {
-      when(mockClaimsCache.getSpecificCase(any, any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
-        .thenReturn(Future.successful(None))
-      when(mockFinancialsApiConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(AllClaims(Seq.empty, Seq.empty, Seq.empty)))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.start("NDRC-100", C285, searched = true, multipleUpload = true).url)
-        val result = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
-  }
 
   "updateFiles" should {
     "return NO_CONTENT when valid payload sent to mongo" in new Setup {
@@ -105,8 +61,21 @@ class FileUploadControllerSpec extends SpecBase {
 
   "continue" should {
     "return OK" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail)))
+      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
+        .thenReturn(Future.successful(Seq.empty))
+      when(mockFinancialsApiConnector.fileUpload(any, any, any, any, any, any)(any))
+        .thenReturn(Future.successful(true))
+      when(mockUploadedFilesCache.removeRecord(any))
+        .thenReturn(Future.successful(true))
+      when(mockUploadDocumentsConnector.wipeData()(any))
+        .thenReturn(Future.successful(true))
+
       running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000").url)
+        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -115,33 +84,36 @@ class FileUploadControllerSpec extends SpecBase {
 
 
   trait Setup {
-    val mockClaimsCache: ClaimsCache = mock[ClaimsCache]
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("caseNumber", C285, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
+    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
     val mockUploadedFilesCache: UploadedFilesCache = mock[UploadedFilesCache]
+    val mockClaimService: ClaimService = mock[ClaimService]
 
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
-      Seq("21GB03I52858073821"),
-      "SomeLrn",
+      NDRC,
+      "DeclarationId",
+      Seq(ProcedureDetail("DeclarationId", true)),
+      Seq.empty,
+      Some("SomeLrn"),
       Some("GB746502538945"),
       InProgress,
-      C285,
-      LocalDate.of(2021, 10, 23),
-      1200,
-      "Sarah Philips",
-      "sarah.philips@acmecorp.com"
+      Some(C285),
+      "20211011",
+      Some("1200"),
+      Some("Sarah Philips"),
+      Some("sarah.philips@acmecorp.com")
     )
 
     when(mockDataStoreConnector.getEmail(any)(any))
       .thenReturn(Future.successful(Right(Email("some@email.com"))))
 
     val app: Application = application.overrides(
-      inject.bind[ClaimsCache].toInstance(mockClaimsCache),
       inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
       inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
-      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector)
+      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector),
+      inject.bind[ClaimService].toInstance(mockClaimService),
     ).build()
   }
 }

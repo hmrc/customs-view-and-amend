@@ -46,7 +46,7 @@ case class ClaimDetail(caseNumber: String,
   }
 
   def multipleDeclarations: Boolean = {
-    mrn.tail.nonEmpty || entryNumbers.tail.nonEmpty
+    mrn.size > 1 || entryNumbers.size > 1
   }
 
   def isPending: Boolean = claimStatus match {
