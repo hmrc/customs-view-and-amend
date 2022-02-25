@@ -38,7 +38,7 @@
                     case Closed =>
                         <th>{messages("claim.list.table.heading.removal")}</th>
                     case Pending =>
-                        <th>{messages("claim.list.table.heading.pending")}</th>
+            <!--TODO: Removed the respond by date until secure messaging timestamp available-->
                     case _ => Html("")
                 }
             }
@@ -52,7 +52,7 @@
                 case e@ClosedClaim(_, caseNumber, _, _, claimStartDate, removalDate) =>
                     claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, Some(e.formattedRemovalDate()))
                 case e@PendingClaim(_, caseNumber, _, _, claimStartDate, respondByDate) =>
-                    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, Some(e.formattedRespondByDate()))
+                    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None)
                 case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
                     claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None)
             }
