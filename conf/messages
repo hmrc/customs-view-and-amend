@@ -1,5 +1,6 @@
 service.name = Customs view and amend
 back.link = Back
+site.change = Change
 
 cf.header.eori=EORI:
 cf.header.eori.dash= -
@@ -42,17 +43,23 @@ claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appe
 claim.detail.title = Case reference {0}
 claim.detail.p1 = Claim details:
 claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
+claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
 claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
 claim.detail.type = Claim type
-claim.detail.type.c285 = C285
+claim.detail.type.multiple.C285 = C285 - Multiple declarations
+claim.detail.type.C285 = C285
+claim.detail.type.multiple.CE1179 = C&E1179 - Multiple declarations
+claim.detail.type.CE1179 = C&E1179
+
+
 claim.detail.type.security = Security
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
 claim.detail.value = Value of claim
 claim.detail.name = Claimant''s name
 claim.detail.email = Email address
-claim.detail.upload = Upload files
+claim.detail.upload = Upload files (opens in a new tab link)
 
 claim.upload.confirmation.h1 = Claim amendment sent
 claim.upload.confirmation.case = Case number
@@ -62,6 +69,9 @@ claim.upload.confirmation.li.1 = confirm your claim and bank transfer
 claim.upload.confirmation.li.2 = ask for more information
 claim.upload.confirmation.li.3 = explain why your claim was rejected
 claim.upload.confirmation.link = View all pending claims
+claim.upload.confirmation.email = We have sent a confirmation email to <strong>{0}</strong>
+claim.upload.confirmation.email.description = This email address is the one used when you registered for the Customs Declaration Service (CDS). If you have not received this email, check your SPAM folder or contact HMRC.
+claim.upload.confirmation.close = You can now close this tab.
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.
@@ -183,3 +193,43 @@ timeout.message = For security reasons, you will be signed out of this service i
 timeout.keepAlive = Stay signed in
 timeout.signOut = Sign out
 # ----------------------------------------------------------
+
+#File Selection
+# ----------------------------------------------------------
+
+file.selection.commercial-invoice = Commercial invoice
+file.selection.import-export-declaration = Import and export declaration
+file.selection.air-waybill = Air waybill
+file.selection.bill-of-lading = Bill of lading
+file.selection.packing-list = Packing list
+file.selection.proof-of-origin = Proof of origin
+file.selection.substitute-entry = Substitute entry
+file.selection.preference-certificate = Preference certificate
+file.selection.correspondence = Correspondence between trader and agent
+file.selection.airworthiness-certificates = Airworthiness certificates
+file.selection.technical-specifications = Technical specifications
+file.selection.letter-of-authority = Letter of authority
+file.selection.faulty-not-ordered = Documentary proof that the goods are faulty or not what you ordered
+file.selection.correspondence = Correspondence
+file.selection.calculation-worksheet = Calculation worksheet
+file.selection.additional-supporting-documents = Additional supporting documents
+file.selection.proof-of-export-or-destruction = Proof of export or destruction
+# ----------------------------------------------------------
+
+
+#File Selection Generic
+# ----------------------------------------------------------
+file.selection.title = File upload description
+file.selection.p1 = Select a description of the file you want to upload by choosing a definition from the list. This will help up process your claim more efficiently.
+file.selection.button = Continue
+# ----------------------------------------------------------
+
+
+file.upload.cya.title = Check your documents before sending
+file.upload.cya.h2 = Uploaded documents
+file.upload.p1 = By sending these files you are confirming that the details you are providing are correct.
+file.upload.button = Confirm and send
+file.uploaded.visually.hidden = currently uploaded documents.
+
+
+

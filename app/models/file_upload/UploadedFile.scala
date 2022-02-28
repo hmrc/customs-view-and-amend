@@ -16,20 +16,35 @@
 
 package models.file_upload
 
-import play.api.libs.json.{JsObject, Json, OFormat}
+import models.FileSelection
+import play.api.libs.json.{Json, OFormat}
 
 case class UploadedFile(
-                          upscanReference: String,
-                          downloadUrl: String,
-                          uploadTimestamp: String,
-                          checksum: String,
-                          fileName: String,
-                          fileMimeType: String,
-                          fileSize: Int,
-                          cargo: Option[UploadCargo],
-                          description: Option[String],
-                          previewUrl: Option[String]
-                        )
+                         upscanReference: String,
+                         downloadUrl: String,
+                         uploadTimestamp: String,
+                         checksum: String,
+                         fileName: String,
+                         fileMimeType: String,
+                         fileSize: Int,
+                         cargo: Option[UploadCargo],
+                         description: FileSelection,
+                         previewUrl: Option[String]
+                       ) {
+
+  def toDec64UploadedFile: Dec64UploadedFile =
+    Dec64UploadedFile(upscanReference,
+      downloadUrl,
+      uploadTimestamp,
+      checksum,
+      fileName,
+      fileMimeType,
+      fileSize,
+      description.toDec64FileType
+    )
+
+
+}
 
 object UploadedFile {
   implicit val format: OFormat[UploadedFile] = Json.format[UploadedFile]

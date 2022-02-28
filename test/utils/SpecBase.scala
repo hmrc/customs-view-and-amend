@@ -21,6 +21,8 @@ import akka.stream.testkit.NoMaterializer
 import com.codahale.metrics.MetricRegistry
 import com.kenshoo.play.metrics.Metrics
 import connector.DataStoreConnector
+import models.Reimbursement
+import models.responses.{C285, ClaimType, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -31,7 +33,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
-import play.api.test.CSRFTokenHelper.CSRFFRequestHeader
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubPlayBodyParsers
 import uk.gov.hmrc.auth.core.retrieve.Email
@@ -55,6 +57,67 @@ trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with 
 
   when(mockDataStoreConnector.getEmail(any)(any))
     .thenReturn(Future.successful(Right(Email("some@email.com"))))
+
+  val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
+
+  val ndrcCase: NDRCCase = NDRCCase(
+    NDRCDetail(
+      CDFPayCaseNumber = "CaseNumber",
+      declarationID = "DeclarationId",
+      claimType = C285,
+      caseType = "NDRC",
+      caseStatus = "Closed",
+      descOfGoods = Some("description of goods"),
+      descOfRejectedGoods = Some("description of rejected goods"),
+      declarantEORI = "SomeEori",
+      importerEORI = "SomeOtherEori",
+      claimantEORI = Some("ClaimaintEori"),
+      basisOfClaim = Some("basis of claim"),
+      claimStartDate = "20221012",
+      claimantName = Some("name"),
+      claimantEmailAddress = Some("email@email.com"),
+      closedDate = Some("20221112"),
+      MRNDetails = Some(Seq(
+        ProcedureDetail("MRN", true)
+      )),
+      entryDetails = Some(Seq(
+        EntryDetail("entryNumber", true)
+      )
+      ),
+      reimbursement = Some(Seq(reimbursement))
+    ),
+    NDRCAmounts(
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+    )
+  )
+  val sctyCase: SCTYCase = SCTYCase(
+    "caseNumber",
+    "declarationId",
+    "Reason for security",
+    "Procedure Code",
+    "Closed",
+    Some(Seq(Goods("itemNumber", Some("description")))),
+    "someEori",
+    "someOtherEori",
+    Some("claimantEori"),
+    Some("600000"),
+    Some("600000"),
+    Some("600000"),
+    Some("600000"),
+    "20221210",
+    Some("name"),
+    Some("email@email.com"),
+    Some("20221012"),
+    Some(Seq(reimbursement))
+  )
 
   def application: GuiceApplicationBuilder = new GuiceApplicationBuilder().overrides(
     bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),

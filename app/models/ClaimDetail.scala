@@ -16,6 +16,7 @@
 
 package models
 
+import models.responses.{ClaimType, EntryDetail, ProcedureDetail}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 import views.helpers.DateFormatters
@@ -23,18 +24,30 @@ import views.helpers.DateFormatters
 import java.time.LocalDate
 
 case class ClaimDetail(caseNumber: String,
-                       mrn: Seq[String],
-                       lrn: String,
+                       serviceType: ServiceType,
+                       declarationId: String,
+                       mrn: Seq[ProcedureDetail],
+                       entryNumbers: Seq[EntryDetail],
+                       lrn: Option[String],
                        claimantsEori: Option[String],
                        claimStatus: ClaimStatus,
-                       claimType: ClaimType,
-                       claimStartDate: LocalDate,
-                       valueOfClaim: BigDecimal,
-                       claimantsName: String,
-                       claimantsEmail: String
+                       claimType: Option[ClaimType],
+                       claimStartDate: String,
+                       valueOfClaim: Option[String],
+                       claimantsName: Option[String],
+                       claimantsEmail: Option[String]
                       ) extends DateFormatters {
 
-  def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+//  def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+
+  def isEntryNumber: Boolean = {
+    val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r
+    entryNumberRegex.findFirstIn(declarationId).isDefined
+  }
+
+  def multipleDeclarations: Boolean = {
+    mrn.size > 1 || entryNumbers.size > 1
+  }
 
   def isPending: Boolean = claimStatus match {
     case Pending => true

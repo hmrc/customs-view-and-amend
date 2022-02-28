@@ -16,10 +16,12 @@
 
 package connector
 
-import config.{AppConfig}
-import models.ClaimType
+import config.AppConfig
+import models.{FileSelection, ServiceType}
 import models.file_upload.{Nonce, UploadDocumentsWrapper}
-import play.api.http.Status.CREATED
+import models.responses.ClaimType
+import play.api.Logging
+import play.api.http.Status.{CREATED, NO_CONTENT}
 import repositories.UploadedFilesCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
@@ -28,17 +30,27 @@ import scala.concurrent.{ExecutionContext, Future}
 
 class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
                                          uploadedFilesCache: UploadedFilesCache
-                                        )(implicit executionContext: ExecutionContext, appConfig: AppConfig) {
+                                        )(implicit executionContext: ExecutionContext, appConfig: AppConfig) extends Logging {
 
 
 
-  def initializeNewFileUpload(caseNumber: String, claimType: ClaimType, searched: Boolean, multipleUpload: Boolean)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: FileSelection)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val nonce = Nonce.random
     for {
-      successfulWrite <- uploadedFilesCache.initializeRecord(caseNumber, nonce)
-      payload = UploadDocumentsWrapper.createPayload(nonce, caseNumber, claimType, searched, multipleUpload)
+      previouslyUploaded <- uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber)
+      successfulWrite <- uploadedFilesCache.initializeRecord(caseNumber, nonce, previouslyUploaded)
+      payload = UploadDocumentsWrapper.createPayload(nonce, caseNumber, serviceType, claimType,  documentType, previouslyUploaded)
       result <- if (successfulWrite) { sendRequest(payload) } else Future.successful(None)
     } yield result
+  }
+
+  def wipeData()(implicit hc: HeaderCarrier): Future[Boolean] = {
+    httpClient.POSTEmpty[HttpResponse](appConfig.fileUploadWipeOutUrl).map(_.status == NO_CONTENT)
+      .recover {
+        case e =>
+          logger.warn(s"Failed to wipe data in upload-document-frontend: $e")
+          false
+      }
   }
 
   private def sendRequest(uploadDocumentsWrapper: UploadDocumentsWrapper)(implicit hc: HeaderCarrier): Future[Option[String]] = {
@@ -49,6 +61,4 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
       }
     }.recover { case _ => None }
   }
-
-
 }

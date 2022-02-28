@@ -41,16 +41,16 @@ class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig)
     servicesConfig.baseUrl("upload-documents-frontend")
   lazy val fileUploadCallbackUrlPrefix: String =
     servicesConfig.getConfString("upload-documents-frontend.callback-url-prefix", "")
-  lazy val fileUploadContextPath: String =
-    servicesConfig.getConfString("upload-documents-frontend.context-path", "/upload-documents")
   lazy val fileUploadPublicUrl: String =
     servicesConfig.getConfString("upload-documents-frontend.public-url", "")
-  lazy val fileUploadInitializationUrl: String = s"$fileUploadBaseUrl$fileUploadContextPath/initialize"
-  lazy val fileUploadWipeOutUrl: String = s"$fileUploadBaseUrl$fileUploadContextPath/wipe-out"
+  lazy val fileUploadInitializationUrl: String = s"$fileUploadBaseUrl/internal/initialize"
+  lazy val fileUploadWipeOutUrl: String = s"$fileUploadBaseUrl/internal/wipe-out"
   lazy val fileUploadServiceName: String = config.get[String]("microservice.services.upload-documents-frontend.serviceName")
   lazy val fileUploadPhase: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBanner")
   lazy val fileUploadPhaseUrl: String = config.get[String]("microservice.services.upload-documents-frontend.phaseBannerUrl")
   lazy val fileUploadAccessibilityUrl: String = config.get[String]("microservice.services.upload-documents-frontend.accessibilityStatement")
+  lazy val fileUploadMultiple: Boolean = config.get[Boolean]("microservice.services.upload-documents-frontend.multiple-upload")
+  lazy val fileUploadSummaryUrl: String = s"$fileUploadPublicUrl/upload-documents/summary"
 
 
   lazy val timeout: Int = config.get[Int]("timeout.timeout")

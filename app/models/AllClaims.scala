@@ -22,9 +22,9 @@ case class AllClaims(pendingClaims: Seq[PendingClaim],
 
   def collectAll: Seq[Claim] = pendingClaims ++ inProgressClaims ++ closedClaims
 
-  //TODO once MRN returns from TPI01 then add that to search query
   def findClaim(query: String): Option[Claim] = collectAll.find(claim =>
-    claim.caseNumber.toUpperCase == query.toUpperCase
+    claim.caseNumber.toUpperCase == query.toUpperCase ||
+      claim.declarationId.toUpperCase == query.toUpperCase
   )
 
 }

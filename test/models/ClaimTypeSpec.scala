@@ -16,6 +16,7 @@
 
 package models
 
+import models.responses.{C285, ClaimType, `C&E1179`}
 import play.api.libs.json.{JsString, JsSuccess}
 import utils.SpecBase
 
@@ -23,14 +24,16 @@ class ClaimTypeSpec extends SpecBase {
 
   "format" should {
     "correctly format data in read and writes" in {
-      ClaimType.format.writes(C285) shouldBe JsString("NDRC")
-      ClaimType.format.writes(Security) shouldBe JsString("SCTY")
-      ClaimType.format.reads(JsString("SCTY")) shouldBe JsSuccess(Security)
-      ClaimType.format.reads(JsString("NDRC")) shouldBe JsSuccess(C285)
+      ClaimType.format.writes(C285) shouldBe JsString("C285")
+      ClaimType.format.writes(`C&E1179`) shouldBe JsString("C&E1179")
+      ClaimType.format.reads(JsString("C&E1179")) shouldBe JsSuccess(`C&E1179`)
+      ClaimType.format.reads(JsString("C285")) shouldBe JsSuccess(C285)
       ClaimType.format.reads(JsString("Unknown")).isError shouldBe true
-      ClaimType.pathBindable.bind("something", "NDRC") shouldBe Right(C285)
-      ClaimType.pathBindable.bind("something", "SCTY") shouldBe Right(Security)
-      ClaimType.pathBindable.bind("something", "Unknown") shouldBe Left("Invalid claim type")
+      ClaimType.pathBindable.bind("something", "C285") shouldBe Right(C285)
+      ClaimType.pathBindable.bind("something", "CE1179") shouldBe Right(`C&E1179`)
+      ClaimType.pathBindable.bind("something", "Unknown") shouldBe Left("Invalid service type")
+      ClaimType.pathBindable.unbind("something", C285) shouldBe "C285"
+      ClaimType.pathBindable.unbind("something", `C&E1179`) shouldBe "CE1179"
     }
   }
 

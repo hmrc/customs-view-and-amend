@@ -20,6 +20,7 @@ import play.api.libs.json.{Json, OFormat}
 
 case class Reimbursement(reimbursementDate: String,
                          reimbursementAmount: String,
+                         taxType: String,
                          reimbursementMethod: String)
 
 object Reimbursement {

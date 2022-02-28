@@ -17,31 +17,36 @@
 package models.file_upload
 
 import config.AppConfig
-import models.ClaimType
+import models.responses.ClaimType
+import models.{FileSelection, ServiceType}
 import play.api.libs.json.{Json, OFormat}
 
-case class UploadDocumentsWrapper(config: UploadDocumentsConfig)
+case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
 
 object UploadDocumentsWrapper {
 
   def createPayload(nonce: Nonce,
                     caseNumber: String,
+                    serviceType: ServiceType,
                     claimType: ClaimType,
-                    searched: Boolean,
-                    multipleUpload: Boolean
+                    documentType: FileSelection,
+                    previouslyUploaded: Seq[UploadedFile] = Seq.empty
                    )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
-    val continueUrl = controllers.routes.FileUploadController.continue(caseNumber)
-    val backLinkUrl = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched)
+    val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber, serviceType)
+    val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber, serviceType, claimType, initialRequest = false).url
     val callBack = controllers.routes.FileUploadController.updateFiles()
 
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
         nonce = nonce,
         initialNumberOfEmptyRows = Some(1),
+        maximumNumberOfFiles = Some(10),
         continueUrl = s"${appConfig.selfUrl}$continueUrl",
         backlinkUrl = s"${appConfig.selfUrl}$backLinkUrl",
         callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBack",
+        continueAfterYesAnswerUrl = Some(s"${appConfig.selfUrl}$backLinkUrl"),
         cargo = UploadCargo(caseNumber),
+        newFileDescription = documentType,
         content = Some(UploadDocumentsContent(
           serviceName = Some(appConfig.fileUploadServiceName),
           serviceUrl = Some(appConfig.homepage),
@@ -49,10 +54,18 @@ object UploadDocumentsWrapper {
           phaseBanner = Some(appConfig.fileUploadPhase),
           phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
           userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
-          contactFrontendServiceId = Some(appConfig.contactFrontendServiceId)
+          contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
+          yesNoQuestionText = Some("Add a different type of supporting evidence"),
+          yesNoQuestionRequiredError = Some("Answer required")
         )),
-        features = Some(UploadDocumentsFeatures(Some(multipleUpload)))
-      )
+        features = Some(
+          UploadDocumentsFeatures(
+            showUploadMultiple = Some(appConfig.fileUploadMultiple),
+            showYesNoQuestionBeforeContinue = Some(true)
+          )
+        )
+      ),
+      existingFiles = previouslyUploaded
     )
   }
 

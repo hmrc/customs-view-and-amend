@@ -21,7 +21,7 @@ import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.toDateTime
 
 case class SCTYCaseDetails(CDFPayCaseNumber: String,
-                           declarationID: Option[String],
+                           declarationID: String,
                            claimStartDate: String,
                            closedDate: Option[String],
                            reasonForSecurity: String,
@@ -36,9 +36,9 @@ case class SCTYCaseDetails(CDFPayCaseNumber: String,
   def toClaim: Claim = {
     val startDate = toDateTime(claimStartDate)
     caseStatus match {
-      case "In Progress" => InProgressClaim(CDFPayCaseNumber, Security, startDate)
-      case "Pending" => PendingClaim(CDFPayCaseNumber, Security, startDate, startDate.plusDays(30))
-      case "Closed" => ClosedClaim(CDFPayCaseNumber, Security, startDate, toDateTime(closedDate.getOrElse("")))
+      case "In Progress" => InProgressClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate)
+      case "Pending" => PendingClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate, startDate.plusDays(30))
+      case "Closed" => ClosedClaim(declarationID,CDFPayCaseNumber, SCTY, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
   }

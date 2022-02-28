@@ -41,9 +41,12 @@
         <tr class="govuk-table__row">
         @{
             claim match {
-                case e@ClosedClaim(caseNumber, _, claimStartDate, removalDate) => claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.closed")), Some(e.formattedRemovalDate()))
-                case e@PendingClaim(caseNumber, _, claimStartDate, newMessage) => claimListRows(e.url(true), caseNumber, e.formattedStartDate(), None, None)
-                case e@InProgressClaim(caseNumber, _, claimStartDate) => claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.inProgress")), None)
+                case e@ClosedClaim(_, caseNumber, _, _, claimStartDate, removalDate) =>
+                    claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.closed")), Some(e.formattedRemovalDate()))
+                case e@PendingClaim(_, caseNumber, _, _, claimStartDate, newMessage) =>
+                    claimListRows(e.url(true), caseNumber, e.formattedStartDate(), None, None)
+                case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
+                    claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.inProgress")), None)
             }
         }
         </tr>

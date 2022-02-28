@@ -16,10 +16,10 @@
 
 package models.requests
 
-import models.ClaimType
+import models.ServiceType
 import play.api.libs.json.{Format, Json}
 
-case class SpecificClaimRequest(cdfPayService: ClaimType, cdfPayCaseNumber: String)
+case class SpecificClaimRequest(cdfPayService: ServiceType, cdfPayCaseNumber: String)
 
 object SpecificClaimRequest {
   implicit val format: Format[SpecificClaimRequest] = Json.format[SpecificClaimRequest]

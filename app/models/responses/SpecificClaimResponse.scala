@@ -16,41 +16,14 @@
 
 package models.responses
 
-import models._
 import play.api.libs.json.{Json, OFormat}
 
-import java.time.LocalDate
-
 case class SpecificClaimResponse(
-                             caseStatus: String,
-                             CDFPayCaseNumber: String,
-                             claimantEORI: Option[String]
-                           ) {
-
-  private def transformCaseStatus: ClaimStatus = {
-    caseStatus match {
-      case "In Progress" => InProgress
-      case "Pending" => Pending
-      case "Closed" => Closed
-      case e => throw new RuntimeException(s"Unknown case status: $e")
-    }
-  }
-
-  //TODO Implement values once API specs produced
-  def toClaimDetail(claimType: ClaimType) = ClaimDetail(
-    CDFPayCaseNumber,
-    Seq("AWAITING API SPEC"),
-    "AWAITING API SPEC",
-    claimantEORI,
-    transformCaseStatus,
-    claimType,
-    LocalDate.of(9999,1,1),
-    123456789.23,
-    "AWAITING API SPEC",
-    "AWAITING API SPEC"
-  )
-}
-
+                                  CDFPayService: String,
+                                  CDFPayCaseFound: Boolean,
+                                  NDRCCase: Option[NDRCCase],
+                                  SCTYCase: Option[SCTYCase]
+                                )
 
 object SpecificClaimResponse {
   implicit val format: OFormat[SpecificClaimResponse] = Json.format[SpecificClaimResponse]

@@ -16,6 +16,7 @@
 
 package models
 
+import models.responses.ClaimType
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 import views.helpers.DateFormatters
@@ -24,21 +25,23 @@ import java.time.LocalDate
 
 sealed trait Claim extends DateFormatters {
   val caseNumber: String
-  val claimType: ClaimType
+  val declarationId: String
+  val serviceType: ServiceType
   val claimStartDate: LocalDate
-  def url(searched: Boolean): String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, claimType, searched).url
+  val lrn: Option[String]
+  def url(searched: Boolean): String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched).url
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
 }
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
-case class InProgressClaim(caseNumber: String, claimType: ClaimType, claimStartDate: LocalDate) extends Claim
+case class InProgressClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate) extends Claim
 
 object InProgressClaim {
   implicit val format: OFormat[InProgressClaim] = Json.format[InProgressClaim]
 }
 
-case class PendingClaim(caseNumber: String, claimType: ClaimType, claimStartDate: LocalDate, respondByDate: LocalDate) extends Claim {
+case class PendingClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, respondByDate: LocalDate) extends Claim {
   //TODO: Removed the respond by date until secure messaging timestamp available
   //def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
 }
@@ -47,7 +50,7 @@ object PendingClaim {
   implicit val format: OFormat[PendingClaim] = Json.format[PendingClaim]
 }
 
-case class ClosedClaim(caseNumber: String, claimType: ClaimType, claimStartDate: LocalDate, removalDate: LocalDate) extends Claim {
+case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate) extends Claim {
   def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
 
 }

@@ -49,9 +49,9 @@ class ClaimsOverviewControllerSpec extends SpecBase {
     val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
-      pendingClaims = Seq(PendingClaim("NDRC-0001", C285, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
-      inProgressClaims = Seq(InProgressClaim("NDRC-0002", C285, LocalDate.of(2019, 1, 1))),
-      closedClaims = Seq(ClosedClaim("NDRC-0003", C285, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1)))
+      pendingClaims = Seq(PendingClaim("MRN", "NDRC-0001", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
+      inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, LocalDate.of(2019, 1, 1))),
+      closedClaims = Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1)))
     )
 
     val app: Application = application.overrides(

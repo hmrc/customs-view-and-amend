@@ -52,10 +52,10 @@ class DefaultUploadedFilesCache @Inject()(mongo: MongoComponent, config: Configu
       )
     )) with UploadedFilesCache {
 
-  override def initializeRecord(caseNumber: String, nonce: Nonce): Future[Boolean] = {
+  override def initializeRecord(caseNumber: String, nonce: Nonce, previouslyUploaded: Seq[UploadedFile]): Future[Boolean] = {
     collection.replaceOne(
       equal("caseNumber", caseNumber),
-      UploadedFilesMongo(caseNumber, UploadedFileMetadata(nonce, Seq.empty, None), LocalDateTime.now()),
+      UploadedFilesMongo(caseNumber, UploadedFileMetadata(nonce, previouslyUploaded, None), LocalDateTime.now()),
       ReplaceOptions().upsert(true)
     ).toFuture().map(_.wasAcknowledged())
   }
@@ -75,12 +75,18 @@ class DefaultUploadedFilesCache @Inject()(mongo: MongoComponent, config: Configu
       case Some(value) => value.uploadedFilesMetadata.uploadedFiles
       case None => Seq.empty
     }
+
+  override def removeRecord(caseNumber: String): Future[Boolean] =
+    collection.deleteOne(
+      equal("caseNumber", caseNumber)
+    ).toSingle().toFuture().map(_.wasAcknowledged())
 }
 
 trait UploadedFilesCache {
-    def initializeRecord(caseNumber: String, nonce: Nonce): Future[Boolean]
+    def initializeRecord(caseNumber: String, nonce: Nonce, previouslyUploaded: Seq[UploadedFile]): Future[Boolean]
     def updateRecord(caseNumber: String, uploadedFileMetadata: UploadedFileMetadata): Future[Boolean]
     def retrieveCurrentlyUploadedFiles(caseNumber: String): Future[Seq[UploadedFile]]
+    def removeRecord(caseNumber: String): Future[Boolean]
 }
 
 case class UploadedFilesMongo(caseNumber: String, uploadedFilesMetadata: UploadedFileMetadata, lastUpdated: LocalDateTime)
