@@ -85,11 +85,14 @@ class UploadFilesCacheSpec extends SpecBase {
       await(for {
         _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata)
-        result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        result1 <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _ <- database.removeRecord(caseNumber)
+        result2 <- database.retrieveCurrentlyUploadedFiles(caseNumber)
         _ <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe true
-        result mustBe Seq(uploadedFile)
+        result1 mustBe Seq(uploadedFile)
+        result2 mustBe Seq.empty
       })
     }
 
@@ -99,6 +102,20 @@ class UploadFilesCacheSpec extends SpecBase {
         _ <- database.collection.drop().toFuture()
       } yield {
         result mustBe Seq.empty
+      })
+    }
+  }
+
+  "removeRecord" should {
+    "remove a record based on the case number" in new Setup {
+      await(for {
+        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata)
+        result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _ <- database.collection.drop().toFuture()
+      } yield {
+        successfulWrite mustBe true
+        result mustBe Seq(uploadedFile)
       })
     }
   }

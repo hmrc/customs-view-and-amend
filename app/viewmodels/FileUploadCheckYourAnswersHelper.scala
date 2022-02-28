@@ -36,8 +36,7 @@ class FileUploadCheckYourAnswersHelper(files: Seq[UploadedFile])(implicit messag
               visuallyHiddenText = Some(messages("file.uploaded.visually.hidden"))
             )
           )
-        ),
-        secondValue = None
+        )
       )
     }.toSeq
   }

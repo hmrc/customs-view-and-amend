@@ -33,16 +33,6 @@
 <dd class="@toClasses("govuk-summary-list__value", row.value.classes)">
 @row.value.content.asHtml
 </dd>
-@row.secondValue.fold{
-@if(anyRowHasActions) {
-@* Add dummy column to extend border *@
-<span class="govuk-summary-list__actions"></span>
-}
-} { sv =>
-<dd class="@toClasses("govuk-summary-list__value", sv.classes)">
-@sv.content.asHtml
-</dd>
-}
 @if(row.actions.exists(_.items.nonEmpty)) {
 <dd class="@toClasses("govuk-summary-list__actions", row.actions.map(_.classes).getOrElse(""))">
 @if(row.actions.exists(_.items.length == 1)) {
@@ -76,4 +66,3 @@
 @actionContent(action: ActionItem) = {@action.content.asHtml@action.visuallyHiddenText.map { visuallyHiddenText => <span class="govuk-visually-hidden"> @visuallyHiddenText</span> }}
 
 @anyRowHasActions = @{rows.exists(_.actions.nonEmpty) && rows.exists(_.actions.get.items.nonEmpty)}
-@anyRowHasSecondValue = @{rows.exists(_.secondValue.nonEmpty)}

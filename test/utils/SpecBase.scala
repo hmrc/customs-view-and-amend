@@ -33,7 +33,7 @@ import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
-import play.api.test.CSRFTokenHelper.CSRFFRequestHeader
+import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubPlayBodyParsers
 import uk.gov.hmrc.auth.core.retrieve.Email
@@ -107,7 +107,7 @@ trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with 
     Some(Seq(Goods("itemNumber", Some("description")))),
     "someEori",
     "someOtherEori",
-    Some("claimaintEori"),
+    Some("claimantEori"),
     Some("600000"),
     Some("600000"),
     Some("600000"),

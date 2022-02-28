@@ -18,13 +18,15 @@ package connectors
 
 import java.time.LocalDate
 import connector.FinancialsApiConnector
+import models.FileSelection.AdditionalSupportingDocuments
 import models._
+import models.file_upload.UploadedFile
 import models.responses.{AllClaimsResponse, C285, Claims, NDRCCaseDetails, ProcedureDetail, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.ClaimsCache
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
 
 import scala.concurrent.Future
@@ -67,7 +69,7 @@ class FinancialsApiConnectorSpec extends SpecBase {
   }
 
   "getClaimInformation" should {
-    "return ClaimDetail when a data returned from the API" in new Setup {
+    "return NDRC ClaimDetail when a data returned from the API" in new Setup {
       when[Future[SpecificClaimResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.successful(specificClaimResponse))
 
@@ -84,6 +86,30 @@ class FinancialsApiConnectorSpec extends SpecBase {
       }
     }
 
+    "return SCTY ClaimDetail when a data returned from the API" in new Setup {
+      val response: SpecificClaimResponse = SpecificClaimResponse(
+        "SCTY",
+        CDFPayCaseFound = true,
+        None,
+        Some(sctyCase)
+      )
+
+
+      when[Future[SpecificClaimResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.successful(response))
+
+      running(app) {
+        val result = await(connector.getClaimInformation("SCTY-1234", NDRC, None)).value
+
+        result.caseNumber shouldBe "caseNumber"
+        result.claimantsEmail.value shouldBe "email@email.com"
+        result.claimantsName.value shouldBe "name"
+        result.declarationId shouldBe "declarationId"
+      }
+    }
+
+
+
     "return None when NO_CONTENT returned from the API" in new Setup {
       when[Future[SpecificClaimResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
@@ -91,6 +117,74 @@ class FinancialsApiConnectorSpec extends SpecBase {
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
         result shouldBe None
+      }
+    }
+
+    "return None when both NDRC/SCTY claim returned for a single claim" in new Setup {
+      val response: SpecificClaimResponse = SpecificClaimResponse(
+        "NDRC",
+        CDFPayCaseFound = true,
+        Some(ndrcCase),
+        Some(sctyCase)
+      )
+
+      when[Future[SpecificClaimResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.successful(response))
+
+      running(app) {
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
+        result shouldBe None
+      }
+    }
+
+    "return None when an unexpected response returned from the API" in new Setup {
+      val response: SpecificClaimResponse = SpecificClaimResponse(
+        "NDRC",
+        CDFPayCaseFound = true,
+        None,
+        None
+      )
+
+      when[Future[SpecificClaimResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.successful(response))
+
+      running(app) {
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
+        result shouldBe None
+      }
+    }
+  }
+
+  "fileUpload" should {
+    "return 'true' if the upload was successful" in new Setup {
+      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.successful(HttpResponse(ACCEPTED, "")))
+
+      running(app) {
+        val result = await(connector.fileUpload("declarationId", false, "eori", NDRC, "caseNumber", Seq(UploadedFile(
+          "ref", "/uri", "timestamp", "sum", "file", "mime", 10, None, AdditionalSupportingDocuments, None
+        ))))
+        result shouldBe true
+      }
+    }
+
+    "return 'false' if the status returned was not ACCEPTED" in new Setup {
+      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+
+      running(app) {
+        val result = await(connector.fileUpload("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty))
+        result shouldBe false
+      }
+    }
+
+    "return false on an exception from the API" in new Setup {
+      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
+        .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
+
+      running(app) {
+        val result = await(connector.fileUpload("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty))
+        result shouldBe false
       }
     }
   }

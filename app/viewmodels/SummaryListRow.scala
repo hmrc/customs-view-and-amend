@@ -21,7 +21,6 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 final case class SummaryListRow(
                                  key: Key,
                                  value: Value,
-                                 secondValue: Option[Value],
                                  classes: String,
                                  actions: Option[Actions]
                                )

@@ -17,7 +17,7 @@
 package controllers
 
 import connector.UploadDocumentsConnector
-import models.responses.C285
+import models.responses.{C285, `C&E1179`}
 import models.{InProgressClaim, NDRC}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
@@ -43,7 +43,7 @@ class FileSelectionControllerSpec extends SpecBase {
       }
     }
 
-    "return OK on a successful request" in new Setup {
+    "return OK on a successful C285 request" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
       when(mockClaimService.clearUploaded(any, any)(any))
@@ -51,6 +51,19 @@ class FileSelectionControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
+        val result = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "return OK on a successful C&E1179 request" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockClaimService.clearUploaded(any, any)(any))
+        .thenReturn(Future.unit)
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, `C&E1179`, initialRequest = true).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -65,8 +78,8 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some("/url")))
 
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "proof-of-origin"
+        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, `C&E1179`).url).withFormUrlEncodedBody(
+          "value" -> "commercial-invoice"
         )
         val result = route(app, request).value
         status(result) mustBe SEE_OTHER

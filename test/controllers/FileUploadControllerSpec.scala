@@ -19,6 +19,7 @@ package controllers
 import connector.{DataStoreConnector, FinancialsApiConnector, UploadDocumentsConnector}
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
 import models._
+import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.Json
@@ -78,6 +79,72 @@ class FileUploadControllerSpec extends SpecBase {
         val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
         val result = route(app, request).value
         status(result) mustBe OK
+      }
+    }
+
+    "return NOT_FOUND if the user is not authorised to view the claim" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(None))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "return NOT_FOUND if no information returned for the specific claim" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(None))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "return NOT_FOUND if files not successfully uploaded" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail)))
+      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
+        .thenReturn(Future.successful(Seq.empty))
+      when(mockFinancialsApiConnector.fileUpload(any, any, any, any, any, any)(any))
+        .thenReturn(Future.successful(false))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "return NOT_FOUND if an email not returned a second time" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail)))
+      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
+        .thenReturn(Future.successful(Seq.empty))
+      when(mockFinancialsApiConnector.fileUpload(any, any, any, any, any, any)(any))
+        .thenReturn(Future.successful(true))
+      when(mockUploadedFilesCache.removeRecord(any))
+        .thenReturn(Future.successful(true))
+      when(mockUploadDocumentsConnector.wipeData()(any))
+        .thenReturn(Future.successful(true))
+      when(mockDataStoreConnector.getEmail(any)(any))
+        .thenReturn(
+          Future.successful(Right(Email("email@email.com"))),
+          Future.successful(Left(UnverifiedEmail)))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
       }
     }
   }

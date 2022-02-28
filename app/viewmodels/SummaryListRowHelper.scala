@@ -25,12 +25,10 @@ trait SummaryListRowHelper {
   def summaryListRow(
                       label: String,
                       value: String,
-                      secondValue: Option[String],
                       actions: Actions): SummaryListRow =
     SummaryListRow(
       key = Key(content = Text(label)),
       value = Value(content = HtmlContent(value)),
-      secondValue = secondValue.map { value => Value(content = HtmlContent(value)) },
       classes = "",
       actions = Some(actions)
     )
