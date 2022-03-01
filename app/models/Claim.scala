@@ -16,10 +16,9 @@
 
 package models
 
-import models.responses.ClaimType
+import helpers.DateFormatters
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import views.helpers.DateFormatters
 
 import java.time.LocalDate
 

@@ -167,7 +167,8 @@ class FileUploadControllerSpec extends SpecBase {
       Some("GB746502538945"),
       InProgress,
       Some(C285),
-      "20211011",
+      LocalDate.now,
+      None,
       Some("1200"),
       Some("Sarah Philips"),
       Some("sarah.philips@acmecorp.com")

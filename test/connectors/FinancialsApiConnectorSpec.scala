@@ -80,7 +80,7 @@ class FinancialsApiConnectorSpec extends SpecBase {
         result.mrn shouldBe Seq(ProcedureDetail("MRN", mainDeclarationReference = true))
         result.claimStatus shouldBe Closed
         result.caseNumber shouldBe "CaseNumber"
-        result.claimStartDate shouldBe "20221012"
+        result.claimStartDate.toString shouldBe "2022-10-12"
         result.claimantsEmail.value shouldBe "email@email.com"
         result.claimantsName.value shouldBe "name"
       }

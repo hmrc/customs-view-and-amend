@@ -16,10 +16,10 @@
 
 package models
 
+import helpers.DateFormatters
 import models.responses.{ClaimType, EntryDetail, ProcedureDetail}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-import views.helpers.DateFormatters
 
 import java.time.LocalDate
 
@@ -32,13 +32,16 @@ case class ClaimDetail(caseNumber: String,
                        claimantsEori: Option[String],
                        claimStatus: ClaimStatus,
                        claimType: Option[ClaimType],
-                       claimStartDate: String,
+                       claimStartDate: LocalDate,
+                       claimClosedDate: Option[LocalDate],
                        valueOfClaim: Option[String],
                        claimantsName: Option[String],
                        claimantsEmail: Option[String]
                       ) extends DateFormatters {
 
-//  def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+ def formattedStartDate()(implicit messages: Messages): String = {
+   dateAsDayMonthAndYear(claimStartDate)
+ }
 
   def isEntryNumber: Boolean = {
     val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r

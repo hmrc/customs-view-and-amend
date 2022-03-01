@@ -16,14 +16,17 @@
 
 package models.responses
 
+import akka.http.scaladsl.model.DateTime
+import helpers.DateFormatters
 import models._
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, Reads, Writes}
+import utils.DateTimeUtil
 
 case class NDRCCase(
                      NDRCDetail: NDRCDetail,
                      NDRCAmounts: NDRCAmounts
-                   ) {
+                   ) extends DateFormatters {
 
   private def transformCaseStatus: ClaimStatus = {
     NDRCDetail.caseStatus match {
@@ -45,7 +48,8 @@ case class NDRCCase(
       NDRCDetail.claimantEORI,
       transformCaseStatus,
       Some(NDRCDetail.claimType),
-      NDRCDetail.claimStartDate,
+      DateTimeUtil.toDateTime(NDRCDetail.claimStartDate),
+      NDRCDetail.closedDate.map(DateTimeUtil.toDateTime),
       NDRCAmounts.totalClaimAmount,
       NDRCDetail.claimantName,
       NDRCDetail.claimantEmailAddress
