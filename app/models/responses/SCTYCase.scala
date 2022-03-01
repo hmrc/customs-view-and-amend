@@ -18,6 +18,7 @@ package models.responses
 
 import models._
 import play.api.libs.json.{Json, OFormat}
+import utils.DateTimeUtil
 
 case class SCTYCase(
                      CDFPayCaseNumber: String,
@@ -60,7 +61,8 @@ case class SCTYCase(
       claimantEORI,
       transformCaseStatus,
       None,
-      claimStartDate,
+      DateTimeUtil.toDateTime(claimStartDate),
+      closedDate.map(DateTimeUtil.toDateTime),
       totalClaimAmount,
       claimantName,
       claimantEmailAddress

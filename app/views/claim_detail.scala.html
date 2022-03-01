@@ -17,7 +17,6 @@
 @import config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
-@import views.helpers.Formatters
 @import models.responses.`C&E1179`
 
 @this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, newTabLink: components.newTabLink)
@@ -72,7 +71,7 @@
             )),
             Some(SummaryListRow(
                 Key(content = HtmlContent(messages("claim.detail.start.date"))),
-                Value(content = HtmlContent(claimDetail.claimStartDate)),
+                Value(content = HtmlContent(claimDetail.formattedStartDate())),
                 actions = None
             )),
             claimDetail.valueOfClaim.map { value =>
