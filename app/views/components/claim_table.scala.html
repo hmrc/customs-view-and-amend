@@ -24,7 +24,9 @@
             case Closed =>
                 <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.closed")}</caption>
             case Pending =>
-                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption>
+                <!--TODO: Removed the respond by date until secure messaging timestamp available-->
+                <!-- <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption> -->
+                    <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"></caption>
             case InProgress =>
                 <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.progress")}</caption>
         }
