@@ -15,7 +15,7 @@
  *@
 
 @this(
-        h3: h3,
+        h2: h2,
         p: p,
         link: link,
         inset: inset
@@ -32,7 +32,7 @@
 )(implicit messages: Messages)
 
 <div class="@cardClass">
-    @h3(title, classes = "govuk-heading-m govuk-!-margin-bottom-4")
+    @h2(title, classes = "govuk-heading-m govuk-!-margin-bottom-4")
     @p(p1)
     @insetMessage.map(inset(_))
     @p2.map(p(_))
