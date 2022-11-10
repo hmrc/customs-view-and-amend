@@ -42,6 +42,9 @@ claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appe
 
 claim.detail.title = Case reference {0}
 claim.detail.p1 = Claim details:
+claim.detail.p1.case.inProgress = Claim details: This claim is open and being reviewed by HMRC.
+claim.detail.p1.case.closed = Claim details:  This claim has been closed
+claim.detail.p1.case.pending = Claim details: This claim requires additional information or documentation.
 claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
 claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
@@ -53,13 +56,14 @@ claim.detail.type.multiple.CE1179 = C&E1179 - Multiple declarations
 claim.detail.type.CE1179 = C&E1179
 
 
-claim.detail.type.security = Security
+claim.detail.type.security = Security deposit or guarantee
 claim.detail.status = Claim status
 claim.detail.start.date = Claim start date
-claim.detail.value = Value of claim
+claim.detail.value = Claim amount requested
 claim.detail.name = Claimant''s name
-claim.detail.email = Email address
+claim.detail.email = Claimant's email address
 claim.detail.upload = Upload files (opens in a new tab link)
+claim.detail.reasonForSecurity = Reason for security
 
 claim.upload.confirmation.h1 = Claim amendment sent
 claim.upload.confirmation.case = Case number

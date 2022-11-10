@@ -22,16 +22,18 @@
 @this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, newTabLink: components.newTabLink)
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@claimStatus = @{claimDetail.claimStatus.messageKey}
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if(searched) Some(routes.ClaimSearch.searchResult().url) else Some(claimDetail.backLink())) {
+
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
-    @p("claim.detail.p1")
+    @p(s"claim.detail.p1.${claimStatus}")
 
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
         rows = Seq(
             Some(SummaryListRow(
-                Key(content = HtmlContent(if(claimDetail.isEntryNumber) messages("claim.detail.entry") else messages("claim.detail.mrn")), classes = "govuk-!-width-two-thirds"),
+                Key(content = HtmlContent(messages("claim.detail.mrn")), classes = "govuk-!-width-two-thirds"),
                 Value(content = HtmlContent(claimDetail.declarationId)),
                 actions = None
             )),
@@ -77,7 +79,7 @@
             claimDetail.valueOfClaim.map { value =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.value"))),
-                    Value(content = HtmlContent(value)),
+                    Value(content = HtmlContent(s"£$value")),
                     actions = None
                 )
             },
@@ -85,6 +87,13 @@
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.name"))),
                     Value(content = HtmlContent(name)),
+                    actions = None
+                )
+            },
+            claimDetail.reasonForSecurity.map { rfs =>
+                SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
+                    Value(content = HtmlContent(rfs)),
                     actions = None
                 )
             },

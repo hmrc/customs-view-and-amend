@@ -28,13 +28,20 @@ sealed trait Claim extends DateFormatters {
   val serviceType: ServiceType
   val claimStartDate: LocalDate
   val lrn: Option[String]
-  def url(searched: Boolean): String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched).url
+  val claimStatus: ClaimStatus
+  def url(searched: Boolean): String = claimStatus match {
+    case InProgress => controllers.routes.ClaimDetailController.inProgressClaimDetail(caseNumber, serviceType, searched).url
+    case Closed => controllers.routes.ClaimDetailController.closedClaimDetail(caseNumber, serviceType, searched).url
+    case Pending => controllers.routes.ClaimDetailController.pendingClaimDetail(caseNumber, serviceType, searched).url
+  }
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
 }
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
-case class InProgressClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate) extends Claim
+case class InProgressClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate) extends Claim {
+  override val claimStatus = InProgress
+}
 
 object InProgressClaim {
   implicit val format: OFormat[InProgressClaim] = Json.format[InProgressClaim]
@@ -43,6 +50,7 @@ object InProgressClaim {
 case class PendingClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, respondByDate: LocalDate) extends Claim {
   //TODO: Removed the respond by date until secure messaging timestamp available
   //def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
+  override val claimStatus = Pending
 }
 
 object PendingClaim {
@@ -50,6 +58,7 @@ object PendingClaim {
 }
 
 case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate) extends Claim {
+  override val claimStatus = Closed
   def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
 
 }
