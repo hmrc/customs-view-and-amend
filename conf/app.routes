@@ -17,7 +17,7 @@ POST        /:serviceType/:claim/:claimType/file-selection        controllers.Fi
 GET         /:serviceType/:claim/upload-check-your-answers        controllers.FileUploadCYAController.onPageLoad(claim: String, serviceType: models.ServiceType)
 
 
-+ nocsrf
++nocsrf
 POST        /update-files                                         controllers.FileUploadController.updateFiles()
 
 GET         /search                                               controllers.ClaimSearch.onPageLoad()
