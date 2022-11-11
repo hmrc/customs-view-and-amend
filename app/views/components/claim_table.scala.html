@@ -14,52 +14,60 @@
  * limitations under the License.
  *@
 
-@this(claimListRows: claimListRows, h2: components.h2)
-
-@(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
+@* * Copyright 2022 HM Revenue & Customs * * Licensed under the Apache License,
+Version 2.0 (the "License"); * you may not use this file except in compliance
+with the License. * You may obtain a copy of the License at * *
+http://www.apache.org/licenses/LICENSE-2.0 * * Unless required by applicable law
+or agreed to in writing, software * distributed under the License is distributed
+on an "AS IS" BASIS, * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+express or implied. * See the License for the specific language governing
+permissions and * limitations under the License. *@ @this(claimListRows:
+claimListRows, h2: components.h2) @(claims: Seq[Claim], claimType: ClaimStatus,
+searched: Boolean)(implicit messages: Messages)
 
 <table class="govuk-table">
-    @{
-        claimType match {
-            case Closed =>
-                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.closed")}</caption>
-            case Pending =>
-                <!--TODO: Removed the respond by date until secure messaging timestamp available-->
-                <!-- <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption> -->
-                    <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"></caption>
-            case InProgress =>
-                <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.progress")}</caption>
-        }
-    }
-    <thead class="govuk-table__head">
-        <tr class="govuk-table__row">
-            <th>@messages("claim.list.table.heading.case")</th>
-            <th>@messages("claim.list.table.heading.start")</th>
-            @{
-                claimType match {
-                    case Closed =>
-                        <th>{messages("claim.list.table.heading.removal")}</th>
-                    case Pending =>
-            <!--TODO: Removed the respond by date until secure messaging timestamp available-->
-                    case _ => Html("")
-                }
-            }
-        </tr>
-    </thead>
-    <tbody class="govuk-table__body">
-    @for(claim <- claims) {
-        <tr class="govuk-table__row">
-        @{
-            claim match {
-                case e@ClosedClaim(_, caseNumber, _, _, claimStartDate, removalDate) =>
-                    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, Some(e.formattedRemovalDate()))
-                case e@PendingClaim(_, caseNumber, _, _, claimStartDate, respondByDate) =>
-                    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None)
-                case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
-                    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None)
-            }
-        }
-        </tr>
-    }
-    </tbody>
+	@{ claimType match { case Closed =>
+	<caption
+		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
+	>
+		{messages("claim.list.table.closed")}
+	</caption>
+	case Pending =>
+	<!--TODO: Removed the respond by date until secure messaging timestamp available-->
+	<!-- <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption> -->
+	<caption
+		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
+	></caption>
+	case InProgress =>
+	<caption
+		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
+	>
+		{messages("claim.list.table.progress")}
+	</caption>
+	} }
+	<thead class="govuk-table__head">
+		<tr class="govuk-table__row">
+			<th>@messages("claim.list.table.heading.case")</th>
+			<th>@messages("claim.list.table.heading.start")</th>
+			@{ claimType match { case Closed =>
+			<th>{messages("claim.list.table.heading.removal")}</th>
+			case Pending =>
+			<!--TODO: Removed the respond by date until secure messaging timestamp available-->
+			case _ => Html("") } }
+		</tr>
+	</thead>
+	<tbody class="govuk-table__body">
+		@for(claim <- claims) {
+		<tr class="govuk-table__row">
+			@{ claim match { case e@ClosedClaim(_, caseNumber, _, _, claimStartDate,
+			removalDate, caseSubStatus) => claimListRows(e.url(searched), caseNumber,
+			e.formattedStartDate(), None, Some(e.formattedRemovalDate())) case
+			e@PendingClaim(_, caseNumber, _, _, claimStartDate, respondByDate) =>
+			claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None,
+			None) case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
+			claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None,
+			None) } }
+		</tr>
+		}
+	</tbody>
 </table>
