@@ -17,10 +17,12 @@
 package controllers
 
 import actions.IdentifierAction
+import cats.syntax.EqOps
 import cats.data.EitherT._
+import cats.implicits.catsSyntaxEq
 import config.AppConfig
 import connector.{DataStoreConnector, FinancialsApiConnector}
-import models.{ClaimDetail, ServiceType}
+import models.{ClaimDetail, ClaimStatus, Closed, InProgress, Pending, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
 import repositories.{ClaimsCache, ClaimsMongo}
@@ -42,14 +44,26 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
+  def inProgressClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
+    claimDetail(caseNumber, serviceType, searched, InProgress)
+
+  def closedClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
+    claimDetail(caseNumber, serviceType, searched, Closed)
+
+  def pendingClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
+    claimDetail(caseNumber, serviceType, searched, Pending)
+
+  private def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean, expectedStatus: ClaimStatus): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
       claims <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
     } yield {
-      Ok(claimDetail(claim, searched, email.value))
+      if (claim.claimStatus == expectedStatus)
+        Ok(claimDetail(claim, searched, email.value))
+      else
+        NotFound(notFound())
     }).merge
   }
 }

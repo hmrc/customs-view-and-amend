@@ -65,7 +65,8 @@ case class SCTYCase(
       closedDate.map(DateTimeUtil.toDateTime),
       totalClaimAmount,
       claimantName,
-      claimantEmailAddress
+      claimantEmailAddress,
+      Some(reasonForSecurity)
     )
   }
 
