@@ -25,6 +25,7 @@ case class NDRCCaseDetails(CDFPayCaseNumber: String,
                            claimStartDate: String,
                            closedDate: Option[String],
                            caseStatus: String,
+                           caseSubStatus: Option[String],
                            declarantEORI: String,
                            importerEORI: String,
                            claimantEORI: Option[String],
@@ -39,7 +40,7 @@ case class NDRCCaseDetails(CDFPayCaseNumber: String,
     caseStatus match {
       case "In Progress" => InProgressClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate)
       case "Pending" => PendingClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, startDate.plusDays(30))
-      case "Closed" => ClosedClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")))
+      case "Closed" => ClosedClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")), caseSubStatus.getOrElse(""))
       case e => throw new RuntimeException(s"Unknown Case Status: $e")
     }
   }

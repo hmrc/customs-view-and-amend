@@ -36,6 +36,11 @@ sealed trait Claim extends DateFormatters {
   }
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
 }
+
+sealed trait SubStatus {
+  val subStatus: String
+}
+ 
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
@@ -57,7 +62,7 @@ object PendingClaim {
   implicit val format: OFormat[PendingClaim] = Json.format[PendingClaim]
 }
 
-case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate) extends Claim {
+case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate, subStatus: String) extends Claim with SubStatus {
   override val claimStatus = Closed
   def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
 
