@@ -66,14 +66,34 @@
                     actions = None
                 ))
             },
-            Some(SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.status"))),
-                Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
-                actions = None
-            )),
+            claimDetail.reasonForSecurity.map { rfs =>
+                SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
+                    Value(content = HtmlContent(rfs)),
+                    actions = None
+                )
+            },
+            if (claimDetail.claimStatus == Closed) {
+                Some(SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.decision"))),
+                    Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
+                    actions = None
+                ))
+            } else {
+                Some(SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.status"))),
+                    Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
+                    actions = None
+                ))
+            },
             Some(SummaryListRow(
                 Key(content = HtmlContent(messages("claim.detail.start.date"))),
                 Value(content = HtmlContent(claimDetail.formattedStartDate())),
+                actions = None
+            )),
+            claimDetail.formattedClosedDate().map(closedDate => SummaryListRow(
+                Key(content = HtmlContent(messages("claim.detail.removal.date"))),
+                Value(content = HtmlContent(closedDate)),
                 actions = None
             )),
             claimDetail.valueOfClaim.map { value =>
@@ -87,13 +107,6 @@
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.name"))),
                     Value(content = HtmlContent(name)),
-                    actions = None
-                )
-            },
-            claimDetail.reasonForSecurity.map { rfs =>
-                SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
-                    Value(content = HtmlContent(rfs)),
                     actions = None
                 )
             },

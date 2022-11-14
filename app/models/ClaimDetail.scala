@@ -44,6 +44,10 @@ case class ClaimDetail(caseNumber: String,
    dateAsDayMonthAndYear(claimStartDate)
  }
 
+  def formattedClosedDate()(implicit messages: Messages): Option[String] = {
+    claimClosedDate.map(dateAsDayMonthAndYear)
+  }
+
   def isEntryNumber: Boolean = {
     val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r
     entryNumberRegex.findFirstIn(declarationId).isDefined
