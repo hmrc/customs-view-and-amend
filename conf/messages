@@ -91,6 +91,21 @@ claim.upload.confirmation.close = You can now close this tab.
 
 claim.list.closed.title = Claims closed
 claim.list.closed.p1 = Claims will be removed from this list on the removal date.
+claim.list.closed.details.heading = What does each claim decision mean?
+claim.list.closed.details.bullet.0 = Approved: 
+claim.list.closed.details.hint.0 = Claim was approved for repayment
+claim.list.closed.details.bullet.1 = Failed verification: 
+claim.list.closed.details.hint.1 = Claim was reviewed but the information provided failed HMRC verification checks
+claim.list.closed.details.bullet.2 = No reply: 
+claim.list.closed.details.hint.2 = Claimant did not respond to HMRC about the claim in time
+claim.list.closed.details.bullet.3 = Part approved: 
+claim.list.closed.details.hint.3 = Claim was reviewed and only part of the claim was approved for a refund
+claim.list.closed.details.bullet.4 = Refused: 
+claim.list.closed.details.hint.4 = Claim was reviewed and was not eligible for a refund
+claim.list.closed.details.bullet.5 = Rejected: 
+claim.list.closed.details.hint.5 = Claim was rejected due to lack of information or not suitable for this claim process
+claim.list.closed.details.bullet.6 = Withdrawn: 
+claim.list.closed.details.hint.6 = Claim was withdrawn by the claimant and no refund was paid
 
 claim.list.pending.title = Claims pending
 claim.list.progress.title = Claims in progress
