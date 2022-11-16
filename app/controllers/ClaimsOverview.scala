@@ -59,10 +59,10 @@ class ClaimsOverview @Inject()(
   val searchForm: Form[String] =
     Form(
       mapping(
-        "view-upload" ->
+        "search" ->
           nonEmptyText
             .verifying(
-              "search-error",
+              "error",
               str => str.isEmpty
             )
       )(identity)(Some(_))
