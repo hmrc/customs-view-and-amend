@@ -19,6 +19,7 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
+import forms.SearchFormHelper
 import play.api.data.Form
 import play.api.data.Forms.mapping
 import play.api.data.Forms.nonEmptyText
@@ -48,7 +49,7 @@ class ClaimsOverview @Inject()(
           .map(allClaims => Ok(claimsOverview(
             0,
             allClaims,
-            searchForm,
+            SearchFormHelper.create,
             routes.ClaimSearch.onSubmit(),
             request.companyName.orNull,
             request.eori)))
@@ -56,15 +57,5 @@ class ClaimsOverview @Inject()(
       )
   }
 
-  val searchForm: Form[String] =
-    Form(
-      mapping(
-        "search" ->
-          nonEmptyText
-            .verifying(
-              "error",
-              str => str.isEmpty
-            )
-      )(identity)(Some(_))
-    )
+
 }
