@@ -61,14 +61,14 @@ messages: Messages) @h1("claim.search.result.title")
 	</thead>
 	<tbody class="govuk-table__body">
 		<tr class="govuk-table__row">
-			@{ claim match { case e@ClosedClaim(_, caseNumber, _, _, claimStartDate,
-			removalDate, caseSubStatus) => claimListRows(e.url(true), caseNumber,
-			e.formattedStartDate(), Some(messages("case.closed")),
-			Some(e.formattedRemovalDate())) case e@PendingClaim(_, caseNumber, _, _,
-			claimStartDate, newMessage) => claimListRows(e.url(true), caseNumber,
-			e.formattedStartDate(), None, None) case e@InProgressClaim(_, caseNumber,
-			_, _, claimStartDate) => claimListRows(e.url(true), caseNumber,
-			e.formattedStartDate(), Some(messages("case.inProgress")), None) } }
+			@{ claim match {
+        case e@ClosedClaim(_, caseNumber, _, _, claimStartDate, removalDate, caseSubStatus) =>
+          claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.closed")), Some(e.formattedRemovalDate()), None) 
+        case e@PendingClaim(_, caseNumber, _, _, claimStartDate, newMessage) =>
+          claimListRows(e.url(true), caseNumber, e.formattedStartDate(), None, None, None) 
+        case e@InProgressClaim(_,caseNumber, _, _, claimStartDate) => 
+          claimListRows(e.url(true), caseNumber, e.formattedStartDate(), Some(messages("case.inProgress")), None, None) 
+        } }
 		</tr>
 	</tbody>
 </table>

@@ -48,25 +48,30 @@ searched: Boolean)(implicit messages: Messages)
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
 			<th>@messages("claim.list.table.heading.case")</th>
-			<th>@messages("claim.list.table.heading.start")</th>
-			@{ claimType match { case Closed =>
-			<th>{messages("claim.list.table.heading.removal")}</th>
-			case Pending =>
-			<!--TODO: Removed the respond by date until secure messaging timestamp available-->
-			case _ => Html("") } }
+			<th>@messages("claim.list.table.heading.mrn")</th>
+      <th>@messages("claim.list.table.heading.type")</th>
+			@{ claimType match {
+        case Closed =>
+			    <th>{messages("claim.list.table.heading.close")}</th>
+          <th>{messages("claim.list.table.heading.decision")}</th>
+			  case Pending | InProgress =>
+          <th>{messages("claim.list.table.heading.start")}</th>
+			  case _ => Html("") } }
 		</tr>
 	</thead>
 	<tbody class="govuk-table__body">
 		@for(claim <- claims) {
 		<tr class="govuk-table__row">
-			@{ claim match { case e@ClosedClaim(_, caseNumber, _, _, claimStartDate,
-			removalDate, caseSubStatus) => claimListRows(e.url(searched), caseNumber,
-			e.formattedStartDate(), None, Some(e.formattedRemovalDate())) case
-			e@PendingClaim(_, caseNumber, _, _, claimStartDate, respondByDate) =>
-			claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None,
-			None) case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
-			claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None,
-			None) } }
+			@{ claim match {
+        case e@ClosedClaim(declarationId, caseNumber, serviceType, _, _, removalDate, caseSubStatus) =>{
+          claimListRows(e.url(searched), caseNumber, declarationId, Some(serviceType.toString()), Some(e.formattedRemovalDate()), Some(caseSubStatus));
+        }
+        case e@PendingClaim(_, caseNumber, _, _, claimStartDate, respondByDate) =>
+			    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None, None) 
+        case e@InProgressClaim(_, caseNumber, _, _, claimStartDate) =>
+			    claimListRows(e.url(searched), caseNumber, e.formattedStartDate(), None, None, None) 
+        } 
+      }
 		</tr>
 		}
 	</tbody>
