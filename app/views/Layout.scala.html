@@ -32,7 +32,6 @@
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         navigationPanel: components.navigation_panel,
-        eoriBanner: components.eori_banner,
         hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
         twoThirdsMainContent: TwoThirdsMainContent
 
@@ -45,10 +44,7 @@
         deskpro: Boolean = true,
         welshToggle: Boolean = true,
         userResearchBanner: Boolean = true,
-        navigationBannerEnabled: Boolean = true,
-        companyBannerEnabled: Boolean = true,
-        eori: Option[String] = None,
-        companyName: Option[String] = None
+        navigationBannerEnabled: Boolean = true
 )(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
@@ -69,9 +65,6 @@
     @beforeContent = {
         @if(navigationBannerEnabled) {
             @navigationPanel()
-        }
-        @if(companyBannerEnabled) {
-            @eoriBanner(Some(request.eori), request.companyName)
         }
         @hmrcLanguageSelectHelper()
         @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
