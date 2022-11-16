@@ -22,6 +22,4 @@
 
 @(msg: String, href: Option[String] = None)(implicit messages: Messages)
 
-<div class="govuk-body">
 @govukButton(Button(content = Text(messages(msg)), href = href))
-</div>

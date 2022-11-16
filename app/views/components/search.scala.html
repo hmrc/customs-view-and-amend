@@ -31,15 +31,14 @@
 <br/>
 @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
 @paragraph(Html(messages(s"$key.desc")))
-@formWithCSRF(postAction, 'novalidate -> "novalidate") {
-    @input(
-    form = form,
-    id = key,
-    name = key,
-    label = null,
-    isPageHeading = false,
-    classes = Some("govuk-input--width-20")
-)
 
-@button(s"$key.button")
+@formWithCSRF(postAction, 'novalidate -> "novalidate", 'style -> "display: flex; gap: 5px;", 'class -> "govuk-!-width-two-thirds") {
+    @input(
+        form = form,
+        id = key,
+        name = key,
+        label = null,
+        isPageHeading = false
+    )
+    @button(s"$key.button")
 }
