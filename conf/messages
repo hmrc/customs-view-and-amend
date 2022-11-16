@@ -126,9 +126,11 @@ claim.list.table.heading = All claims
 
 claim.list.table.heading.case = Case reference
 claim.list.table.heading.start = Claim start date
-claim.list.table.heading.status = Claim status
+claim.list.table.heading.mrn = MRN
+claim.list.table.heading.type = Type of claim
+claim.list.table.heading.decision = Claim decision
 claim.list.table.heading.pending = Respond by date
-claim.list.table.heading.removal = Removal date
+claim.list.table.heading.close = Claim close date
 
 claim.list.table.closed = Sorted by closest removal date.
 claim.list.table.pending = Sorted by closest respond by date.
