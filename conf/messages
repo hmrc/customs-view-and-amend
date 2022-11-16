@@ -44,7 +44,7 @@ claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appe
 #  SEARCH - COMPONENT
 #===================================================
 search.title=Search for a claim
-search.error-claim=Please enter a valid input
+search.error=Please enter a valid input
 search.desc=Search by case reference number, movement reference number (MRN), local reference number (LRN)
 search.button=Search
 
