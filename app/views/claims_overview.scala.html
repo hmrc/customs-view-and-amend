@@ -32,7 +32,7 @@
     subHeading: components.sub_heading,
     button: components.button,
     input: components.input_text,
-    search: components.search,
+    headerArea: components.header_area,
     formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
     )
 
@@ -48,10 +48,9 @@
 @key = @{"view-upload"}
 @title = @{messages(s"$key.title")}
 
-@layout(pageTitle = Some(messages(s"$key.page-title"))) {
-    @heading(Html(title), caption = messages(s"$key.title.caption", companyName, eori))
+@layout(pageTitle = Some(messages(s"$key.page-title")), fullWidth = true) {
 
-    @search(form, postAction)
+    @headerArea(title, form, postAction)
 
     @dropdown(
         summary = s"$key.updated.title",
