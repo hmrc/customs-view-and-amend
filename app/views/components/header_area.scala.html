@@ -1,0 +1,35 @@
+@*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import play.twirl.api.Html
+@import uk.gov.hmrc.govukfrontend.views.html.components._
+
+@this(
+    heading: components.heading,
+    insetText: components.inset_text,
+    search: components.search,
+    paragraph: components.paragraph
+    )
+
+@(title: String, form: Form[String], postAction: Call, inset: Option[String] = None, showCompanyNameAndEori: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
+
+@heading(Html(title), caption = messages("common.company-name-and-eori", request.companyName.orNull, request.eori))
+
+@if(inset.nonEmpty){
+@insetText(content = HtmlContent(paragraph(Html(inset.get))))
+}
+
+@search(form, postAction)

@@ -32,7 +32,7 @@
 @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
 @paragraph(Html(messages(s"$key.desc")))
 
-@formWithCSRF(postAction, 'novalidate -> "novalidate", 'style -> "display: flex; gap: 5px;", 'class -> "govuk-!-width-two-thirds") {
+@formWithCSRF(postAction, 'novalidate -> "novalidate", 'style -> "display: flex; gap: 5px; flex-direction: row;", 'class -> "govuk-!-width-two-thirds") {
     @input(
         form = form,
         id = key,

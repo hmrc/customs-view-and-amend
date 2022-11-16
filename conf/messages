@@ -2,6 +2,8 @@ service.name = View your customs financial accounts
 back.link = Back
 site.change = Change
 
+common.company-name-and-eori={0} - {1}
+
 cf.header.eori=EORI:
 cf.header.eori.dash= -
 cf.header.companyName = {0} -
@@ -13,32 +15,6 @@ feedback.after = will help us to improve it.
 service.banner.home = Claims summary
 service.banner.start = Start a new claim
 service.banner.search = Find a claim
-
-claims.overview.title = Your claims for repayment of customs charges
-claims.overview.summary = Claims summary
-
-claims.overview.progress.plural.h3 = You have {0} in progress
-claims.overview.progress.single.h3 = You have {0} in progress
-
-claims.overview.progress.p1 = Claims currently being reviewed by HMRC.
-claims.overview.progress.link = View claims in progress
-
-claims.overview.pending.plural.h3 = You have {0} pending
-claims.overview.pending.single.h3 = You have {0} pending
-
-claims.overview.pending.p1 = Claims that need a response or additional information.
-claims.overview.pending.indent = You have {0} unread messages.
-claims.overview.pending.link = View claims pending
-
-claims.overview.closed.plural.h3 = You have {0} closed
-claims.overview.closed.single.h3 = You have {0} closed
-
-claims.overview.closed.p1 = Claims that were approved, rejected or did not receive a response in time.
-claims.overview.closed.p2 = Closed claims are removed after one month.
-claims.overview.closed.link = View closed claims
-
-claims.overview.no-claims.p1 = You have no claims to view.
-claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appear.
 
 #===================================================
 #  SEARCH - COMPONENT
@@ -54,7 +30,6 @@ search.button=Search
 #===================================================
 view-upload.page-title=Your customs financial accounts
 view-upload.title=Claims summary
-view-upload.title.caption={0} - {1}
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
 view-upload.updated.1.title=Claims in progress
