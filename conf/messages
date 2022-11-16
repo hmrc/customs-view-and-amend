@@ -58,7 +58,9 @@ claim.detail.type.CE1179 = C&E1179
 
 claim.detail.type.security = Security deposit or guarantee
 claim.detail.status = Claim status
+claim.detail.decision = Claim decision
 claim.detail.start.date = Claim start date
+claim.detail.removal.date = Claim removal date
 claim.detail.value = Claim amount requested
 claim.detail.name = Claimant''s name
 claim.detail.email = Claimant's email address

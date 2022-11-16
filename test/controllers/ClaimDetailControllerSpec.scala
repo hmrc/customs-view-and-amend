@@ -122,6 +122,19 @@ class ClaimDetailControllerSpec extends SpecBase {
         status(result) mustBe NOT_FOUND
       }
     }
+
+    "return NOT_FOUND when a status does not match the URL" in new Setup {
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = InProgress))))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.closedClaimDetail("someClaim", NDRC, searched = false).url)
+        val result = route(app, request).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
   }
 
   trait Setup {
