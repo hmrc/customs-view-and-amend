@@ -15,53 +15,112 @@
  *@
 
 @import config.AppConfig
+@import utils.HtmlUtil._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.input.PrefixOrSuffix
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
-@this(layout: Layout, card: components.card, h1: components.h1, h2: components.h2, p: components.p)
+@this(
+    layout: Layout,
+    card: components.card,
+    h1: components.h1,
+    h2: components.h2,
+    p: components.p,
+    heading: components.heading,
+    bullets: components.bullets,
+    paragraph: components.paragraph,
+    dropdown: components.dropdown,
+    subHeading: components.sub_heading,
+    button: components.button,
+    input: components.input_text,
+    formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+    )
 
-@(newMessageCount:Int = 0, allClaims: AllClaims)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(
+    newMessageCount:Int = 0,
+    allClaims: AllClaims,
+    form: Form[String],
+    postAction: Call,
+    companyName: String,
+    eori: String
+)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claims.overview.title"))) {
-    @h1("claims.overview.summary", classes = "govuk-heading-xl")
+@key = @{"view-upload"}
+@title = @{messages(s"$key.title")}
+
+@layout(pageTitle = Some(messages(s"$key.page-title"))) {
+    @heading(Html(title), caption = messages(s"$key.title.caption", companyName, eori))
+
+    <br/>
+    @subHeading(Html(messages(s"$key.search.title")), classes = "govuk-heading-m")
+    @paragraph(Html(messages(s"$key.search.desc")))
+    @formWithCSRF(postAction, 'novalidate -> "novalidate") {
+        @input(
+        form = form,
+        id = key,
+        name = key,
+        label = null,
+        isPageHeading = false,
+        classes = Some("govuk-input--width-20")
+        )
+
+        @button(s"$key.search.button")
+    }
+
+    @dropdown(
+        summary = s"$key.updated.title",
+        html(
+        paragraph(Html(messages(s"$key.updated.desc"))),
+        bullets(Seq(subHeading(Html(messages(s"$key.updated.1.title")), classes = "govuk-heading-s"))),
+        paragraph(Html(messages(s"$key.updated.1.content"))),
+
+        bullets(Seq(subHeading(Html(messages(s"$key.updated.2.title")), classes = "govuk-heading-s"))),
+        paragraph(Html(messages(s"$key.updated.2.content"))),
+
+        bullets(Seq(subHeading(Html(messages(s"$key.updated.3.title")), classes = "govuk-heading-s"))),
+        paragraph(Html(messages(s"$key.updated.3.content")))
+        )
+    )
 
     @if(allClaims.collectAll.nonEmpty) {
         @card(
-            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
-                messages("claims.overview.progress.plural.h3", allClaims.inProgressClaims.size)
-            } else {
-                messages("claims.overview.progress.single.h3", allClaims.inProgressClaims.size)
-            },
-            messages("claims.overview.progress.p1"),
-            allClaims.inProgressClaims.nonEmpty,
-            messages("claims.overview.progress.link"),
-            controllers.routes.ClaimListController.showInProgressClaimList(None).url
-        )
-        @card(
             if(allClaims.pendingClaims.size > 1 || allClaims.pendingClaims.isEmpty){
-                messages("claims.overview.pending.plural.h3", allClaims.pendingClaims.size)
+            messages(s"$key.more-information.title", allClaims.pendingClaims.size)
             } else {
-                messages("claims.overview.pending.single.h3", allClaims.pendingClaims.size)
+            messages(s"$key.more-information.title", allClaims.pendingClaims.size)
             },
-            messages("claims.overview.pending.p1"),
+            messages(s"$key.more-information.desc"),
             allClaims.pendingClaims.nonEmpty,
-            messages("claims.overview.pending.link"),
+            messages(s"$key.more-information.link"),
             controllers.routes.ClaimListController.showPendingClaimList(None).url,
             insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
         )
+
+        @card(
+            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
+                messages(s"$key.in-progress.title", allClaims.inProgressClaims.size)
+            } else {
+                messages(s"$key.in-progress.title", allClaims.inProgressClaims.size)
+            },
+            messages(s"$key.in-progress.desc"),
+            allClaims.inProgressClaims.nonEmpty,
+            messages(s"$key.in-progress.link"),
+            controllers.routes.ClaimListController.showInProgressClaimList(None).url
+        )
+
         @card(
             if(allClaims.closedClaims.size > 1 || allClaims.closedClaims.isEmpty){
-                messages("claims.overview.closed.plural.h3", allClaims.closedClaims.size)
+                messages(s"$key.closed.title", allClaims.closedClaims.size)
             } else {
-                messages("claims.overview.closed.single.h3", allClaims.closedClaims.size)
+                messages(s"$key.closed.title", allClaims.closedClaims.size)
             },
-            messages("claims.overview.closed.p1"),
+            messages(s"$key.closed.desc"),
             allClaims.closedClaims.nonEmpty,
-            messages("claims.overview.closed.link"),
+            messages(s"$key.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
-            p2 = Some(messages("claims.overview.closed.p2")),
             cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9"
         )
     } else {
-        @p("claims.overview.no-claims.p1")
-        @p("claims.overview.no-claims.p2")
+        @p(s"$key.no-claims.p1")
+        @p(s"$key.no-claims.p2")
     }
 }
