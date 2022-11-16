@@ -32,6 +32,7 @@
     subHeading: components.sub_heading,
     button: components.button,
     input: components.input_text,
+    search: components.search,
     formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
     )
 
@@ -50,21 +51,7 @@
 @layout(pageTitle = Some(messages(s"$key.page-title"))) {
     @heading(Html(title), caption = messages(s"$key.title.caption", companyName, eori))
 
-    <br/>
-    @subHeading(Html(messages(s"$key.search.title")), classes = "govuk-heading-m")
-    @paragraph(Html(messages(s"$key.search.desc")))
-    @formWithCSRF(postAction, 'novalidate -> "novalidate") {
-        @input(
-        form = form,
-        id = key,
-        name = key,
-        label = null,
-        isPageHeading = false,
-        classes = Some("govuk-input--width-20")
-        )
-
-        @button(s"$key.search.button")
-    }
+    @search(form, postAction)
 
     @dropdown(
         summary = s"$key.updated.title",
