@@ -32,7 +32,7 @@
     subHeading: components.sub_heading,
     button: components.button,
     input: components.input_text,
-    header: components.header_area,
+    headerArea: components.header_area,
     formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
     )
 
@@ -50,7 +50,7 @@
 
 @layout(pageTitle = Some(messages(s"$key.page-title")), fullWidth = true) {
 
-    @header(title, form, postAction)
+    @headerArea(title, form, postAction)
 
     @dropdown(
         summary = s"$key.updated.title",
