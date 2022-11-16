@@ -95,6 +95,8 @@ claim.list.closed.p1 = Claims will be removed from this list on the removal date
 claim.list.pending.title = Claims pending
 claim.list.progress.title = Claims in progress
 claim.list.table.heading = All claims
+claim.list.scty = Security deposit or guarantee
+claim.list.ndrc = Overpayment or rejected goods
 
 claim.list.table.heading.case = Case reference
 claim.list.table.heading.start = Claim start date
