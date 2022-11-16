@@ -1,4 +1,4 @@
-service.name = Customs view and amend
+service.name = View your customs financial accounts
 back.link = Back
 site.change = Change
 
@@ -39,6 +39,41 @@ claims.overview.closed.link = View closed claims
 
 claims.overview.no-claims.p1 = You have no claims to view.
 claims.overview.no-claims.p2 = It can take up to 24 hours for new claims to appear.
+
+#===================================================
+#  SEARCH - COMPONENT
+#===================================================
+search.title=Search for a claim
+search.error=Please enter a valid input
+search.desc=Search by case reference number, movement reference number (MRN), local reference number (LRN)
+search.button=Search
+
+
+#===================================================
+#  VIEW UPLOAD - PAGE
+#===================================================
+view-upload.page-title=Your customs financial accounts
+view-upload.title=Claims summary
+view-upload.title.caption={0} - {1}
+view-upload.updated.title=When and how often are claim statuses updated?
+view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
+view-upload.updated.1.title=Claims in progress
+view-upload.updated.1.content=These claims are being looked at by HMRC. This could take up to 30 working days. If you did not provide full supporting documentation when your claim was submitted, this will delay the claim process.
+view-upload.updated.2.title=Claims needing more information
+view-upload.updated.2.content=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
+view-upload.updated.3.title=Closed claims
+view-upload.updated.3.content=Cases are closed when HMRC have fully reviewed the claim, and have either approved or rejected it. If you withdraw your claim for any reason, it will also be classed as closed. <br/><br/> Closed claims will remain in your list for a period of 30 days and are then removed. You will need to reference your email communication with HMRC to view any claim details.
+view-upload.more-information.title={0} claims need more information
+view-upload.more-information.desc=Claims that require additional information or documentation.
+view-upload.more-information.link=View claims needing more information
+view-upload.in-progress.title={0} claims are in progress
+view-upload.in-progress.desc=Claims in progress are open and being reviewed by HMRC
+view-upload.in-progress.link=View claims in progress
+view-upload.closed.title={0} claims have been closed
+view-upload.closed.desc=Closed claims have been approved or rejected by HMRC or withdrawn, and will be removed from this list after 30 days.
+view-upload.closed.link=View closed claims
+view-upload.no-claims.p1 = You have no claims to view.
+view-upload.no-claims.p2 = It can take up to 24 hours for new claims to appear.
 
 claim.detail.title = Case reference {0}
 claim.detail.p1 = Claim details:

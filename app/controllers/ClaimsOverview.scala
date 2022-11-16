@@ -19,6 +19,10 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
+import forms.SearchFormHelper
+import play.api.data.Form
+import play.api.data.Forms.mapping
+import play.api.data.Forms.nonEmptyText
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SearchCache
@@ -39,11 +43,19 @@ class ClaimsOverview @Inject()(
   extends FrontendController(mcc) with I18nSupport {
 
   def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
-    for {
-      _ <- searchCache.removeSearch(request.eori)
-      allClaims <- financialsApiConnector.getClaims(request.eori)
-    } yield {
-      Ok(claimsOverview(0, allClaims))
-    }
+    searchCache.removeSearch(request.eori)
+      .flatMap(_ => {
+        financialsApiConnector.getClaims(request.eori)
+          .map(allClaims => Ok(claimsOverview(
+            0,
+            allClaims,
+            SearchFormHelper.create,
+            routes.ClaimSearch.onSubmit(),
+            request.companyName.orNull,
+            request.eori)))
+      }
+      )
   }
+
+
 }

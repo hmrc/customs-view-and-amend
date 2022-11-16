@@ -14,12 +14,16 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Button
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+@import play.twirl.api.Html
 
-@this(govukButton: GovukButton)
+@this()
 
-@(msg: String, href: Option[String] = None)(implicit messages: Messages)
+@(
+    heading: Html,
+    classes: String = "govuk-heading-m govuk-!-margin-top-9",
+    level: String = "h2"
+)
 
-@govukButton(Button(content = Text(messages(msg)), href = href))
+<@level class="@classes">
+    @heading
+</@level>

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Button
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+package forms
 
-@this(govukButton: GovukButton)
+import play.api.data.Form
+import play.api.data.Forms.{mapping, nonEmptyText}
 
-@(msg: String, href: Option[String] = None)(implicit messages: Messages)
-
-@govukButton(Button(content = Text(messages(msg)), href = href))
+object SearchFormHelper {
+  val create: Form[String] =
+    Form(
+      mapping(
+        "search" ->
+          nonEmptyText
+            .verifying(
+              "error",
+              str => str.nonEmpty
+            )
+      )(identity)(Some(_))
+    )
+}

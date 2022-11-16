@@ -14,12 +14,20 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.GovukButton
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Button
-@import uk.gov.hmrc.govukfrontend.views.Aliases.Text
+@import play.api.i18n._
+@import play.twirl.api.Html
 
-@this(govukButton: GovukButton)
+@this()
 
-@(msg: String, href: Option[String] = None)(implicit messages: Messages)
+@(summary:String, content:Html)(implicit messages: Messages)
 
-@govukButton(Button(content = Text(messages(msg)), href = href))
+<details class="govuk-details" data-module="govuk-details">
+    <summary class="govuk-details__summary" role="button">
+        <span class="govuk-details__summary-text">
+            @Html(messages(summary))
+        </span>
+    </summary>
+    <div class="govuk-details__text">
+        @content
+    </div>
+</details>
