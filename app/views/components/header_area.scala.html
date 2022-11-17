@@ -24,12 +24,20 @@
     paragraph: components.paragraph
     )
 
-@(title: String, form: Form[String], postAction: Call, inset: Option[String] = None, showCompanyNameAndEori: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
+@(key: String,
+  form: Form[String],
+  postAction: Call,
+  showCompanyNameAndEori: Boolean = true,
+  showInset: Boolean = false)(implicit request: IdentifierRequest[_], messages: Messages)
 
-@heading(Html(title), caption = messages("common.company-name-and-eori", request.companyName.orNull, request.eori))
+@if(showCompanyNameAndEori) {
+  @heading(Html(messages(s"${key}.title")), caption = messages("common.company-name-and-eori", request.companyName.orNull, request.eori))
+} else {
+  @heading(Html(messages(s"${key}.title")))
+}
 
-@if(inset.nonEmpty){
-@insetText(content = HtmlContent(paragraph(Html(inset.get))))
+@if(showInset){
+@insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
 }
 
 @search(form, postAction)
