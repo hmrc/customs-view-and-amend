@@ -14,6 +14,9 @@
  * limitations under the License.
  *@
 
+@this(claimListRows: claimListRows, h2: components.h2)
+
+@(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
 @this(claimListRows: claimListRows, h2: components.h2) 
 @(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
 
@@ -58,13 +61,7 @@
         case e@ClosedClaim(declarationId, caseNumber, _, _, _, removalDate, caseSubStatus) =>{
           claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedRemovalDate()), Some(caseSubStatus));
         }
-        case e@PendingClaim(declarationId, caseNumber, _, _, _, _) =>
-			    claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedStartDate), None) 
-        case e@InProgressClaim(declarationId, caseNumber, _, _, _) =>
-			    claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedStartDate()), None) 
-        } 
-      }
-		</tr>
-		}
-	</tbody>
+        </tr>
+    }
+    </tbody>
 </table>
