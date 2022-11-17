@@ -25,6 +25,7 @@ case class NDRCDetail(
                        claimType: ClaimType,
                        caseType: String,
                        caseStatus: String,
+                       caseSubStatus: Option[String],
                        descOfGoods: Option[String],
                        descOfRejectedGoods: Option[String],
                        declarantEORI: String,

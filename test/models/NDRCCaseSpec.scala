@@ -40,6 +40,7 @@ class NDRCCaseSpec extends SpecBase {
           |    "claimantEORI": "ClaimaintEori",
           |    "declarationID": "DeclarationId",
           |    "caseStatus": "Closed",
+          |    "caseSubStatus": "Refused",
           |    "descOfRejectedGoods": "description of rejected goods",
           |    "claimantEmailAddress": "email@email.com",
           |    "CDFPayCaseNumber": "CaseNumber",
