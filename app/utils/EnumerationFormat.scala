@@ -34,8 +34,12 @@ trait EnumerationFormat[T] {
   final def parse(key: String): Option[T] =
     valueMap.get(key)
 
-  final def keyOf(value: T): String =
-    value.toString
+  final def keyOf(value: T): String = {
+    val key = value.toString
+    if (hasKey(key)) key
+    else
+      throw new IllegalArgumentException(s"The [$key] is NOT a value of the expected enum class.")
+  }
 
   final def tryParse(key: String): T =
     valueMap.getOrElse(

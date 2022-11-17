@@ -15,8 +15,8 @@
  */
 
 package utils
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.json._
 
 class EnumerationFormatSpec extends AnyWordSpec with Matchers {
@@ -27,20 +27,24 @@ class EnumerationFormatSpec extends AnyWordSpec with Matchers {
     "serialize an enum" in {
       Foo.format.writes(Foo.A) shouldBe JsString("A")
       Foo.format.writes(Foo.B) shouldBe JsString("B")
-      an[Exception] shouldBe thrownBy {
+      an[Exception]            shouldBe thrownBy {
         Foo.format.writes(Foo.C)
       }
     }
 
     "de-serialize an enum" in {
-      Foo.format.reads(JsString("A")) shouldBe JsSuccess(Foo.A)
-      Foo.format.reads(JsString("B")) shouldBe JsSuccess(Foo.B)
-      Foo.format.reads(JsString("C")) shouldBe a[JsError]
-      Foo.format.reads(JsString("D")) shouldBe a[JsError]
-      Foo.format.reads(JsNull) shouldBe a[JsError]
+      Foo.format.reads(JsString("A"))   shouldBe JsSuccess(Foo.A)
+      Foo.format.reads(JsString("B"))   shouldBe JsSuccess(Foo.B)
+      an[Exception]                     shouldBe thrownBy {
+        Foo.format.reads(JsString("C")) shouldBe a[JsError]
+      }
+      an[Exception]                     shouldBe thrownBy {
+        Foo.format.reads(JsString("D")) shouldBe a[JsError]
+      }
+      Foo.format.reads(JsNull)          shouldBe a[JsError]
       Foo.format.reads(Json.obj("A" -> JsBoolean(true))) shouldBe a[JsError]
       Foo.format.reads(Json.obj("value" -> JsString("A"))) shouldBe a[JsError]
-      Foo.format.reads(JsNumber(1)) shouldBe a[JsError]
+      Foo.format.reads(JsNumber(1))     shouldBe a[JsError]
       Foo.format.reads(JsBoolean(true)) shouldBe a[JsError]
     }
   }
