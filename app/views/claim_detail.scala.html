@@ -69,23 +69,23 @@
             claimDetail.reasonForSecurity.map { rfs =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
-                    Value(content = HtmlContent(rfs)),
+                    Value(content = HtmlContent(messages(s"claim.detail.reasonForSecurity.$rfs"))),
                     actions = None
                 )
             },
-            if (claimDetail.claimStatus == Closed) {
-                Some(SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.decision"))),
-                    Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
-                    actions = None
-                ))
-            } else {
+            claimDetail.caseSubStatus.filter(_ => claimDetail.claimStatus == Closed).fold(
                 Some(SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.status"))),
                     Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
                     actions = None
                 ))
-            },
+            )(
+                caseSubStatus => Some(SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.decision"))),
+                    Value(content = HtmlContent(messages(caseSubStatus))),
+                    actions = None
+                ))
+            ),
             Some(SummaryListRow(
                 Key(content = HtmlContent(messages("claim.detail.start.date"))),
                 Value(content = HtmlContent(claimDetail.formattedStartDate())),

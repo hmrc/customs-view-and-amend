@@ -152,6 +152,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       Some("SomeLrn"),
       Some("GB746502538945"),
       InProgress,
+      None,
       Some(C285),
       LocalDate.now,
       None,
