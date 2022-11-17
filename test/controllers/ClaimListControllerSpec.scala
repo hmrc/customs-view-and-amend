@@ -73,7 +73,7 @@ class ClaimListControllerSpec extends SpecBase {
     val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
 
     val closedClaims: Seq[ClosedClaim] = (1 to 100).map { value =>
-      ClosedClaim("MRN", s"NDRC-${1000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+      ClosedClaim("MRN", s"NDRC-${1000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value), "Closed")
     }
     val pendingClaims: Seq[PendingClaim] = (1 to 100).map { value =>
       PendingClaim("MRN", s"NDRC-${2000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
