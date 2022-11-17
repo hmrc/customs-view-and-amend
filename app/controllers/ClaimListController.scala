@@ -19,6 +19,7 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
+import forms.SearchFormHelper
 import models.IdentifierRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
@@ -59,7 +60,14 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>{
-      Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page), caseStatusHints))
+      Ok(claimsClosed(
+        ClosedClaimListViewModel(claims.closedClaims, page),
+        caseStatusHints, 
+        SearchFormHelper.create,
+        routes.ClaimSearch.onSubmit(),
+        request.companyName.orNull,
+        request.eori
+      ))
     }
     }
   }

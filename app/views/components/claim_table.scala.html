@@ -17,29 +17,8 @@
 @this(claimListRows: claimListRows, h2: components.h2)
 
 @(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
-@this(claimListRows: claimListRows, h2: components.h2) 
-@(claims: Seq[Claim], claimType: ClaimStatus, searched: Boolean)(implicit messages: Messages)
 
 <table class="govuk-table">
-	@{ claimType match { case Closed =>
-	<caption
-		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
-	>
-		{messages("claim.list.table.closed")}
-	</caption>
-	case Pending =>
-	<!--TODO: Removed the respond by date until secure messaging timestamp available-->
-	<!-- <caption class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular">{messages("claim.list.table.pending")}</caption> -->
-	<caption
-		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
-	></caption>
-	case InProgress =>
-	<caption
-		class="govuk-table__caption govuk-!-margin-top-0 govuk-!-margin-bottom-5 govuk-!-font-weight-regular"
-	>
-		{messages("claim.list.table.progress")}
-	</caption>
-	} }
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
 			<th>@messages("claim.list.table.heading.case")</th>
@@ -54,12 +33,18 @@
 			  case _ => Html("") } }
 		</tr>
 	</thead>
-	<tbody class="govuk-table__body">
-		@for(claim <- claims) {
-		<tr class="govuk-table__row">
-			@{ claim match {
-        case e@ClosedClaim(declarationId, caseNumber, _, _, _, removalDate, caseSubStatus) =>{
-          claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedRemovalDate()), Some(caseSubStatus));
+	    <tbody class="govuk-table__body">
+    @for(claim <- claims) {
+        <tr class="govuk-table__row">
+        @{
+            claim match {
+                case e@ClosedClaim(declarationId, caseNumber, _, _, claimStartDate, removalDate, subStatus) =>
+                    claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedRemovalDate()), Some(subStatus))
+                case e@PendingClaim(declarationId, caseNumber, _, _, claimStartDate, respondByDate) =>
+                    claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedStartDate()), None)
+                case e@InProgressClaim(declarationId, caseNumber, _, _, claimStartDate) =>
+                    claimListRows(e.url(searched), caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedStartDate()), None)
+            }
         }
         </tr>
     }
