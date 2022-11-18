@@ -22,6 +22,7 @@ import cats.data.EitherT._
 import cats.implicits.catsSyntaxEq
 import config.AppConfig
 import connector.{DataStoreConnector, FinancialsApiConnector}
+import models.responses.C285
 import models.{ClaimDetail, ClaimStatus, Closed, InProgress, Pending, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
@@ -59,9 +60,10 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
       lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
       email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
+      fileSelectionUrl = routes.FileSelectionController.onPageLoad(claim.caseNumber, claim.serviceType, claim.claimType.getOrElse(C285), initialRequest = false)
     } yield {
       if (claim.claimStatus == expectedStatus)
-        Ok(claimDetail(claim, searched, email.value))
+        Ok(claimDetail(claim, searched, email.value, fileSelectionUrl.url))
       else
         NotFound(notFound())
     }).merge

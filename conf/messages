@@ -64,6 +64,10 @@ claim.detail.type.multiple.C285 = C285 - Multiple declarations
 claim.detail.type.C285 = C285
 claim.detail.type.multiple.CE1179 = C&E1179 - Multiple declarations
 claim.detail.type.CE1179 = C&E1179
+claim.detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
+claim.detail.h2.supporting-documents=Add supporting documents
+claim.detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
+claim.detail.link.file-upload=File upload
 
 
 claim.detail.type.security = Security deposit or guarantee

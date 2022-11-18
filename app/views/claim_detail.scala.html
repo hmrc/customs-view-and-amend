@@ -19,9 +19,19 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import models.responses.`C&E1179`
 
-@this(layout: Layout, h1: components.h1, p: components.p, govukSummaryList: GovukSummaryList, newTabLink: components.newTabLink)
+@this(
+    layout: Layout,
+    h1: components.h1,
+    h2: components.h2,
+    p: components.p,
+    govukSummaryList: GovukSummaryList,
+    link: components.link,
+    newTabLink: components.newTabLink,
+    insetText: components.inset_text,
+    paragraph: components.paragraph
+)
 
-@(claimDetail: ClaimDetail, searched: Boolean, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimDetail: ClaimDetail, searched: Boolean, email: String, fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if(searched) Some(routes.ClaimSearch.searchResult().url) else Some(claimDetail.backLink())) {
@@ -119,6 +129,13 @@
     ))
 
     @if(claimDetail.isPending) {
+        @insetText(content = HtmlContent(paragraph(Html(messages("claim.detail.inset.check-email")))))
+        @h2(messages("claim.detail.h2.supporting-documents"))
+        @link(
+            "claim.detail.link.file-upload",
+            fileSelectionUrl
+        )
+        @paragraph(Html(messages("claim.detail.p1.valid-formats")))
         @claimDetail.claimType.map { claimType =>
             @newTabLink("claim.detail.upload", routes.FileSelectionController.onPageLoad(claimDetail.caseNumber, claimDetail.serviceType, claimType, initialRequest = true).url)
         }
