@@ -40,18 +40,18 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
                                     claimsInProgress: claims_in_progress,
                                    )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
-    
+
   private val caseStatusHints: DropdownHints =
-    DropdownHints.range(elementIndex = 0, maxHints = 6)  
-    
+    DropdownHints.range(elementIndex = 0, maxHints = 6)
+
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims: AllClaims =>
       Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page),
         SearchFormHelper.create,
-        routes.ClaimSearch.onSubmit(),
-        request.eori))
+        routes.ClaimSearch.onSubmit()
+      ))
     }
   }
 
@@ -62,13 +62,12 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>{
+    financialsApiConnector.getClaims(request.eori).map { claims => {
       Ok(claimsClosed(
         ClosedClaimListViewModel(claims.closedClaims, page),
-        caseStatusHints, 
+        caseStatusHints,
         SearchFormHelper.create,
-        routes.ClaimSearch.onSubmit(),
-        request.eori
+        routes.ClaimSearch.onSubmit()
       ))
     }
     }

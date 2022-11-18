@@ -1,34 +1,28 @@
 @*
- * Copyright 2022 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
+* Copyright 2022 HM Revenue & Customs
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*@
 
 @import viewmodels.InProgressClaimListViewModel
 @import config.AppConfig
 @import views.html.components.pager
 
-@this(layout: Layout,
-        claimTable: components.claim_table,
-        headerArea: components.header_area,
-        p: components.p,
-        dropdownDetails: components.dropdown_details,
-        search: components.search)
+@this(layout: Layout, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: InProgressClaimListViewModel,
         searchForm: Form[String],
-        postAction: Call,
-        eori: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+        postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
     @key = @{"claim.list.progress"}
 
