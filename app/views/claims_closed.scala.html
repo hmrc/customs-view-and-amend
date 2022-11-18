@@ -33,7 +33,7 @@
   companyName: String,
   eori: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@key = @{"claim-list-closed"}
+@key = @{"claim.list.closed"}
 @title = @{messages(s"$key.title")}
 
 @layout(pageTitle = Some(title),
