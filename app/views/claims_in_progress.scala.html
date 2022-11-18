@@ -17,7 +17,6 @@
 @import viewmodels.InProgressClaimListViewModel
 @import config.AppConfig
 @import views.html.components.pager
-@import views.components.hints.DropdownHints
 
 @this(layout: Layout,
         claimTable: components.claim_table,
@@ -27,10 +26,8 @@
         search: components.search)
 
 @(model: InProgressClaimListViewModel,
-        caseStatusHints: DropdownHints,
         searchForm: Form[String],
         postAction: Call,
-        companyName: String,
         eori: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
     @key = @{"claim.list.progress"}

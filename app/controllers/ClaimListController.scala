@@ -49,10 +49,8 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims: AllClaims =>
       Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page),
-        caseStatusHints,
         SearchFormHelper.create,
         routes.ClaimSearch.onSubmit(),
-        request.companyName.orNull,
         request.eori))
     }
   }
@@ -70,7 +68,6 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
         caseStatusHints, 
         SearchFormHelper.create,
         routes.ClaimSearch.onSubmit(),
-        request.companyName.orNull,
         request.eori
       ))
     }
