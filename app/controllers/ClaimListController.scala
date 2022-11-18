@@ -19,12 +19,14 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
+import forms.SearchFormHelper
 import models.IdentifierRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.{ClosedClaimListViewModel, InProgressClaimListViewModel, PendingClaimListViewModel}
 import views.html.{claims_closed, claims_in_progress, claims_pending}
+import views.components.hints.DropdownHints
 
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
@@ -38,7 +40,10 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
                                     claimsInProgress: claims_in_progress,
                                    )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
-
+    
+  private val caseStatusHints: DropdownHints =
+    DropdownHints.range(elementIndex = 0, maxHints = 6)  
+    
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
@@ -54,8 +59,16 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
   }
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page)))
+    financialsApiConnector.getClaims(request.eori).map { claims =>{
+      Ok(claimsClosed(
+        ClosedClaimListViewModel(claims.closedClaims, page),
+        caseStatusHints, 
+        SearchFormHelper.create,
+        routes.ClaimSearch.onSubmit(),
+        request.companyName.orNull,
+        request.eori
+      ))
+    }
     }
   }
 }

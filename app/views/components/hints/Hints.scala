@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,14 +12,16 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@this(link: components.link)
+package views.components.hints
 
-@(linkUrl: String, linkMessage: String, col2: String, col3: Option[String], col4: Option[String], col5: Option[String])(implicit messages: Messages)
+import play.api.i18n.Messages
+import play.twirl.api.Html
 
-<td class="govuk-table__cell">@link(linkMessage, linkUrl, pWrapped = false, linkClass = "govuk-link govuk-body")</td>
-<td class="govuk-table__cell">@col2</td>
-@col3.map(value => <td class="govuk-table__cell">{value}</td>)
-@col4.map(value => <td class="govuk-table__cell">{value}</td>)
-@col5.map(value => <td class="govuk-table__cell">{value}</td>)
+trait Hints {
+
+  def renderHintsWithLabels(parentKey: String)(implicit messages: Messages): Html
+  def renderHints(parentKey: String)(implicit messages: Messages): Html
+
+}

@@ -69,7 +69,7 @@ class ClaimServiceSpec extends SpecBase {
     val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
 
     val closedClaims: Seq[ClosedClaim] = (1 to 100).map { value =>
-      ClosedClaim("MRN", s"NDRC-${1000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+      ClosedClaim("MRN", s"NDRC-${1000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value), "Closed")
     }
     val pendingClaims: Seq[PendingClaim] = (1 to 100).map { value =>
       PendingClaim("MRN", s"NDRC-${2000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))

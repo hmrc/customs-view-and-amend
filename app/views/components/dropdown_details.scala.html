@@ -14,12 +14,20 @@
  * limitations under the License.
  *@
 
-@this(link: components.link)
+@import play.api.i18n._
+@import play.twirl.api.Html
 
-@(linkUrl: String, linkMessage: String, col2: String, col3: Option[String], col4: Option[String], col5: Option[String])(implicit messages: Messages)
+@this()
 
-<td class="govuk-table__cell">@link(linkMessage, linkUrl, pWrapped = false, linkClass = "govuk-link govuk-body")</td>
-<td class="govuk-table__cell">@col2</td>
-@col3.map(value => <td class="govuk-table__cell">{value}</td>)
-@col4.map(value => <td class="govuk-table__cell">{value}</td>)
-@col5.map(value => <td class="govuk-table__cell">{value}</td>)
+@(summary:String, content:Html)(implicit messages: Messages)
+
+<details class="govuk-details" data-module="govuk-details">
+    <summary class="govuk-details__summary" role="button">
+        <span class="govuk-details__summary-text">
+            @Html(messages(summary))
+        </span>
+    </summary>
+    <div class="govuk-details__text">
+        @content
+    </div>
+</details>

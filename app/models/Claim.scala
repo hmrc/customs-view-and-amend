@@ -16,13 +16,13 @@
 
 package models
 
-import helpers.DateFormatters
+import helpers.{DateFormatters, ServiceTypeFormatters}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
-sealed trait Claim extends DateFormatters {
+sealed trait Claim extends DateFormatters with ServiceTypeFormatters {
   val caseNumber: String
   val declarationId: String
   val serviceType: ServiceType
@@ -35,7 +35,10 @@ sealed trait Claim extends DateFormatters {
     case Pending => controllers.routes.ClaimDetailController.pendingClaimDetail(caseNumber, serviceType, searched).url
   }
   def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+  def formattedServiceType()(implicit messages: Messages): String = serviceTypeAsMessage(serviceType)
 }
+
+ 
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
@@ -57,7 +60,7 @@ object PendingClaim {
   implicit val format: OFormat[PendingClaim] = Json.format[PendingClaim]
 }
 
-case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate) extends Claim {
+case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate, caseSubStatus: String) extends Claim {
   override val claimStatus = Closed
   def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
 

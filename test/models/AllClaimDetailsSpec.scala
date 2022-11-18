@@ -32,7 +32,7 @@ class AllClaimDetailsSpec extends SpecBase {
     }
 
     "return ClosedClaim when case status is 'Closed'" in new Setup {
-      createSctyDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLL12345", "SEC-2109", SCTY, Some("broomer007"), startDate, endDate)
+      createSctyDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLL12345", "SEC-2109", SCTY, Some("broomer007"), startDate, endDate, "Closed")
     }
 
     "throw an exception when unknown claim type passed" in new Setup {
@@ -52,7 +52,7 @@ class AllClaimDetailsSpec extends SpecBase {
     }
 
     "return ClosedClaim when case status is 'Closed'" in new Setup {
-      createNdrcDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate, endDate)
+      createNdrcDetailsClaim("Closed").toClaim shouldBe ClosedClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate, endDate, "Closed")
     }
 
     "throw an exception when unknown claim type passed" in new Setup {
@@ -69,12 +69,10 @@ class AllClaimDetailsSpec extends SpecBase {
 
     def createSctyDetailsClaim(status: String): SCTYCaseDetails =
       SCTYCaseDetails(CDFPayCaseNumber = "SEC-2109", declarationID = "21LLLLLLLLLL12345",
-      claimStartDate = "20210320", closedDate = Some("20210520"), reasonForSecurity = "ACS", caseStatus = status,
-      declarantEORI = "GB744638982000", importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"),
-      totalCustomsClaimAmount = Some("12000.56"), totalVATClaimAmount = Some("3412.01"), declarantReferenceNumber = Some("broomer007"))
+      claimStartDate = "20210320", closedDate = Some("20210520"), reasonForSecurity = "ACS", caseStatus = status, caseSubStatus = Option(status), declarantEORI = "GB744638982000", importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"), totalCustomsClaimAmount = Some("12000.56"), totalVATClaimAmount = Some("3412.01"), declarantReferenceNumber = Some("broomer007"))
 
     def createNdrcDetailsClaim(status: String): NDRCCaseDetails = NDRCCaseDetails(CDFPayCaseNumber = "NDRC-2109", declarationID = "21LLLLLLLLLLLLLLL9",
-      claimStartDate = "20210320", closedDate = Some("20210520"), caseStatus = status, declarantEORI = "GB744638982000",
+      claimStartDate = "20210320", closedDate = Some("20210520"), caseStatus = status, caseSubStatus = Option(status), declarantEORI = "GB744638982000",
       importerEORI = "GB744638982000", claimantEORI = Some("GB744638982000"), totalCustomsClaimAmount = Some("3000.20"),
       totalVATClaimAmount = Some("784.66"), totalExciseClaimAmount = Some("1200.00"), declarantReferenceNumber = Some("KWMREF1"),
       basisOfClaim = Some("Duplicate Entry"))
