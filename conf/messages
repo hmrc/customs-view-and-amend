@@ -59,18 +59,16 @@ claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
 claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
 claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
-claim.detail.type = Claim type
-claim.detail.type.multiple.C285 = C285 - Multiple declarations
-claim.detail.type.C285 = C285
-claim.detail.type.multiple.CE1179 = C&E1179 - Multiple declarations
-claim.detail.type.CE1179 = C&E1179
 claim.detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
 claim.detail.h2.supporting-documents=Add supporting documents
 claim.detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
 claim.detail.link.file-upload=File upload
 
-
+claim.detail.type = Claim type
+claim.detail.type.C285 = C285
+claim.detail.type.CE1179 = C&E1179
 claim.detail.type.security = Security deposit or guarantee
+
 claim.detail.status = Claim status
 claim.detail.decision = Claim decision
 claim.detail.start.date = Claim start date
