@@ -106,9 +106,9 @@
                 Value(content = HtmlContent(closedDate)),
                 actions = None
             )),
-            claimDetail.valueOfClaim.map { value =>
+            claimDetail.totalClaimAmount.map { value =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.value"))),
+                            Key(content = HtmlContent(messages("claim.detail.value"))),
                     Value(content = HtmlContent(s"£$value")),
                     actions = None
                 )

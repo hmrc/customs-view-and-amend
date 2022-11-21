@@ -35,7 +35,7 @@ case class ClaimDetail(caseNumber: String,
                        claimType: Option[ClaimType],
                        claimStartDate: LocalDate,
                        claimClosedDate: Option[LocalDate],
-                       valueOfClaim: Option[String],
+                       totalClaimAmount: Option[String],
                        claimantsName: Option[String],
                        claimantsEmail: Option[String],
                        reasonForSecurity: Option[String] = None
