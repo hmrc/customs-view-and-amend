@@ -6,9 +6,7 @@ GET         /claims-in-progress                                   controllers.Cl
 GET         /pending-claims                                       controllers.ClaimListController.showPendingClaimList(page: Option[Int])
 GET         /closed-claims                                        controllers.ClaimListController.showClosedClaimList(page: Option[Int])
 
-GET         /claims-in-progress/:claimType/:claim                 controllers.ClaimDetailController.inProgressClaimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
-GET         /claims-closed/:claimType/:claim                      controllers.ClaimDetailController.closedClaimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
-GET         /claims-need-more-info/:claimType/:claim              controllers.ClaimDetailController.pendingClaimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
+GET         /claim/:claimType/:claim                              controllers.ClaimDetailController.claimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
 GET         /verify-your-email                                    controllers.EmailController.showUnverified()
 
 GET         /:serviceType/:claim/upload-confirmation              controllers.FileUploadController.continue(claim: String, serviceType: models.ServiceType)
