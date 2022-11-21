@@ -18,12 +18,18 @@
 @import config.AppConfig
 @import views.html.components.pager
 
-@this(layout: Layout, h1: components.h1, claimTable: components.claim_table)
+@this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
 
-@(model: PendingClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
-
+@(model: PendingClaimListViewModel, searchForm: Form[String], postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@key = @{"claim-list-pending"}
 @layout(pageTitle = Some(messages("claim.list.pending.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
-    @h1("claim.list.pending.title", classes = "govuk-heading-xl")
+    @headerArea(
+     key,
+     searchForm,
+     postAction,
+     true,
+     true
+    )
     @claimTable(model.visibleItems, Pending, searched = false)
     @pager(model)
 

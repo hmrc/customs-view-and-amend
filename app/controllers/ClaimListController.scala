@@ -57,7 +57,11 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
 
   def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsPending(PendingClaimListViewModel(claims.pendingClaims, page)))
+      Ok(claimsPending(
+        PendingClaimListViewModel(claims.pendingClaims, page),
+        SearchFormHelper.create,
+        routes.ClaimSearch.onSubmit()
+      ))
     }
   }
 

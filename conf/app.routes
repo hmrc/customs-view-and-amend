@@ -3,8 +3,8 @@
 GET         /                                                     controllers.ClaimsOverview.show
 
 GET         /claims-in-progress                                   controllers.ClaimListController.showInProgressClaimList(page: Option[Int])
-GET         /pending-claims                                       controllers.ClaimListController.showPendingClaimList(page: Option[Int])
-GET         /closed-claims                                        controllers.ClaimListController.showClosedClaimList(page: Option[Int])
+GET         /claims-need-more-info                                controllers.ClaimListController.showPendingClaimList(page: Option[Int])
+GET         /claims-closed                                        controllers.ClaimListController.showClosedClaimList(page: Option[Int])
 
 GET         /claims-in-progress/:claimType/:claim                 controllers.ClaimDetailController.inProgressClaimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
 GET         /claims-closed/:claimType/:claim                      controllers.ClaimDetailController.closedClaimDetail(claim: String, claimType: models.ServiceType, searched: Boolean)
