@@ -17,28 +17,25 @@
 @import play.twirl.api.Html
 
 @this(
-    paragraph: components.paragraph,
-    subHeading: components.sub_heading,
-    input: components.input_text,
-    button: components.button,
-    formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
-    )
+        paragraph: components.paragraph,
+        subHeading: components.sub_heading,
+        input: components.input_text,
+        button: components.button,
+        formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+)
 
 @(form: Form[String], postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages)
 
-@key = @{"search"}
+    @key = @{"search"}
 
-<br/>
-@subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
-@paragraph(Html(messages(s"$key.desc")))
+    <br/>
+    @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
+    @paragraph(Html(messages(s"$key.desc")))
 
-@formWithCSRF(postAction, 'novalidate -> "novalidate", 'style -> "display: flex; gap: 5px; flex-direction: row;", 'class -> "govuk-!-width-two-thirds") {
-    @input(
-        form = form,
-        id = key,
-        name = key,
-        label = null,
-        isPageHeading = false
-    )
-    @button(s"$key.button")
-}
+    @formWithCSRF(postAction, 'novalidate -> "novalidate") {
+
+        <div class="govuk-form-group">
+            <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="text"/>
+            @button(s"$key.button")
+        </div>
+    }
