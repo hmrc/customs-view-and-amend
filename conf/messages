@@ -126,7 +126,9 @@ claim-list-closed.details.hint.5 = Claim was rejected due to lack of information
 claim-list-closed.details.bullet.6 = Withdrawn: 
 claim-list-closed.details.hint.6 = Claim was withdrawn by the claimant and no refund was paid
 
-claim.list.pending.title = Claims pending
+claim-list-pending.title = Claims needing more information
+claim-list-pending.inset = Claims that require additional information or documentation
+
 claim.list.progress.title = Claims in progress
 claim.list.table.heading = All claims
 claim.list.scty = Security deposit or guarantee
