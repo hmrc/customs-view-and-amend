@@ -41,7 +41,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimsMongo)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.inProgressClaimDetail("someClaim", SCTY, searched = false).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -54,7 +54,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.pendingClaimDetail("someClaim", NDRC, searched = false).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -67,7 +67,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.closedClaimDetail("someClaim", NDRC, searched = false).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe OK
       }
@@ -78,7 +78,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.inProgressClaimDetail("someClaim", SCTY, searched = false).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -91,7 +91,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Left(UnverifiedEmail)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.inProgressClaimDetail("someClaim", NDRC, searched = true).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -104,7 +104,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.inProgressClaimDetail("someClaim", NDRC, searched = true).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
@@ -117,20 +117,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.inProgressClaimDetail("someClaim", NDRC, searched = false).url)
-        val result = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
-
-    "return NOT_FOUND when a status does not match the URL" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = InProgress))))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.closedClaimDetail("someClaim", NDRC, searched = false).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
       }

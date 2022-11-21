@@ -45,16 +45,7 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
                                       notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
   extends FrontendController(mcc) with I18nSupport {
 
-  def inProgressClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
-    claimDetail(caseNumber, serviceType, searched, InProgress)
-
-  def closedClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
-    claimDetail(caseNumber, serviceType, searched, Closed)
-
-  def pendingClaimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
-    claimDetail(caseNumber, serviceType, searched, Pending)
-
-  private def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean, expectedStatus: ClaimStatus): Action[AnyContent] = authenticate.async { implicit request =>
+  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
     (for {
       claims <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
@@ -62,10 +53,7 @@ class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
       claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
       fileSelectionUrl = routes.FileSelectionController.onPageLoad(claim.caseNumber, claim.serviceType, claim.claimType.getOrElse(C285), initialRequest = false)
     } yield {
-      if (claim.claimStatus == expectedStatus)
         Ok(claimDetail(claim, searched, email.value, fileSelectionUrl.url))
-      else
-        NotFound(notFound())
     }).merge
   }
 }
