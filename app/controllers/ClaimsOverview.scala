@@ -20,9 +20,6 @@ import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.FinancialsApiConnector
 import forms.SearchFormHelper
-import play.api.data.Form
-import play.api.data.Forms.mapping
-import play.api.data.Forms.nonEmptyText
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import repositories.SearchCache

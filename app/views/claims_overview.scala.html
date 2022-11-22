@@ -15,9 +15,6 @@
  *@
 
 @import config.AppConfig
-@import utils.HtmlUtil._
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.input.PrefixOrSuffix
-@import uk.gov.hmrc.govukfrontend.views.viewmodels.content.HtmlContent
 
 @this(
     layout: Layout,
@@ -33,7 +30,9 @@
     button: components.button,
     input: components.input_text,
     headerArea: components.header_area,
-    formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
+    formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF,
+    titleAndDescriptionList: components.title_and_description_list,
+    ul: components.ul
     )
 
 @(
@@ -46,7 +45,6 @@
 )(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"view-upload"}
-@title = @{messages(s"$key.title")}
 
 @layout(pageTitle = Some(messages(s"$key.page-title")), fullWidth = true) {
 
@@ -54,17 +52,7 @@
 
     @dropdown(
         summary = s"$key.updated.title",
-        html(
-        paragraph(Html(messages(s"$key.updated.desc"))),
-        bullets(Seq(subHeading(Html(messages(s"$key.updated.1.title")), classes = "govuk-heading-s"))),
-        paragraph(Html(messages(s"$key.updated.1.content"))),
-
-        bullets(Seq(subHeading(Html(messages(s"$key.updated.2.title")), classes = "govuk-heading-s"))),
-        paragraph(Html(messages(s"$key.updated.2.content"))),
-
-        bullets(Seq(subHeading(Html(messages(s"$key.updated.3.title")), classes = "govuk-heading-s"))),
-        paragraph(Html(messages(s"$key.updated.3.content")))
-        )
+        ul(titleAndDescriptionList(key, 2))
     )
 
     @if(allClaims.collectAll.nonEmpty) {
