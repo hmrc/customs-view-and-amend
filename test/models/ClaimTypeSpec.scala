@@ -34,6 +34,11 @@ class ClaimTypeSpec extends SpecBase {
       ClaimType.pathBindable.bind("something", "Unknown") shouldBe Left("Invalid service type")
       ClaimType.pathBindable.unbind("something", C285) shouldBe "C285"
       ClaimType.pathBindable.unbind("something", `C&E1179`) shouldBe "CE1179"
+      ClaimType.queryBindable.bind("claimType", Map(("claimType", Seq("C285")))) shouldBe Some(Right(C285))
+      ClaimType.queryBindable.bind("claimType", Map(("claimType", Seq("CE1179")))) shouldBe Some(Right(`C&E1179`))
+      ClaimType.queryBindable.bind("claimType", Map(("claimType", Seq("Unknown")))) shouldBe Some(Left("Invalid service type"))
+      ClaimType.queryBindable.unbind("claimType", C285) shouldBe "claimType=C285"
+      ClaimType.queryBindable.unbind("claimType", `C&E1179`) shouldBe "claimType=CE1179"
     }
   }
 

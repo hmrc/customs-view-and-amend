@@ -11,8 +11,8 @@ GET         /verify-your-email                                    controllers.Em
 
 GET         /:serviceType/:claim/upload-confirmation              controllers.FileUploadController.continue(claim: String, serviceType: models.ServiceType)
 
-GET         /:serviceType/:claim/:claimType/file-selection        controllers.FileSelectionController.onPageLoad(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType, initialRequest: Boolean)
-POST        /:serviceType/:claim/:claimType/file-selection        controllers.FileSelectionController.onSubmit(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType)
+GET         /choose-file-type                                     controllers.FileSelectionController.onPageLoad(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType, initialRequest: Boolean)
+POST        /choose-file-type                                     controllers.FileSelectionController.onSubmit(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType)
 
 GET         /:serviceType/:claim/upload-check-your-answers        controllers.FileUploadCYAController.onPageLoad(claim: String, serviceType: models.ServiceType)
 
