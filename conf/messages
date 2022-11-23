@@ -254,29 +254,30 @@ timeout.signOut = Sign out
 
 file.selection.commercial-invoice = Commercial invoice
 file.selection.import-export-declaration = Import and export declaration
-file.selection.air-waybill = Air waybill
+file.selection.air-waybill = Air way bill
 file.selection.bill-of-lading = Bill of lading
 file.selection.packing-list = Packing list
 file.selection.proof-of-origin = Proof of origin
-file.selection.substitute-entry = Substitute entry
+file.selection.substitute-entry = Substitute or diversion entry
 file.selection.preference-certificate = Preference certificate
 file.selection.correspondence = Correspondence between trader and agent
 file.selection.airworthiness-certificates = Airworthiness certificates
 file.selection.technical-specifications = Technical specifications
-file.selection.letter-of-authority = Letter of authority
+file.selection.proof-of-authority = Proof of authority
 file.selection.faulty-not-ordered = Documentary proof that the goods are faulty or not what you ordered
 file.selection.correspondence = Correspondence
-file.selection.calculation-worksheet = Calculation worksheet
-file.selection.additional-supporting-documents = Additional supporting documents
+file.selection.calculation-worksheet = Calculation or customs worksheet
+file.selection.other-supporting-documents = Other documents supporting your claim
 file.selection.proof-of-export-or-destruction = Proof of export or destruction
 # ----------------------------------------------------------
 
 
 #File Selection Generic
 # ----------------------------------------------------------
-file.selection.title = File upload description
-file.selection.p1 = Select a description of the file you want to upload by choosing a definition from the list. This will help up process your claim more efficiently.
+file.selection.title = Add supporting documents to your claim
+file.selection.p1 = You can upload one document at a time. Repeat this step to add more documents to your claim.
 file.selection.button = Continue
+file.selection.error.required = Select which type of document you are uploading
 # ----------------------------------------------------------
 
 
