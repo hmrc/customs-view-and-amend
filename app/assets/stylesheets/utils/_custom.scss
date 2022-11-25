@@ -200,3 +200,8 @@ th.govuk-table__header.govuk-table__cell--numeric {
   width: 40%;
   margin-right: 40px;
 }
+
+// abbreviations
+abbr[title] {
+  text-decoration: none;
+}
