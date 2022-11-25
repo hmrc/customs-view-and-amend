@@ -102,7 +102,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "proof-of-origin"
+          "value" -> "proof-of-authority"
         )
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND
@@ -117,7 +117,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "proof-of-origin"
+          "value" -> "proof-of-authority"
         )
         val result = route(app, request).value
         status(result) mustBe NOT_FOUND

@@ -50,7 +50,7 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
     val result: EitherT[Future, Result, Result] = for {
       _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
       _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
-    } yield Ok(fileSelection(form, serviceType, caseNumber, claimType, FileSelection.options(form, claimType)))
+    } yield Ok(fileSelection(form, serviceType, caseNumber, claimType, FileSelection.options(form)))
     result.merge
   }
 
@@ -58,7 +58,7 @@ class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocument
     val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
     form.bindFromRequest().fold(
       formWithErrors =>
-        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form, claimType)))),
+        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form)))),
       documentType =>
         (for {
           _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))

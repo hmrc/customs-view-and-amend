@@ -17,7 +17,7 @@
 package models.responses
 
 import play.api.libs.json._
-import play.api.mvc.PathBindable
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 sealed trait ClaimType
 
@@ -42,6 +42,21 @@ object ClaimType {
     }
   }
 
+  implicit def queryBindable: QueryStringBindable[ClaimType] = new QueryStringBindable[ClaimType] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ClaimType]] =
+      params(key) match {
+        case "C285" :: Nil => Some(Right(C285))
+        case "CE1179" :: Nil => Some(Right(`C&E1179`))
+        case _ => Some(Left("Invalid service type"))
+      }
+
+    override def unbind(key: String, value: ClaimType): String = {
+      value match {
+        case `C&E1179` => s"$key=CE1179"
+        case C285 => s"$key=C285"
+      }
+    }
+  }
 
   implicit val format: Format[ClaimType] = new Format[ClaimType] {
     override def writes(o: ClaimType): JsValue =

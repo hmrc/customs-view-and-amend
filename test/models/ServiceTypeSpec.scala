@@ -28,6 +28,14 @@ class ServiceTypeSpec extends SpecBase {
       ServiceType.pathBindable.bind("someKey", "INVALID") shouldBe Left("Invalid service type")
     }
 
+    "perform correct query bindings" in {
+      ServiceType.queryBindable.bind("serviceType", Map(("serviceType", Seq("NDRC")))) shouldBe Some(Right(NDRC))
+      ServiceType.queryBindable.bind("serviceType", Map(("serviceType", Seq("SCTY")))) shouldBe Some(Right(SCTY))
+      ServiceType.queryBindable.bind("serviceType", Map(("serviceType", Seq("Unknown")))) shouldBe Some(Left("Invalid service type"))
+      ServiceType.queryBindable.unbind("serviceType", NDRC) shouldBe "serviceType=NDRC"
+      ServiceType.queryBindable.unbind("serviceType", SCTY) shouldBe "serviceType=SCTY"
+    }
+
     "write to the correct string" in {
       val ndrcServiceType: ServiceType = NDRC
       val sctyServiceType: ServiceType = SCTY
@@ -43,6 +51,8 @@ class ServiceTypeSpec extends SpecBase {
         JsString("INVALID").as[ServiceType]
       }.errors.map(_._2.map(_.message)).head shouldBe List("""Unexpected CDFPayService: "INVALID"""")
     }
+
+
   }
 
 }

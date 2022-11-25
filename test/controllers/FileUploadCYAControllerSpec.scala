@@ -46,7 +46,7 @@ class FileUploadCYAControllerSpec extends SpecBase {
         val result = route(app, identifierRequest).value
         status(result) shouldBe OK
         contentAsString(result).contains("file name") shouldBe true
-        contentAsString(result).contains("Additional supporting documents") shouldBe true
+        contentAsString(result).contains("Other documents supporting your claim") shouldBe true
       }
     }
 
