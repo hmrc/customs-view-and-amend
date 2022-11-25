@@ -37,7 +37,8 @@ case class UploadDocumentsContent(
                                    allowedFilesTypesHint: Option[String] = None,
                                    contactFrontendServiceId: Option[String] = None,
                                    yesNoQuestionText: Option[String] = None,
-                                   yesNoQuestionRequiredError: Option[String] = None
+                                   yesNoQuestionRequiredError: Option[String] = None,
+                                   fileUploadedProgressBarLabel: Option[String] = None
                                  )
 
 object UploadDocumentsContent {

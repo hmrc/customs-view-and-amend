@@ -19,6 +19,7 @@ package models.file_upload
 import config.AppConfig
 import models.responses.ClaimType
 import models.{FileSelection, ServiceType}
+import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 
 case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
@@ -31,7 +32,7 @@ object UploadDocumentsWrapper {
                     claimType: ClaimType,
                     documentType: FileSelection,
                     previouslyUploaded: Seq[UploadedFile] = Seq.empty
-                   )(implicit appConfig: AppConfig): UploadDocumentsWrapper = {
+                   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
     val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber, serviceType)
     val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber, serviceType, claimType, initialRequest = false).url
     val callBack = controllers.routes.FileUploadController.updateFiles()
@@ -41,22 +42,34 @@ object UploadDocumentsWrapper {
         nonce = nonce,
         initialNumberOfEmptyRows = Some(1),
         maximumNumberOfFiles = Some(10),
+        maximumFileSizeBytes = Some(1024 * 1024 * 9),
         continueUrl = s"${appConfig.selfUrl}$continueUrl",
         backlinkUrl = s"${appConfig.selfUrl}$backLinkUrl",
         callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBack",
         continueAfterYesAnswerUrl = Some(s"${appConfig.selfUrl}$backLinkUrl"),
         cargo = UploadCargo(caseNumber),
         newFileDescription = documentType,
+        allowedContentTypes = Some("image/jpeg,image/png,application/pdf"),
+        allowedFileExtensions = Some(".jpg,.jpeg,.png,.pdf"),
         content = Some(UploadDocumentsContent(
-          serviceName = Some(appConfig.fileUploadServiceName),
+          serviceName = Some(messages("service.name")),
+          title = Some(s"Upload ${documentType.message.toLowerCase}"),
+          descriptionHtml = Some(
+            """<p class="govuk-body">""" +
+              s"${documentType.message} files can be up to a maximum of 9MB size per file. " +
+              "The selected file must be a JPG, PNG or PDF." +
+              "</p>"
+            ),
           serviceUrl = Some(appConfig.homepage),
           accessibilityStatementUrl = Some(appConfig.fileUploadAccessibilityUrl),
           phaseBanner = Some(appConfig.fileUploadPhase),
           phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
           userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
           contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
-          yesNoQuestionText = Some("Add a different type of supporting evidence"),
-          yesNoQuestionRequiredError = Some("Answer required")
+          yesNoQuestionText = Some("Add a different type of supporting evidence to your claim?"),
+          yesNoQuestionRequiredError = Some("Select yes to add a different type of supporting document to your claim"),
+          allowedFilesTypesHint = Some("The selected file must be a JPG, PNG or PDF"),
+          fileUploadedProgressBarLabel = Some("Uploaded")
         )),
         features = Some(
           UploadDocumentsFeatures(
