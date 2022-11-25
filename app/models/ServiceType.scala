@@ -17,7 +17,7 @@
 package models
 
 import play.api.libs.json._
-import play.api.mvc.PathBindable
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 sealed trait ServiceType {
   val dec64ServiceType: String
@@ -43,6 +43,22 @@ object ServiceType {
       value match {
         case NDRC => "NDRC"
         case SCTY => "SCTY"
+      }
+    }
+  }
+
+  implicit def queryBindable: QueryStringBindable[ServiceType] = new QueryStringBindable[ServiceType] {
+    override def bind(key: String, params: Map[String, Seq[String]]): Option[Either[String, ServiceType]] =
+      params.apply(key) match {
+        case "NDRC" :: Nil => Some(Right(NDRC))
+        case "SCTY" :: Nil => Some(Right(SCTY))
+        case _ => Some(Left("Invalid service type"))
+      }
+
+    override def unbind(key: String, value: ServiceType): String = {
+      value match {
+        case NDRC => s"$key=NDRC"
+        case SCTY => s"$key=SCTY"
       }
     }
   }

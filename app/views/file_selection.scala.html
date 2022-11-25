@@ -26,19 +26,21 @@
         p: components.p,
         govukRadios: GovukRadios,
         formHelper: FormWithCSRF,
-        button: components.button
+        button: components.button,
+        insetText: components.inset_text,
+        paragraph: components.paragraph,
 )
 
 @(form: Form[_], serviceType: ServiceType, caseNumber: String, claimType: ClaimType, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     pageTitle = Some(messages("file.selection.title")),
-    navigationBannerEnabled = false) {
+        backLink = Some(routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched = false).url)) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, serviceType, claimType)) {
 
-        @h1("file.selection.title")
-        @p("file.selection.p1")
+        @h1(s"${messages("file.selection.title")} $caseNumber")
+        @insetText(content = HtmlContent(paragraph(Html(messages("file.selection.p1")))))
 
         @govukRadios(Radios(
             classes = "govuk-radios",

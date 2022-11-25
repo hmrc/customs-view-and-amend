@@ -23,13 +23,10 @@ import play.api.data.Form
 class FileSelectionFormProvider(claimType: ClaimType) extends Mappings {
 
   implicit val enumerable: Enumerable[FileSelection] =
-    claimType match {
-      case C285 => FileSelection.c285Enumerable
-      case `C&E1179` => FileSelection.`C&E1179Enumerable`
-    }
+    FileSelection.enumerable
 
   def apply(): Form[FileSelection] =
     Form(
-      "value" -> enumerable[FileSelection]("error.required")
+      "value" -> enumerable[FileSelection]("file.selection.error.required")
     )
 }
