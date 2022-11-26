@@ -22,7 +22,7 @@ import com.codahale.metrics.MetricRegistry
 import com.kenshoo.play.metrics.Metrics
 import connector.DataStoreConnector
 import models.Reimbursement
-import models.responses.{C285, ClaimType, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
+import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -42,13 +42,20 @@ import scala.concurrent.Future
 
 class FakeMetrics extends Metrics {
   override val defaultRegistry: MetricRegistry = new MetricRegistry
-  override val toJson: String = "{}"
+  override val toJson: String                  = "{}"
 }
 
-trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with ScalaFutures with Matchers with IntegrationPatience {
+trait SpecBase
+    extends AnyWordSpecLike
+    with MockitoSugar
+    with OptionValues
+    with ScalaFutures
+    with Matchers
+    with IntegrationPatience {
 
   def fakeRequest(method: String = "", path: String = ""): FakeRequest[AnyContentAsEmpty.type] =
-    FakeRequest(method, path).withCSRFToken.asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
+    FakeRequest(method, path).withCSRFToken
+      .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
       .withHeaders("X-Session-Id" -> "someSessionId")
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest("", ""))
@@ -78,12 +85,15 @@ trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with 
       claimantName = Some("name"),
       claimantEmailAddress = Some("email@email.com"),
       closedDate = Some("20221112"),
-      MRNDetails = Some(Seq(
-        ProcedureDetail("MRN", true)
-      )),
-      entryDetails = Some(Seq(
-        EntryDetail("entryNumber", true)
-      )
+      MRNDetails = Some(
+        Seq(
+          ProcedureDetail("MRN", true)
+        )
+      ),
+      entryDetails = Some(
+        Seq(
+          EntryDetail("entryNumber", true)
+        )
       ),
       reimbursement = Some(Seq(reimbursement))
     ),
@@ -96,7 +106,7 @@ trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with 
       Some("600000"),
       Some("600000"),
       Some("600000"),
-      Some("600000"),
+      Some("600000")
     )
   )
   val sctyCase: SCTYCase = SCTYCase(
@@ -121,14 +131,16 @@ trait SpecBase extends AnyWordSpecLike with MockitoSugar with OptionValues with 
     Some(Seq(reimbursement))
   )
 
-  def application: GuiceApplicationBuilder = new GuiceApplicationBuilder().overrides(
-    bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
-    bind[DataStoreConnector].toInstance(mockDataStoreConnector),
-    bind[Metrics].toInstance(new FakeMetrics)
-  ).configure(
-    "play.filters.csp.nonce.enabled" -> "false",
-    "auditing.enabled" -> "false",
-    "metrics.enabled" -> "false"
-  )
+  def application: GuiceApplicationBuilder = new GuiceApplicationBuilder()
+    .overrides(
+      bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
+      bind[DataStoreConnector].toInstance(mockDataStoreConnector),
+      bind[Metrics].toInstance(new FakeMetrics)
+    )
+    .configure(
+      "play.filters.csp.nonce.enabled" -> "false",
+      "auditing.enabled"               -> "false",
+      "metrics.enabled"                -> "false"
+    )
 
 }

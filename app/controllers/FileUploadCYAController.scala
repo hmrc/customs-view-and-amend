@@ -20,7 +20,6 @@ import actions.{EmailAction, IdentifierAction}
 import cats.data.EitherT
 import cats.data.EitherT.{fromOptionF, liftF}
 import config.AppConfig
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
 import models.{IdentifierRequest, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents, Result}
@@ -29,28 +28,31 @@ import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.FileUploadCheckYourAnswersHelper
 import views.html.errors.not_found
-import views.html.{upload_check_your_answers, upload_confirmation}
+import views.html.upload_check_your_answers
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FileUploadCYAController @Inject()(
-                                         mcc: MessagesControllerComponents,
-                                         authenticate: IdentifierAction,
-                                         verifyEmail: EmailAction,
-                                         claimService: ClaimService,
-                                         uploadedFilesCache: UploadedFilesCache,
-                                         uploadDocumentsCheckYourAnswers: upload_check_your_answers,
-                                         notFound: not_found,
-                                       )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
-
+class FileUploadCYAController @Inject() (
+  mcc: MessagesControllerComponents,
+  authenticate: IdentifierAction,
+  verifyEmail: EmailAction,
+  claimService: ClaimService,
+  uploadedFilesCache: UploadedFilesCache,
+  uploadDocumentsCheckYourAnswers: upload_check_your_answers,
+  notFound: not_found
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
   def onPageLoad(caseNumber: String, serviceType: ServiceType): Action[AnyContent] = actions.async { implicit request =>
     val result: EitherT[Future, Result, Result] = for {
-      _ <- fromOptionF[Future, Result, ClaimsMongo](claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+      _     <- fromOptionF[Future, Result, ClaimsMongo](
+                 claimService.authorisedToView(caseNumber, request.eori),
+                 NotFound(notFound())
+               )
       files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
       helper = new FileUploadCheckYourAnswersHelper(files)
     } yield Ok(uploadDocumentsCheckYourAnswers(caseNumber, serviceType, helper))

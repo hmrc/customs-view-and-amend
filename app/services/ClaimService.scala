@@ -16,32 +16,31 @@
 
 package services
 
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
+import connector.{ClaimsConnector, UploadDocumentsConnector}
 import repositories.{ClaimsCache, ClaimsMongo, UploadedFilesCache}
 import uk.gov.hmrc.http.HeaderCarrier
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimService @Inject()(
-                              financialsApiConnector: FinancialsApiConnector,
-                              uploadDocumentsConnector: UploadDocumentsConnector,
-                              uploadedFilesCache: UploadedFilesCache,
-                              claimsCache: ClaimsCache
-                            )(implicit executionContext: ExecutionContext){
+class ClaimService @Inject() (
+  claimsConnector: ClaimsConnector,
+  uploadDocumentsConnector: UploadDocumentsConnector,
+  uploadedFilesCache: UploadedFilesCache,
+  claimsCache: ClaimsCache
+)(implicit executionContext: ExecutionContext) {
 
   def authorisedToView(caseNumber: String, eori: String)(implicit hc: HeaderCarrier): Future[Option[ClaimsMongo]] =
     for {
-      _ <- financialsApiConnector.getClaims(eori)
+      _      <- claimsConnector.getClaims(eori)
       result <- claimsCache.getSpecificCase(eori, caseNumber)
     } yield result
 
-  def clearUploaded(caseNumber: String, initialRequest: Boolean)(implicit hc: HeaderCarrier): Future[Unit] = {
+  def clearUploaded(caseNumber: String, initialRequest: Boolean)(implicit hc: HeaderCarrier): Future[Unit] =
     if (initialRequest) {
       for {
         _ <- uploadedFilesCache.removeRecord(caseNumber)
         _ <- uploadDocumentsConnector.wipeData()
       } yield ()
     } else { Future.unit }
-  }
 }

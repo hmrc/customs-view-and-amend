@@ -17,16 +17,14 @@
 package controllers
 
 import actions.IdentifierAction
-import cats.syntax.EqOps
 import cats.data.EitherT._
-import cats.implicits.catsSyntaxEq
 import config.AppConfig
-import connector.{DataStoreConnector, FinancialsApiConnector}
+import connector.{DataStoreConnector, ClaimsConnector}
 import models.responses.C285
-import models.{ClaimDetail, ClaimStatus, Closed, InProgress, Pending, ServiceType}
+import models.{ClaimDetail, ServiceType}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.{ClaimsCache, ClaimsMongo}
+import repositories.ClaimsCache
 import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
@@ -35,25 +33,32 @@ import views.html.errors.not_found
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimDetailController @Inject()(mcc: MessagesControllerComponents,
-                                      authenticate: IdentifierAction,
-                                      dataStoreConnector: DataStoreConnector,
-                                      financialsApiConnector: FinancialsApiConnector,
-                                      claimService: ClaimService,
-                                      claimDetail: claim_detail,
-                                      claimsCache: ClaimsCache,
-                                      notFound: not_found)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
+class ClaimDetailController @Inject() (
+  mcc: MessagesControllerComponents,
+  authenticate: IdentifierAction,
+  dataStoreConnector: DataStoreConnector,
+  claimsConnector: ClaimsConnector,
+  claimService: ClaimService,
+  claimDetail: claim_detail,
+  claimsCache: ClaimsCache,
+  notFound: not_found
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
-  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] = authenticate.async { implicit request =>
-    (for {
-      claims <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
-      lrn = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
-      email <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
-      claim <- fromOptionF[Future, Result, ClaimDetail](financialsApiConnector.getClaimInformation(caseNumber, serviceType, lrn), NotFound(notFound()))
-      fileSelectionUrl = routes.FileSelectionController.onPageLoad(claim.caseNumber, claim.serviceType, claim.claimType.getOrElse(C285), initialRequest = false)
-    } yield {
-        Ok(claimDetail(claim, searched, email.value, fileSelectionUrl.url))
-    }).merge
-  }
+  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
+    authenticate.async { implicit request =>
+      (for {
+        claims          <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+        lrn              = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
+        email           <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
+        claim           <- fromOptionF[Future, Result, ClaimDetail](
+                             claimsConnector.getClaimInformation(caseNumber, serviceType, lrn),
+                             NotFound(notFound())
+                           )
+        fileSelectionUrl =
+          routes.FileSelectionController
+            .onPageLoad(claim.caseNumber, claim.serviceType, claim.claimType.getOrElse(C285), initialRequest = false)
+      } yield Ok(claimDetail(claim, searched, email.value, fileSelectionUrl.url))).merge
+    }
 }

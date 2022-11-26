@@ -18,7 +18,7 @@ package controllers
 
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
-import connector.FinancialsApiConnector
+import connector.ClaimsConnector
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,30 +29,36 @@ import views.html.claims_overview
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ClaimsOverview @Inject()(
-                                mcc: MessagesControllerComponents,
-                                searchCache: SearchCache,
-                                authenticate: IdentifierAction,
-                                verifyEmail: EmailAction,
-                                financialsApiConnector: FinancialsApiConnector,
-                                claimsOverview: claims_overview,
-                              )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
+class ClaimsOverview @Inject() (
+  mcc: MessagesControllerComponents,
+  searchCache: SearchCache,
+  authenticate: IdentifierAction,
+  verifyEmail: EmailAction,
+  claimsConnector: ClaimsConnector,
+  claimsOverview: claims_overview
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
   def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
-    searchCache.removeSearch(request.eori)
-      .flatMap(_ => {
-        financialsApiConnector.getClaims(request.eori)
-          .map(allClaims => Ok(claimsOverview(
-            0,
-            allClaims,
-            SearchFormHelper.create,
-            routes.ClaimSearch.onSubmit(),
-            request.companyName.orNull,
-            request.eori)))
+    searchCache
+      .removeSearch(request.eori)
+      .flatMap { _ =>
+        claimsConnector
+          .getClaims(request.eori)
+          .map(allClaims =>
+            Ok(
+              claimsOverview(
+                0,
+                allClaims,
+                SearchFormHelper.create,
+                routes.ClaimSearch.onSubmit(),
+                request.companyName.orNull,
+                request.eori
+              )
+            )
+          )
       }
-      )
   }
-
 
 }
