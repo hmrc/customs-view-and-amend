@@ -29,6 +29,7 @@
         button: components.button,
         insetText: components.inset_text,
         paragraph: components.paragraph,
+        errorSummary: components.error_summary
 )
 
 @(form: Form[_], serviceType: ServiceType, caseNumber: String, claimType: ClaimType, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
@@ -38,7 +39,7 @@
         backLink = Some(routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched = false).url)) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, serviceType, claimType)) {
-
+        @errorSummary(form.errors)
         @h1(s"${messages("file.selection.title")} $caseNumber")
         @insetText(content = HtmlContent(paragraph(Html(messages("file.selection.p1")))))
 
