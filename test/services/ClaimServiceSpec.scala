@@ -16,9 +16,8 @@
 
 package services
 
-import connector.{FinancialsApiConnector, UploadDocumentsConnector}
+import connector.{ClaimsConnector, UploadDocumentsConnector}
 import models.{AllClaims, ClosedClaim, InProgressClaim, NDRC, PendingClaim}
-import org.mockito.verification.VerificationMode
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -33,14 +32,14 @@ class ClaimServiceSpec extends SpecBase {
 
   "authorisedToView" should {
     "return the result of getSpecificCase" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(Some(claimsMongo)))
 
       running(app) {
-          val result = await(service.authorisedToView("caseNumber", "EORI"))
-          result.value mustBe claimsMongo
+        val result = await(service.authorisedToView("caseNumber", "EORI"))
+        result.value mustBe claimsMongo
       }
     }
   }
@@ -64,15 +63,33 @@ class ClaimServiceSpec extends SpecBase {
       }
     }
   }
-  
-  trait Setup {
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
 
-    val closedClaims: Seq[ClosedClaim] = (1 to 100).map { value =>
-      ClosedClaim("MRN", s"NDRC-${1000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value), "Closed")
+  trait Setup {
+    val claimsMongo: ClaimsMongo = ClaimsMongo(
+      Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
+      LocalDateTime.now()
+    )
+
+    val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
+      ClosedClaim(
+        "MRN",
+        s"NDRC-${1000 + value}",
+        NDRC,
+        None,
+        LocalDate.of(2021, 2, 1).plusDays(value),
+        LocalDate.of(2022, 1, 1).plusDays(value),
+        "Closed"
+      )
     }
-    val pendingClaims: Seq[PendingClaim] = (1 to 100).map { value =>
-      PendingClaim("MRN", s"NDRC-${2000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value), LocalDate.of(2022, 1, 1).plusDays(value))
+    val pendingClaims: Seq[PendingClaim]      = (1 to 100).map { value =>
+      PendingClaim(
+        "MRN",
+        s"NDRC-${2000 + value}",
+        NDRC,
+        None,
+        LocalDate.of(2021, 2, 1).plusDays(value),
+        LocalDate.of(2022, 1, 1).plusDays(value)
+      )
     }
     val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
       InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value))
@@ -86,17 +103,19 @@ class ClaimServiceSpec extends SpecBase {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
+    val mockClaimsConnector: ClaimsConnector                   = mock[ClaimsConnector]
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
-    val mockUploadedFilesCache: UploadedFilesCache = mock[UploadedFilesCache]
-    val mockClaimsCache: ClaimsCache = mock[ClaimsCache]
+    val mockUploadedFilesCache: UploadedFilesCache             = mock[UploadedFilesCache]
+    val mockClaimsCache: ClaimsCache                           = mock[ClaimsCache]
 
-    val app: Application = application.overrides(
-      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector),
-      inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
-      inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
-      inject.bind[ClaimsCache].toInstance(mockClaimsCache)
-    ).build()
+    val app: Application = application
+      .overrides(
+        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
+        inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
+        inject.bind[ClaimsCache].toInstance(mockClaimsCache)
+      )
+      .build()
 
     val service: ClaimService = app.injector.instanceOf[ClaimService]
   }

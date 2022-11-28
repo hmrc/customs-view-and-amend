@@ -16,11 +16,11 @@
 
 package controllers
 
-import connector.FinancialsApiConnector
+import connector.ClaimsConnector
 import models._
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import org.scalatest.matchers.must.Matchers._
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.{ClaimsCache, ClaimsMongo}
@@ -35,14 +35,15 @@ class ClaimDetailControllerSpec extends SpecBase {
 
   "claimDetail" should {
     "return OK when a in progress claim has been found" in new Setup {
-      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail)))
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
+        val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
@@ -50,12 +51,13 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a pending claim has been found" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockFinancialsApiConnector.getClaimInformation(any,any, any)(any))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+        val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
@@ -63,12 +65,13 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a closed claim has been found" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+        val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
@@ -78,8 +81,9 @@ class ClaimDetailControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
@@ -92,7 +96,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
-        val result = route(app, request).value
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
@@ -100,12 +104,12 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return NOT_FOUND when claim not found from the API" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(None))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
-        val result = route(app, request).value
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
@@ -113,22 +117,26 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return NOT_FOUND when a claim is not present in the list of claims" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockFinancialsApiConnector.getClaimInformation(any, any, any)(any))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
   }
 
   trait Setup {
-    val mockClaimsCache: ClaimsCache = mock[ClaimsCache]
-    val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "someClaim", NDRC, Some("LRN"), LocalDate.of(2021, 10, 23))), LocalDateTime.now())
-    val mockClaimService: ClaimService = mock[ClaimService]
+    val mockClaimsCache: ClaimsCache         = mock[ClaimsCache]
+    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
+    val claimsMongo: ClaimsMongo             = ClaimsMongo(
+      Seq(InProgressClaim("MRN", "someClaim", NDRC, Some("LRN"), LocalDate.of(2021, 10, 23))),
+      LocalDateTime.now()
+    )
+    val mockClaimService: ClaimService       = mock[ClaimService]
 
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
@@ -151,11 +159,13 @@ class ClaimDetailControllerSpec extends SpecBase {
     when(mockDataStoreConnector.getEmail(any)(any))
       .thenReturn(Future.successful(Right(Email("some@email.com"))))
 
-    val app: Application = application.overrides(
-      inject.bind[ClaimsCache].toInstance(mockClaimsCache),
-      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector),
-      inject.bind[ClaimService].toInstance(mockClaimService)
-    ).build()
+    val app: Application = application
+      .overrides(
+        inject.bind[ClaimsCache].toInstance(mockClaimsCache),
+        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        inject.bind[ClaimService].toInstance(mockClaimService)
+      )
+      .build()
   }
 
 }

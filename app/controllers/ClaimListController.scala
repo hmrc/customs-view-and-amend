@@ -18,7 +18,7 @@ package controllers
 
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
-import connector.FinancialsApiConnector
+import connector.ClaimsConnector
 import forms.SearchFormHelper
 import models.{AllClaims, IdentifierRequest}
 import play.api.i18n.I18nSupport
@@ -31,15 +31,17 @@ import views.components.hints.DropdownHints
 import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
-class ClaimListController @Inject()(mcc: MessagesControllerComponents,
-                                    authenticate: IdentifierAction,
-                                    verifyEmail: EmailAction,
-                                    financialsApiConnector: FinancialsApiConnector,
-                                    claimsClosed: claims_closed,
-                                    claimsPending: claims_pending,
-                                    claimsInProgress: claims_in_progress,
-                                   )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
+class ClaimListController @Inject() (
+  mcc: MessagesControllerComponents,
+  authenticate: IdentifierAction,
+  verifyEmail: EmailAction,
+  claimsConnector: ClaimsConnector,
+  claimsClosed: claims_closed,
+  claimsPending: claims_pending,
+  claimsInProgress: claims_in_progress
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
   private val caseStatusHints: DropdownHints =
     DropdownHints.range(elementIndex = 0, maxHints = 6)
@@ -47,33 +49,39 @@ class ClaimListController @Inject()(mcc: MessagesControllerComponents,
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims: AllClaims =>
-      Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page),
-        SearchFormHelper.create,
-        routes.ClaimSearch.onSubmit()
-      ))
+    claimsConnector.getClaims(request.eori).map { claims: AllClaims =>
+      Ok(
+        claimsInProgress(
+          InProgressClaimListViewModel(claims.inProgressClaims, page),
+          SearchFormHelper.create,
+          routes.ClaimSearch.onSubmit()
+        )
+      )
     }
   }
 
   def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims =>
-      Ok(claimsPending(
-        PendingClaimListViewModel(claims.pendingClaims, page),
-        SearchFormHelper.create,
-        routes.ClaimSearch.onSubmit()
-      ))
+    claimsConnector.getClaims(request.eori).map { claims =>
+      Ok(
+        claimsPending(
+          PendingClaimListViewModel(claims.pendingClaims, page),
+          SearchFormHelper.create,
+          routes.ClaimSearch.onSubmit()
+        )
+      )
     }
   }
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    financialsApiConnector.getClaims(request.eori).map { claims => {
-      Ok(claimsClosed(
-        ClosedClaimListViewModel(claims.closedClaims, page),
-        caseStatusHints,
-        SearchFormHelper.create,
-        routes.ClaimSearch.onSubmit()
-      ))
-    }
+    claimsConnector.getClaims(request.eori).map { claims =>
+      Ok(
+        claimsClosed(
+          ClosedClaimListViewModel(claims.closedClaims, page),
+          caseStatusHints,
+          SearchFormHelper.create,
+          routes.ClaimSearch.onSubmit()
+        )
+      )
     }
   }
 }

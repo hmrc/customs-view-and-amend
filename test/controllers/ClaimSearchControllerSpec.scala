@@ -16,7 +16,7 @@
 
 package controllers
 
-import connector.FinancialsApiConnector
+import connector.ClaimsConnector
 import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -37,7 +37,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
       }
@@ -48,7 +48,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(SearchQuery(None, "testing"))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
       }
@@ -59,12 +59,12 @@ class ClaimSearchControllerSpec extends SpecBase {
     "return BAD_REQUEST when field is empty" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
         fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "")
-      val result: Future[Result] = route(app, request).value
+      val result: Future[Result]                           = route(app, request).value
       status(result) mustBe BAD_REQUEST
     }
 
     "return a search result when the field is not empty" in new Setup {
-      when(mockFinancialsApiConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
       when(mockSearchCache.set(any, any, any))
@@ -72,7 +72,7 @@ class ClaimSearchControllerSpec extends SpecBase {
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
         fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "NDRC-2000")
-      val result: Future[Result] = route(app, request).value
+      val result: Future[Result]                           = route(app, request).value
       status(result) mustBe SEE_OTHER
       redirectLocation(result).value mustBe routes.ClaimSearch.searchResult().url
     }
@@ -84,7 +84,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(SearchQuery(None, "testing"))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
       }
@@ -95,7 +95,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe routes.ClaimSearch.onPageLoad().url
@@ -103,21 +103,24 @@ class ClaimSearchControllerSpec extends SpecBase {
     }
   }
 
-
   trait Setup {
-    val mockFinancialsApiConnector: FinancialsApiConnector = mock[FinancialsApiConnector]
-    val mockSearchCache: SearchCache = mock[SearchCache]
+    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
+    val mockSearchCache: SearchCache                       = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
-      pendingClaims = Seq(PendingClaim("MRN", "NDRC-0001", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
+      pendingClaims =
+        Seq(PendingClaim("MRN", "NDRC-0001", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
       inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, LocalDate.of(2019, 1, 1))),
-      closedClaims = Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1), "Closed"))
+      closedClaims =
+        Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1), "Closed"))
     )
 
-    val app: Application = application.overrides(
-      inject.bind[FinancialsApiConnector].toInstance(mockFinancialsApiConnector),
-      inject.bind[SearchCache].toInstance(mockSearchCache)
-    ).build()
+    val app: Application = application
+      .overrides(
+        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        inject.bind[SearchCache].toInstance(mockSearchCache)
+      )
+      .build()
   }
 
 }
