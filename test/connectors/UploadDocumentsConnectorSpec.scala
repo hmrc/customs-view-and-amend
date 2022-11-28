@@ -20,6 +20,7 @@ import connector.UploadDocumentsConnector
 import models.FileSelection.AdditionalSupportingDocuments
 import models.NDRC
 import models.responses.C285
+import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -30,6 +31,7 @@ import utils.SpecBase
 import scala.concurrent.Future
 
 class UploadDocumentsConnectorSpec extends SpecBase {
+  implicit val messages: Messages = stubMessages()
 
   "startFileUpload" should {
     "return the response header on a successful request" in new Setup {

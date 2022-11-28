@@ -20,6 +20,7 @@ import connector.UploadDocumentsConnector
 import models.responses.{C285, `C&E1179`}
 import models.{InProgressClaim, NDRC}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.i18n.Messages
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import repositories.ClaimsMongo
@@ -30,6 +31,7 @@ import java.time.{LocalDate, LocalDateTime}
 import scala.concurrent.Future
 
 class FileSelectionControllerSpec extends SpecBase {
+  implicit val messages: Messages = stubMessages()
 
   "onPageLoad" should {
     "return NOT_FOUND if the user is not authorised to view the page" in new Setup {
@@ -74,7 +76,7 @@ class FileSelectionControllerSpec extends SpecBase {
     "return OK on a successful request" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any, any))
         .thenReturn(Future.successful(Some("/url")))
 
       running(app) {
@@ -83,7 +85,7 @@ class FileSelectionControllerSpec extends SpecBase {
         )
         val result = route(app, request).value
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10100/url"
+        redirectLocation(result).value mustBe "http://localhost:10110/url"
       }
     }
 
@@ -112,7 +114,7 @@ class FileSelectionControllerSpec extends SpecBase {
     "return NOT_FOUND if no redirect location provided from the file upload service" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any))
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any, any))
         .thenReturn(Future.successful(None))
 
       running(app) {

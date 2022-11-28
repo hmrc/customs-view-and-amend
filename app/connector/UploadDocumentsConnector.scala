@@ -22,6 +22,7 @@ import models.file_upload.{Nonce, UploadDocumentsWrapper}
 import models.responses.ClaimType
 import play.api.Logging
 import play.api.http.Status.{CREATED, NO_CONTENT}
+import play.api.i18n.Messages
 import repositories.UploadedFilesCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
@@ -34,7 +35,7 @@ class UploadDocumentsConnector @Inject()(httpClient: HttpClient,
 
 
 
-  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: FileSelection)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: FileSelection)(implicit hc: HeaderCarrier, messages: Messages): Future[Option[String]] = {
     val nonce = Nonce.random
     for {
       previouslyUploaded <- uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber)
