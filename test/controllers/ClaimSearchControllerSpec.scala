@@ -74,7 +74,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "NDRC-2000")
       val result: Future[Result]                           = route(app, request).value
       status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe routes.ClaimSearch.searchResult().url
+      redirectLocation(result).value mustBe routes.ClaimSearch.onSubmit().url
     }
   }
 
@@ -84,7 +84,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some(SearchQuery(None, "testing"))))
 
       running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.onSubmit().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
       }
@@ -95,7 +95,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
+        val request                = fakeRequest(GET, routes.ClaimSearch.onSubmit().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe routes.ClaimSearch.onPageLoad().url
