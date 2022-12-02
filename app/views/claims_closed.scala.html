@@ -36,11 +36,7 @@
 @layout(pageTitle = Some(title),
         backLink = Some(routes.ClaimsOverview.show.url)) {
           
-          @headerArea(key,
-                      searchForm,
-                      postAction, 
-                      true, 
-                      true)
+          @headerArea(key, showInset = true)
           
           @dropdownDetails( summary = (s"$key.details.heading"), content = caseStatusHints.renderHintsWithLabels(key))
           

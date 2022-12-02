@@ -19,7 +19,7 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
-import forms.SearchFormProvider
+import forms.SearchFormHelper
 import models.IdentifierRequest
 import play.api.data.Form
 import play.api.i18n.I18nSupport
@@ -35,7 +35,6 @@ class ClaimSearch @Inject() (
   connector: ClaimsConnector,
   mcc: MessagesControllerComponents,
   searchCache: SearchCache,
-  searchForm: SearchFormProvider,
   searchClaim: search_claims,
   searchResult: search_result,
   authenticate: IdentifierAction,
@@ -44,34 +43,27 @@ class ClaimSearch @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val formProvider: Form[String]                            = searchForm()
+  val formProvider: Form[String]                            = SearchFormHelper.create
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def onPageLoad(): Action[AnyContent] = actions.async { implicit request =>
+  def onPageLoad(): Action[AnyContent] = actions.async { implicit request => {
     searchCache.get(request.eori).map {
-      case Some(value) => Ok(searchClaim(formProvider.fill(value.query)))
-      case None        => Ok(searchClaim(formProvider))
+      case Some(value) => Ok(searchClaim(formProvider.fill(value.query), routes.ClaimSearch.onSubmit()))
+      case None => Ok(searchClaim(formProvider, routes.ClaimSearch.onSubmit()))
     }
+  }
+
   }
 
   def onSubmit(): Action[AnyContent] = actions.async { implicit request =>
     formProvider
       .bindFromRequest()
       .fold(
-        _ => Future.successful(BadRequest(searchClaim(formProvider))),
-        query =>
-          for {
-            allClaims <- connector.getClaims(request.eori)
-            foundClaim = allClaims.findClaim(query)
-            _         <- searchCache.set(request.eori, foundClaim, query)
-          } yield Redirect(routes.ClaimSearch.searchResult())
+        _ => Future.successful(BadRequest(searchClaim(formProvider, routes.ClaimSearch.onSubmit(), Seq.empty))),
+        query => connector.getClaims(request.eori).map(claims => {
+            Ok(searchClaim(formProvider, routes.ClaimSearch.onSubmit(), claims.findClaim(query), Some(query), searched = true))
+        })
       )
   }
 
-  def searchResult(): Action[AnyContent] = actions.async { implicit request =>
-    searchCache.get(request.eori).map {
-      case Some(value) => Ok(searchResult(value.claim, value.query))
-      case None        => Redirect(routes.ClaimSearch.onPageLoad())
-    }
-  }
 }

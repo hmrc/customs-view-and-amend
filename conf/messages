@@ -21,7 +21,7 @@ service.banner.search = Find a claim
 #===================================================
 search.title=Search for a claim
 search.error=Please enter a valid input
-search.desc=Search by case reference number, movement reference number (MRN), local reference number (LRN)
+search.desc=Search by case reference number or movement reference number (MRN)
 search.button=Search
 
 
@@ -145,11 +145,27 @@ claim.list.table.closed = Sorted by closest removal date.
 claim.list.table.pending = Sorted by closest respond by date.
 claim.list.table.progress = Sorted by closest claim start date.
 
-claim.search.title = Find a claim
-claim.search.result.title = Search results
+#===================================================
+#  FIND A CLAIM - PAGE
+#===================================================
+
+claim.search.title=Find a claim
+claim.search.inset=Search by case reference number or movement reference number (MRN)
+
+claim.search.result.title=Your search returned
+claim.search.result.fail.title=There are no matching results for {0}.
+claim.search.result.fail.hint=Try searching again by:
+claim.search.result.fail.bullet=double-checking your case reference or MRN
+claim.search.result.case=Case reference
+claim.search.result.mrn=MRN
+claim.search.result.type=Claim type
+claim.search.result.status=Claim status
+claim.search.result.closed=Closed
+claim.search.result.pending=Pending
+claim.search.result.in-progress=In Progress
+
 claim.search.result = There is <strong>{0}</strong> matching result for ‘{1}’.
 claim.search.p1 = Enter a case reference or Movement Reference Number (MRN)
-claim.search.hint = For example, '‘NDRC-1234’' or '‘22GBJD4DCMAM33DOI2’'.
 claim.search.button = Search
 
 claim.search.none.title = No results found

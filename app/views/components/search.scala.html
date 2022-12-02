@@ -15,6 +15,7 @@
  *@
 
 @import play.twirl.api.Html
+@import forms.SearchFormHelper
 
 @this(
         paragraph: components.paragraph,
@@ -24,15 +25,18 @@
         formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 )
 
-@(form: Form[String], postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages)
+@(form: Form[String] = SearchFormHelper.create, showSearchTitle: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
 
     @key = @{"search"}
 
     <br/>
-    @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
+    @if(showSearchTitle) {
+        @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
+    }
+
     @paragraph(Html(messages(s"$key.desc")))
 
-    @formWithCSRF(postAction, 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.ClaimSearch.onSubmit(), 'novalidate -> "novalidate") {
 
         <div class="govuk-form-group">
             <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="text"/>

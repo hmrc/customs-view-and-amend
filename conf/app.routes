@@ -22,7 +22,6 @@ POST        /update-files                                         controllers.Fi
 
 GET         /find-a-claim                                         controllers.ClaimSearch.onPageLoad()
 POST        /find-a-claim                                         controllers.ClaimSearch.onSubmit()
-GET         /find-a-claim/result                                  controllers.ClaimSearch.searchResult()
 
 GET         /logout-survey                                        controllers.LogoutController.logout
 GET         /logout                                               controllers.LogoutController.logoutNoSurvey

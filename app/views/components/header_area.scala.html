@@ -16,6 +16,7 @@
 
 @import play.twirl.api.Html
 @import uk.gov.hmrc.govukfrontend.views.html.components._
+@import forms.SearchFormHelper
 
 @this(
     heading: components.heading,
@@ -25,10 +26,10 @@
     )
 
 @(key: String,
-  form: Form[String],
-  postAction: Call,
+  form: Form[String] = SearchFormHelper.create,
   showCompanyNameAndEori: Boolean = true,
-  showInset: Boolean = false)(implicit request: IdentifierRequest[_], messages: Messages)
+  showInset: Boolean = false,
+  showSearchTitle: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
 
 @if(showCompanyNameAndEori) {
   @heading(Html(messages(s"${key}.title")), caption = messages("common.company-name-and-eori", request.companyName.orNull, request.eori))
@@ -37,7 +38,7 @@
 }
 
 @if(showInset){
-@insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
+    @insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
 }
 
-@search(form, postAction)
+@search(showSearchTitle = showSearchTitle)
