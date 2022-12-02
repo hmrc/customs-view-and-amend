@@ -164,15 +164,9 @@ claim.search.result.closed=Closed
 claim.search.result.pending=Pending
 claim.search.result.in-progress=In Progress
 
-claim.search.result = There is <strong>{0}</strong> matching result for ‘{1}’.
-claim.search.p1 = Enter a case reference or Movement Reference Number (MRN)
-claim.search.button = Search
-
-claim.search.none.title = No results found
-claim.search.none.p1 = There are <strong>0</strong> matching results for {0}.
-claim.search.none.link = searching again
-claim.search.none.link.pre = Try
-claim.search.none.link.post = by double-checking your case reference or MRN.
+#===================================================
+#  CASE STATUS
+#===================================================
 
 case.pending = Pending
 case.inProgress = In progress
