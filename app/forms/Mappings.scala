@@ -19,9 +19,7 @@ package forms
 import models.Enumerable
 import play.api.data.Forms._
 import play.api.data.format.Formatter
-import play.api.data.{FieldMapping, FormError, Mapping}
-
-import java.time.LocalDate
+import play.api.data.{FieldMapping, FormError}
 
 trait Mappings {
 

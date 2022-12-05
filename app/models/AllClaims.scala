@@ -16,15 +16,21 @@
 
 package models
 
+import play.api.libs.json.{Json, OFormat}
+
 case class AllClaims(pendingClaims: Seq[PendingClaim],
                      inProgressClaims: Seq[InProgressClaim],
                      closedClaims: Seq[ClosedClaim]) {
 
   def collectAll: Seq[Claim] = pendingClaims ++ inProgressClaims ++ closedClaims
 
-  def findClaim(query: String): Option[Claim] = collectAll.find(claim =>
+  def findClaim(query: String): Seq[Claim] = collectAll.filter(claim =>
     claim.caseNumber.toUpperCase == query.toUpperCase ||
       claim.declarationId.toUpperCase == query.toUpperCase
   )
 
+}
+
+object AllClaims {
+  implicit val format: OFormat[AllClaims] = Json.format[AllClaims]
 }

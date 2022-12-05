@@ -32,21 +32,7 @@ import scala.concurrent.Future
 class ClaimSearchControllerSpec extends SpecBase {
 
   "onPageLoad" should {
-    "return OK when no data found in search cache" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(None))
-
-      running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
-        val result: Future[Result] = route(app, request).value
-        status(result) mustBe OK
-      }
-    }
-
-    "return OK when data found in search cache" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(Some(SearchQuery(None, "testing"))))
-
+    "return OK" in new Setup {
       running(app) {
         val request                = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
         val result: Future[Result] = route(app, request).value
@@ -61,45 +47,43 @@ class ClaimSearchControllerSpec extends SpecBase {
         fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "")
       val result: Future[Result]                           = route(app, request).value
       status(result) mustBe BAD_REQUEST
+      verify(mockSearchCache, times(0)).get(any)
+      verify(mockSearchCache, times(0)).set(any, any, any)
+      verify(mockClaimsConnector, times(0)).getClaims(any)(any)
     }
 
-    "return a search result when the field is not empty" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(allClaims))
+    "return OK when the field is not empty and search cache is available" in new Setup {
+      when(mockSearchCache.get(any))
+        .thenReturn(Future.successful(Some(SearchQuery(allClaims, "query"))))
+
+      val request: FakeRequest[AnyContentAsFormUrlEncoded] =
+        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
+      val result: Future[Result]                           = route(app, request).value
+
+      status(result) mustBe OK
+      verify(mockSearchCache, times(1)).get(any)
+      verify(mockSearchCache, times(0)).set(any, any, any)
+      verify(mockClaimsConnector, times(0)).getClaims(any)(any)
+    }
+
+    "return OK when the field is not empty and search cache is NOT available" in new Setup {
+      when(mockSearchCache.get(any))
+        .thenReturn(Future.successful(None))
 
       when(mockSearchCache.set(any, any, any))
         .thenReturn(Future.successful(true))
 
+      when(mockClaimsConnector.getClaims(any)(any))
+        .thenReturn(Future.successful(allClaims))
+
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "NDRC-2000")
-      val result: Future[Result]                           = route(app, request).value
-      status(result) mustBe SEE_OTHER
-      redirectLocation(result).value mustBe routes.ClaimSearch.searchResult().url
-    }
-  }
+        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
+      val result: Future[Result] = route(app, request).value
 
-  "searchResult" should {
-    "return OK when cached search available" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(Some(SearchQuery(None, "testing"))))
-
-      running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
-        val result: Future[Result] = route(app, request).value
-        status(result) mustBe OK
-      }
-    }
-
-    "redirect to the search form if no cached search available" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(None))
-
-      running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.searchResult().url)
-        val result: Future[Result] = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.ClaimSearch.onPageLoad().url
-      }
+      status(result) mustBe OK
+      verify(mockSearchCache, times(1)).get(any)
+      verify(mockSearchCache, times(1)).set(any, any, any)
+      verify(mockClaimsConnector, times(1)).getClaims(any)(any)
     }
   }
 

@@ -51,7 +51,7 @@ class ClaimsOverview @Inject() (
               claimsOverview(
                 0,
                 allClaims,
-                SearchFormHelper.create,
+                SearchFormHelper.form,
                 routes.ClaimSearch.onSubmit(),
                 request.companyName.orNull,
                 request.eori

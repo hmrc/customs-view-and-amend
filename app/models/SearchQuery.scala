@@ -16,4 +16,4 @@
 
 package models
 
-case class SearchQuery(claim: Option[Claim], query: String)
+case class SearchQuery(claims: AllClaims, query: String)

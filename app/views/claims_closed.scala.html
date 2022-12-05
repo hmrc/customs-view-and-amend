@@ -26,9 +26,7 @@
       dropdownDetails: components.dropdown_details)
 
 @(model: ClosedClaimListViewModel,
-  caseStatusHints: DropdownHints,
-  searchForm: Form[String],
-  postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+  caseStatusHints: DropdownHints)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"claim.list.closed"}
 @title = @{messages(s"$key.title")}
@@ -36,11 +34,7 @@
 @layout(pageTitle = Some(title),
         backLink = Some(routes.ClaimsOverview.show.url)) {
           
-          @headerArea(key,
-                      searchForm,
-                      postAction, 
-                      true, 
-                      true)
+          @headerArea(key, showInset = true)
           
           @dropdownDetails( summary = (s"$key.details.heading"), content = caseStatusHints.renderHintsWithLabels(key))
           

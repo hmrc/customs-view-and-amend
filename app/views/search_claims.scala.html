@@ -18,30 +18,28 @@
 @import config.AppConfig
 
 @this(layout: Layout,
-        formHelper: FormWithCSRF,
-        h1: components.h1,
+        headerArea: components.header_area,
+        subHeading: components.sub_heading,
+        searchTable: components.search_table,
         p: components.p,
-        hint: components.hint,
-        button: components.button,
-        searchResult: components.search_result_table,
-        unorderedList: components.unordered_list,
-        textInput: components.inputText,
-        searchInput: components.search_input)
+        bullets: components.bullets)
 
-@(form: Form[_], claim: Option[Claim] = None, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claims: Seq[Claim] = Seq.empty, query: Option[String] = None, searched: Boolean = false)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@key = @{"claim.search"}
 
-@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true, backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true) {
 
-    @formHelper(action = routes.ClaimSearch.onSubmit()) {
-        @textInput(form,
-            id = "search-claim",
-            classes = Some("govuk-!-width-one-third"),
-            name = "value",
-            label = "claim.search.title",
-            hint = Some("claim.search.hint"),
-            isPageHeading = true
-        )
+    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false)
 
-        @button("claim.search.button")
+    @if(searched) {
+        @if(claims.nonEmpty) {
+            @subHeading(Html(messages(s"$key.result.title")), classes = "govuk-heading-m")
+            @searchTable(claims)
+        } else {
+            @subHeading(Html(messages(s"$key.result.fail.title", query.get)), classes = "govuk-heading-m")
+            @p(s"$key.result.fail.hint")
+            @bullets(Seq(Html(messages(s"$key.result.fail.bullet"))))
+        }
     }
+
 }
