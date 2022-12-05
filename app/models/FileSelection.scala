@@ -16,7 +16,6 @@
 
 package models
 
-import models.responses.{C285, ClaimType, `C&E1179`}
 import play.api.data.Form
 import play.api.i18n.Messages
 import play.api.libs.json._

@@ -16,7 +16,7 @@
 
 package forms
 
-import models.responses.{C285, ClaimType, `C&E1179`}
+import models.responses.ClaimType
 import models.{Enumerable, FileSelection}
 import play.api.data.Form
 

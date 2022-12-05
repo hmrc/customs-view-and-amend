@@ -16,7 +16,6 @@
 
 package models.responses
 
-import akka.http.scaladsl.model.DateTime
 import helpers.DateFormatters
 import models._
 import play.api.libs.functional.syntax._
