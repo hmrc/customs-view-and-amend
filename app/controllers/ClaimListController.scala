@@ -19,7 +19,6 @@ package controllers
 import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
-import forms.SearchFormHelper
 import models.{AllClaims, IdentifierRequest}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
@@ -50,38 +49,19 @@ class ClaimListController @Inject() (
 
   def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     claimsConnector.getClaims(request.eori).map { claims: AllClaims =>
-      Ok(
-        claimsInProgress(
-          InProgressClaimListViewModel(claims.inProgressClaims, page),
-          SearchFormHelper.create,
-          routes.ClaimSearch.onSubmit()
-        )
-      )
+      Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page)))
     }
   }
 
   def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     claimsConnector.getClaims(request.eori).map { claims =>
-      Ok(
-        claimsPending(
-          PendingClaimListViewModel(claims.pendingClaims, page),
-          SearchFormHelper.create,
-          routes.ClaimSearch.onSubmit()
-        )
-      )
+      Ok(claimsPending(PendingClaimListViewModel(claims.pendingClaims, page)))
     }
   }
 
   def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
     claimsConnector.getClaims(request.eori).map { claims =>
-      Ok(
-        claimsClosed(
-          ClosedClaimListViewModel(claims.closedClaims, page),
-          caseStatusHints,
-          SearchFormHelper.create,
-          routes.ClaimSearch.onSubmit()
-        )
-      )
+      Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page), caseStatusHints))
     }
   }
 }

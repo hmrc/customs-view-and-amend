@@ -16,6 +16,8 @@
 
 package models
 
+import play.api.libs.json.{Json, OFormat}
+
 case class AllClaims(pendingClaims: Seq[PendingClaim],
                      inProgressClaims: Seq[InProgressClaim],
                      closedClaims: Seq[ClosedClaim]) {
@@ -27,4 +29,8 @@ case class AllClaims(pendingClaims: Seq[PendingClaim],
       claim.declarationId.toUpperCase == query.toUpperCase
   )
 
+}
+
+object AllClaims {
+  implicit val format: OFormat[AllClaims] = Json.format[AllClaims]
 }

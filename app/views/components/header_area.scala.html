@@ -26,7 +26,7 @@
     )
 
 @(key: String,
-  form: Form[String] = SearchFormHelper.create,
+  form: Form[String] = SearchFormHelper.form,
   showCompanyNameAndEori: Boolean = true,
   showInset: Boolean = false,
   showSearchTitle: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)

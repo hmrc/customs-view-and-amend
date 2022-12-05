@@ -20,9 +20,7 @@
 
 @this(layout: Layout, claimTable: components.claim_table, headerArea: components.header_area)
 
-@(model: InProgressClaimListViewModel,
-        searchForm: Form[String],
-        postAction: Call)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(model: InProgressClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
     @key = @{"claim.list.progress"}
 

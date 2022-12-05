@@ -16,7 +16,7 @@
 
 package repositories
 
-import models.SearchQuery
+import models.{AllClaims, SearchQuery}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.test.Helpers._
@@ -38,11 +38,11 @@ class SearchCacheSpec extends SpecBase {
 
     "return a SearchQuery if data found in the db" in new Setup {
       await(for {
-        _ <- database.set("someId", None, "testing")
+        _ <- database.set("someId", AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
         result <- database.get("someId")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result.value mustBe SearchQuery(None, "testing")
+        result.value mustBe SearchQuery(AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
       })
     }
   }
@@ -50,11 +50,11 @@ class SearchCacheSpec extends SpecBase {
   "set" should {
     "insert a document correctly" in new Setup {
       await(for {
-        _ <- database.set("someId", None, "testing")
+        _ <- database.set("someId", AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
         result <- database.get("someId")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result.value mustBe SearchQuery(None, "testing")
+        result.value mustBe SearchQuery(AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
       })
     }
   }
@@ -62,13 +62,13 @@ class SearchCacheSpec extends SpecBase {
   "removeSearch" should {
     "remove a search query from the database" in new Setup {
       await(for {
-        _ <- database.set("someId", None, "testing")
+        _ <- database.set("someId", AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
         result1 <- database.get("someId")
         _ <- database.removeSearch("someId")
         result2 <- database.get("someId")
         _ <- database.collection.drop().toFuture()
       } yield {
-        result1.value mustBe SearchQuery(None, "testing")
+        result1.value mustBe SearchQuery(AllClaims(Seq.empty, Seq.empty, Seq.empty), "testing")
         result2 mustBe None
       })
     }

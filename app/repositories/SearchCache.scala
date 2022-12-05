@@ -16,7 +16,7 @@
 
 package repositories
 
-import models.{Claim, SearchQuery}
+import models.{AllClaims, SearchQuery}
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{IndexModel, IndexOptions, ReplaceOptions}
@@ -51,10 +51,10 @@ class DefaultSearchCache @Inject()(mongo: MongoComponent, config: Configuration)
       .map(_.map(_.toSearchQuery))
 
 
-  override def set(id: String, claim: Option[Claim], query: String): Future[Boolean] =
+  override def set(id: String, claims: AllClaims, query: String): Future[Boolean] =
     collection.replaceOne(
       equal("_id", id),
-      SearchQueryMongo(claim, query, LocalDateTime.now()),
+      SearchQueryMongo(claims, query, LocalDateTime.now()),
       ReplaceOptions().upsert(true)
     ).toFuture().map(_.wasAcknowledged())
 
@@ -66,12 +66,12 @@ class DefaultSearchCache @Inject()(mongo: MongoComponent, config: Configuration)
 
 trait SearchCache {
   def get(id: String): Future[Option[SearchQuery]]
-  def set(id: String, claim: Option[Claim], query: String): Future[Boolean]
+  def set(id: String, claims: AllClaims, query: String): Future[Boolean]
   def removeSearch(id: String): Future[Boolean]
 }
 
-case class SearchQueryMongo(claim: Option[Claim], query: String, lastUpdated: LocalDateTime) {
-  def toSearchQuery: SearchQuery = SearchQuery(claim, query)
+case class SearchQueryMongo(claims: AllClaims, query: String, lastUpdated: LocalDateTime) {
+  def toSearchQuery: SearchQuery = SearchQuery(claims, query)
 }
 
 object SearchQueryMongo {

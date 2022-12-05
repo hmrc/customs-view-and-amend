@@ -23,7 +23,7 @@ import utils.SpecBase
 class SearchFormHelperSpec extends SpecBase {
   "searchForm" should {
 
-    val testForm = SearchFormHelper.create
+    val testForm = SearchFormHelper.form
 
     "allow valid input" in {
       val result: Form[String] = testForm.fillAndValidate("Foo")

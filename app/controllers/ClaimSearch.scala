@@ -20,13 +20,13 @@ import actions.{EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
 import forms.SearchFormHelper
-import models.IdentifierRequest
+import models.{AllClaims, Claim, IdentifierRequest}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
 import repositories.SearchCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{search_claims, search_result}
+import views.html.search_claims
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -36,34 +36,36 @@ class ClaimSearch @Inject() (
   mcc: MessagesControllerComponents,
   searchCache: SearchCache,
   searchClaim: search_claims,
-  searchResult: search_result,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val formProvider: Form[String]                            = SearchFormHelper.create
+  val formProvider: Form[String]                            = SearchFormHelper.form
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def onPageLoad(): Action[AnyContent] = actions.async { implicit request => {
-    searchCache.get(request.eori).map {
-      case Some(value) => Ok(searchClaim(formProvider.fill(value.query), routes.ClaimSearch.onSubmit()))
-      case None => Ok(searchClaim(formProvider, routes.ClaimSearch.onSubmit()))
-    }
-  }
-
+  def onPageLoad(): Action[AnyContent] = actions.async { implicit request =>
+    Future.successful(Ok(searchClaim()))
   }
 
   def onSubmit(): Action[AnyContent] = actions.async { implicit request =>
     formProvider
       .bindFromRequest()
       .fold(
-        _ => Future.successful(BadRequest(searchClaim(formProvider, routes.ClaimSearch.onSubmit(), Seq.empty))),
-        query => connector.getClaims(request.eori).map(claims => {
-            Ok(searchClaim(formProvider, routes.ClaimSearch.onSubmit(), claims.findClaim(query), Some(query), searched = true))
-        })
-      )
+        _ => Future.successful(BadRequest(searchClaim())),
+        query => getClaim(query).map( claim =>
+          Ok(searchClaim(claim, Some(query), searched = true))
+        ))
   }
 
+  def getClaim(query: String)(implicit request: IdentifierRequest[AnyContent]): Future[Seq[Claim]] = {
+    searchCache.get(request.eori).map[Future[AllClaims]] {
+      case Some(searchQuery) => Future.successful(searchQuery.claims)
+      case _ => connector.getClaims(request.eori).map(claims => {
+        searchCache.set(request.eori, claims, query)
+        claims
+      })
+    }.flatten.map(claims => claims.findClaim(query))
+  }
 }

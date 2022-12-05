@@ -20,7 +20,7 @@ import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
 
 object SearchFormHelper {
-  val create: Form[String] =
+  val form: Form[String] =
     Form(
       mapping(
         "search" ->
