@@ -21,7 +21,7 @@ service.banner.search = Find a claim
 #===================================================
 search.title=Search for a claim
 search.error=Please enter a valid input
-search.desc=Search by case reference number or movement reference number (MRN)
+search.desc=Search by case reference number, movement reference number (MRN), local reference number (LRN)
 search.button=Search
 
 
@@ -32,10 +32,10 @@ view-upload.page-title=Your customs financial accounts
 view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
-view-upload.details.bullet.0=Claims in progress
-view-upload.details.hint.0=These claims are being looked at by HMRC. This could take up to 30 working days. If you did not provide full supporting documentation when your claim was submitted, this will delay the claim process.
-view-upload.details.bullet.1=Claims needing more information
-view-upload.details.hint.1=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
+view-upload.details.bullet.0=Claims needing more information
+view-upload.details.hint.0=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
+view-upload.details.bullet.1=Claims in progress
+view-upload.details.hint.1=These claims are being looked at by HMRC. This could take up to 30 working days. If you did not provide full supporting documentation when your claim was submitted, this will delay the claim process.
 view-upload.details.bullet.2=Closed claims
 view-upload.details.hint.2=Cases are closed when HMRC have fully reviewed the claim, and have either approved or rejected it. If you withdraw your claim for any reason, it will also be classed as closed. Closed claims will remain in your list for a period of 30 days and are then removed. You will need to reference your email communication with HMRC to view any claim details.
 view-upload.more-information.title={0} claims need more information
@@ -145,28 +145,18 @@ claim.list.table.closed = Sorted by closest removal date.
 claim.list.table.pending = Sorted by closest respond by date.
 claim.list.table.progress = Sorted by closest claim start date.
 
-#===================================================
-#  FIND A CLAIM - PAGE
-#===================================================
+claim.search.title = Find a claim
+claim.search.result.title = Search results
+claim.search.result = There is <strong>{0}</strong> matching result for ‘{1}’.
+claim.search.p1 = Enter a case reference or Movement Reference Number (MRN)
+claim.search.hint = For example, '‘NDRC-1234’' or '‘22GBJD4DCMAM33DOI2’'.
+claim.search.button = Search
 
-claim.search.title=Find a claim
-claim.search.inset=Search by case reference number or movement reference number (MRN)
-
-claim.search.result.title=Your search returned
-claim.search.result.fail.title=There are no matching results for {0}.
-claim.search.result.fail.hint=Try searching again by:
-claim.search.result.fail.bullet=double-checking your case reference or MRN
-claim.search.result.case=Case reference
-claim.search.result.mrn=MRN
-claim.search.result.type=Claim type
-claim.search.result.status=Claim status
-claim.search.result.closed=Closed
-claim.search.result.pending=Pending
-claim.search.result.in-progress=In Progress
-
-#===================================================
-#  CASE STATUS
-#===================================================
+claim.search.none.title = No results found
+claim.search.none.p1 = There are <strong>0</strong> matching results for {0}.
+claim.search.none.link = searching again
+claim.search.none.link.pre = Try
+claim.search.none.link.post = by double-checking your case reference or MRN.
 
 case.pending = Pending
 case.inProgress = In progress
@@ -290,13 +280,6 @@ file.selection.button = Continue
 file.selection.error.required = Select which type of document you are uploading
 # ----------------------------------------------------------
 
-
-file.upload.yes-no-question-text = Add a different type of supporting evidence to your claim?
-file.upload.yes-no-question-required-error = Select yes to add a different type of supporting document to your claim
-file.upload.allowed-file-types-hint = The selected file must be a JPG, PNG or PDF
-file.upload.progress-bar-label = Uploaded
-file.upload.description = <p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>
-file.upload.title = Upload {0}
 
 file.upload.cya.title = Check your documents before sending
 file.upload.cya.h2 = Uploaded documents
