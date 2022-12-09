@@ -72,9 +72,16 @@ class UploadDocumentsConnector @Inject() (httpClient: HttpClient, uploadedFilesC
       .POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializationUrl, uploadDocumentsWrapper)
       .map { response =>
         response.status match {
-          case CREATED => response.header("Location")
-          case _       => None
+          case CREATED =>
+            response.header("Location")
+
+          case status =>
+            logger.error(s"Cannot initialize file upload:\nstatus = $status\nbody = ${response.body}")
+            None
         }
       }
-      .recover { case _ => None }
+      .recover { case exception =>
+        logger.error(s"Cannot initialize file upload:\nexception = $exception")
+        None
+      }
 }
