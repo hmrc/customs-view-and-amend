@@ -21,8 +21,8 @@
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: PendingClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
-@key = @{"claim-list-pending"}
-@layout(pageTitle = Some(messages("claim.list.pending.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
+@key = @{"claim.list.pending"}
+@layout(pageTitle = Some(messages(s"${key}.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
     @headerArea(key, showInset = true)
     @claimTable(model.visibleItems, Pending, searched = false)
     @pager(model)
