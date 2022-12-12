@@ -17,14 +17,16 @@
 package connector
 
 import config.AppConfig
-import models.{FileSelection, ServiceType}
 import models.file_upload.{Nonce, UploadDocumentsWrapper}
 import models.responses.ClaimType
+import models.{FileSelection, ServiceType}
 import play.api.Logging
-import play.api.http.Status.{CREATED, NO_CONTENT}
+import play.api.http.Status.{ACCEPTED, CREATED, NO_CONTENT}
 import play.api.i18n.Messages
+import play.mvc.Http.HeaderNames
 import repositories.UploadedFilesCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
@@ -72,8 +74,8 @@ class UploadDocumentsConnector @Inject() (httpClient: HttpClient, uploadedFilesC
       .POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializationUrl, uploadDocumentsWrapper)
       .map { response =>
         response.status match {
-          case CREATED =>
-            response.header("Location")
+          case CREATED | ACCEPTED =>
+            response.header(HeaderNames.LOCATION).orElse(Some("/upload-customs-documents"))
 
           case status =>
             logger.error(s"Cannot initialize file upload:\nstatus = $status\nbody = ${response.body}")
