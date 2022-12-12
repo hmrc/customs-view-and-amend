@@ -93,5 +93,5 @@ class FileUploadController @Inject() (
         case Left(_)      => NotFound(notFound()).withHeaders("X-Explanation" -> "EMAIL_NOT_FOUND")
         case Right(email) => Ok(confirmation(caseNumber, email.value))
       }
-    } else Future.successful(NotFound(notFound()))
+    } else Future.successful(NotFound(notFound()).withHeaders("X-Explanation" -> "UNSUCCESSFUL_UPLOAD_TO_CDFPAY"))
 }

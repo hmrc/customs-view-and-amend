@@ -76,7 +76,8 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, claimsCache
         case HttpResponse(ACCEPTED, _, _) => true
         case _                            => false
       }
-      .recover { case _ =>
+      .recover { case exception =>
+        logger.error(s"Submitting files for $caseNumber to CDFPay resulted in an error: $exception")
         false
       }
   }
