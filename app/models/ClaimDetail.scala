@@ -38,7 +38,8 @@ case class ClaimDetail(caseNumber: String,
                        totalClaimAmount: Option[String],
                        claimantsName: Option[String],
                        claimantsEmail: Option[String],
-                       reasonForSecurity: Option[String] = None
+                       reasonForSecurity: Option[String] = None,
+                       securityGoodsDescription: Option[String] = None
                       ) extends DateFormatters {
 
  def formattedStartDate()(implicit messages: Messages): String = {

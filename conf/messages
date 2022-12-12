@@ -77,6 +77,7 @@ claim.detail.value = Claim amount requested
 claim.detail.name = Claimant''s name
 claim.detail.email = Claimant''s email address
 claim.detail.upload = Upload files (opens in a new tab link)
+claim.detail.descriptionOfGoods = Description of goods
 claim.detail.reasonForSecurity = Reason for security
 claim.detail.reasonForSecurity.ACS=Account Sales
 claim.detail.reasonForSecurity.MDC=Missing document: Community System of Duty Relief (CSDR)

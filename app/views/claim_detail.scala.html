@@ -32,12 +32,13 @@
 )
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String, fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber)), backLink = if(searched) Some(routes.ClaimSearch.onPageLoad().url) else Some(claimDetail.backLink())) {
 
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
-    @p(s"claim.detail.p1.${claimStatus}")
+    @p(s"claim.detail.p1.$claimStatus")
 
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
@@ -73,6 +74,13 @@
                     Value(content = HtmlContent(messages(content))),
                     actions = None
                 ))
+            },
+            claimDetail.securityGoodsDescription.map { description =>
+                SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.descriptionOfGoods"))),
+                    Value(content = HtmlContent(description)),
+                    actions = None
+                )
             },
             claimDetail.reasonForSecurity.map { rfs =>
                 SummaryListRow(
