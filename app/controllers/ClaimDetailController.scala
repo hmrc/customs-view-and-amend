@@ -49,12 +49,18 @@ class ClaimDetailController @Inject() (
   def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
     authenticate.async { implicit request =>
       (for {
-        claims          <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+        claims          <- fromOptionF(
+                             claimService.authorisedToView(caseNumber, request.eori),
+                             NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+                           )
         lrn              = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
-        email           <- fromOptionF(dataStoreConnector.getEmail(request.eori).map(_.toOption), NotFound(notFound()))
+        email           <- fromOptionF(
+                             dataStoreConnector.getEmail(request.eori).map(_.toOption),
+                             NotFound(notFound()).withHeaders("X-Explanation" -> "EMAIL_NOT_FOUND")
+                           )
         claim           <- fromOptionF[Future, Result, ClaimDetail](
                              claimsConnector.getClaimInformation(caseNumber, serviceType, lrn),
-                             NotFound(notFound())
+                             NotFound(notFound()).withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
                            )
         fileSelectionUrl =
           routes.FileSelectionController

@@ -63,11 +63,11 @@ class FileUploadController @Inject() (
     val result: EitherT[Future, Result, Result] = for {
       _                    <- fromOptionF[Future, Result, ClaimsMongo](
                                 claimService.authorisedToView(caseNumber, request.eori),
-                                NotFound(notFound())
+                                NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
                               )
       claim                <- fromOptionF[Future, Result, ClaimDetail](
                                 claimsConnector.getClaimInformation(caseNumber, serviceType, None),
-                                NotFound(notFound())
+                                NotFound(notFound()).withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
                               )
       files                <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
       successfullyUploaded <-
@@ -90,7 +90,7 @@ class FileUploadController @Inject() (
         _     <- uploadDocumentsConnector.wipeData()
         email <- dataStoreConnector.getEmail(request.eori)
       } yield email match {
-        case Left(_)      => NotFound(notFound())
+        case Left(_)      => NotFound(notFound()).withHeaders("X-Explanation" -> "EMAIL_NOT_FOUND")
         case Right(email) => Ok(confirmation(caseNumber, email.value))
       }
     } else Future.successful(NotFound(notFound()))
