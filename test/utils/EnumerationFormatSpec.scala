@@ -33,19 +33,41 @@ class EnumerationFormatSpec extends AnyWordSpec with Matchers {
     }
 
     "de-serialize an enum" in {
-      Foo.format.reads(JsString("A"))   shouldBe JsSuccess(Foo.A)
-      Foo.format.reads(JsString("B"))   shouldBe JsSuccess(Foo.B)
-      an[Exception]                     shouldBe thrownBy {
+      Foo.format.reads(JsString("A"))                      shouldBe JsSuccess(Foo.A)
+      Foo.format.reads(JsString("B"))                      shouldBe JsSuccess(Foo.B)
+      an[Exception]                                        shouldBe thrownBy {
         Foo.format.reads(JsString("C")) shouldBe a[JsError]
       }
-      an[Exception]                     shouldBe thrownBy {
+      an[Exception]                                        shouldBe thrownBy {
         Foo.format.reads(JsString("D")) shouldBe a[JsError]
       }
-      Foo.format.reads(JsNull)          shouldBe a[JsError]
-      Foo.format.reads(Json.obj("A" -> JsBoolean(true))) shouldBe a[JsError]
+      Foo.format.reads(JsNull)                             shouldBe a[JsError]
+      Foo.format.reads(Json.obj("A" -> JsBoolean(true)))   shouldBe a[JsError]
       Foo.format.reads(Json.obj("value" -> JsString("A"))) shouldBe a[JsError]
-      Foo.format.reads(JsNumber(1))     shouldBe a[JsError]
-      Foo.format.reads(JsBoolean(true)) shouldBe a[JsError]
+      Foo.format.reads(JsNumber(1))                        shouldBe a[JsError]
+      Foo.format.reads(JsBoolean(true))                    shouldBe a[JsError]
+    }
+
+    "parse an enum" in {
+      Foo.parse("A")   shouldBe Some(Foo.A)
+      Foo.parse("B")   shouldBe Some(Foo.B)
+      Foo.parse("C")   shouldBe None
+      Foo.parse("D")   shouldBe None
+      Foo.parse("ABC") shouldBe None
+    }
+
+    "tryParse an enum" in {
+      Foo.tryParse("A") shouldBe Foo.A
+      Foo.tryParse("B") shouldBe Foo.B
+      an[Exception]     shouldBe thrownBy {
+        Foo.tryParse("C")
+      }
+      an[Exception]     shouldBe thrownBy {
+        Foo.tryParse("D")
+      }
+      an[Exception]     shouldBe thrownBy {
+        Foo.tryParse("ABC")
+      }
     }
   }
 

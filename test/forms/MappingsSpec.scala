@@ -49,6 +49,11 @@ class MappingsSpec extends SpecBase with Mappings {
       result.get shouldBe Bar
     }
 
+    "unbind a valid option" in {
+      val result = testForm.fill(Bar)
+      result.data shouldBe Map("value" -> "Bar")
+    }
+
     "not bind an invalid option" in {
       val result = testForm.bind(Map("value" -> "Not Bar"))
       result.errors must contain(FormError("value", "error.invalid"))
