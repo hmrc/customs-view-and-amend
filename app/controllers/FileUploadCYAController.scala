@@ -51,7 +51,7 @@ class FileUploadCYAController @Inject() (
     val result: EitherT[Future, Result, Result] = for {
       _     <- fromOptionF[Future, Result, ClaimsMongo](
                  claimService.authorisedToView(caseNumber, request.eori),
-                 NotFound(notFound())
+                 NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
                )
       files <- liftF(uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber))
       helper = new FileUploadCheckYourAnswersHelper(files)

@@ -35,36 +35,60 @@ import views.html.file_selection
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FileSelectionController @Inject()(uploadDocumentsConnector: UploadDocumentsConnector,
-                                        claimService: ClaimService,
-                                        mcc: MessagesControllerComponents,
-                                        fileSelection: file_selection,
-                                        notFound: not_found,
-                                        authenticate: IdentifierAction,
-                                        verifyEmail: EmailAction)(implicit executionContext: ExecutionContext, appConfig: AppConfig) extends FrontendController(mcc) with I18nSupport {
+class FileSelectionController @Inject() (
+  uploadDocumentsConnector: UploadDocumentsConnector,
+  claimService: ClaimService,
+  mcc: MessagesControllerComponents,
+  fileSelection: file_selection,
+  notFound: not_found,
+  authenticate: IdentifierAction,
+  verifyEmail: EmailAction
+)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
   val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
 
-  def onPageLoad(caseNumber: String, serviceType: ServiceType, claimType: ClaimType, initialRequest: Boolean): Action[AnyContent] = actions.async { implicit request =>
-    val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
+  def onPageLoad(
+    caseNumber: String,
+    serviceType: ServiceType,
+    claimType: ClaimType,
+    initialRequest: Boolean
+  ): Action[AnyContent] = actions.async { implicit request =>
+    val form: Form[FileSelection]               = new FileSelectionFormProvider(claimType)()
     val result: EitherT[Future, Result, Result] = for {
-      _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
+      _ <- fromOptionF(
+             claimService.authorisedToView(caseNumber, request.eori),
+             NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+           )
       _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
     } yield Ok(fileSelection(form, serviceType, caseNumber, claimType, FileSelection.options(form)))
     result.merge
   }
 
-  def onSubmit(caseNumber: String, serviceType: ServiceType, claimType: ClaimType): Action[AnyContent] = actions.async { implicit request =>
-    val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
-    form.bindFromRequest().fold(
-      formWithErrors =>
-        Future.successful(BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form)))),
-      documentType =>
-        (for {
-          _ <- fromOptionF(claimService.authorisedToView(caseNumber, request.eori), NotFound(notFound()))
-          result <- fromOptionF(uploadDocumentsConnector.startFileUpload(caseNumber, claimType, serviceType, documentType)
-            .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))), NotFound(notFound()))
-        } yield result).merge
-    )
+  def onSubmit(caseNumber: String, serviceType: ServiceType, claimType: ClaimType): Action[AnyContent] = actions.async {
+    implicit request =>
+      val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
+      form
+        .bindFromRequest()
+        .fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form)))
+            ),
+          documentType =>
+            (for {
+              _      <- fromOptionF(
+                          claimService.authorisedToView(caseNumber, request.eori),
+                          NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+                        )
+              result <- fromOptionF(
+                          uploadDocumentsConnector
+                            .startFileUpload(caseNumber, claimType, serviceType, documentType)
+                            .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))),
+                          NotFound(notFound()).withHeaders("X-Explanation" -> "START_UPLOAD_HAS_FAILED")
+                        )
+            } yield result).merge
+        )
   }
 }
