@@ -51,7 +51,7 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, claimsCache
     with Logging {
 
   private val baseUrl       = appConfig.cdsReimbursementClaim
-  private val fileUploadUrl = s"$baseUrl/submit-file-upload"
+  private val fileUploadUrl = s"$baseUrl/claims/files"
 
   final def submitFileToCDFPay(
     declarationId: String,
@@ -74,7 +74,12 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, claimsCache
       .POST[Dec64UploadRequest, HttpResponse](fileUploadUrl, request)
       .map {
         case HttpResponse(ACCEPTED, _, _) => true
-        case _                            => false
+
+        case failedResponse =>
+          logger.error(
+            s"Submitting files for $caseNumber to CDFPay has failed with ${failedResponse.status} status:\n${failedResponse.body}"
+          )
+          false
       }
       .recover { case exception =>
         logger.error(s"Submitting files for $caseNumber to CDFPay resulted in an error: $exception")

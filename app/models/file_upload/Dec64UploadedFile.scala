@@ -19,17 +19,16 @@ package models.file_upload
 import play.api.libs.json.{Json, OFormat}
 
 case class Dec64UploadedFile(
-                              upscanReference: String,
-                              downloadUrl: String,
-                              uploadTimestamp: String,
-                              checksum: String,
-                              fileName: String,
-                              fileMimeType: String,
-                              fileSize: Int,
-                              description: String
-                            )
+  upscanReference: String,
+  downloadUrl: String,
+  uploadTimestamp: String,
+  checksum: String,
+  fileName: String,
+  fileMimeType: String,
+  fileSize: Int,
+  description: String
+)
 
 object Dec64UploadedFile {
   implicit val format: OFormat[Dec64UploadedFile] = Json.format[Dec64UploadedFile]
 }
-
