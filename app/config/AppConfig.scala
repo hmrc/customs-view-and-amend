@@ -54,7 +54,7 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
     config.get[String]("microservice.services.upload-documents-frontend.accessibilityStatement")
   lazy val fileUploadMultiple: Boolean         =
     config.get[Boolean]("microservice.services.upload-documents-frontend.multiple-upload")
-  lazy val fileUploadSummaryUrl: String        = s"$fileUploadPublicUrl/upload-documents/summary"
+  lazy val fileUploadSummaryUrl: String        = s"$fileUploadPublicUrl/upload-customs-documents/summary"
 
   lazy val timeout: Int      = config.get[Int]("timeout.timeout")
   lazy val countdown: Int    = config.get[Int]("timeout.countdown")
