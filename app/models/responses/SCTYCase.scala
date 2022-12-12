@@ -51,6 +51,16 @@ case class SCTYCase(
     }
   }
 
+  private def getSecurityGoodsDescription: Option[String] = {
+    goods
+      .map(_
+        .flatMap(_.goodsDescription)
+        .filter(_.trim.nonEmpty)
+        .mkString(", ")
+      )
+  }
+
+
   def toClaimDetail(lrn: Option[String]): ClaimDetail = {
     ClaimDetail(
       CDFPayCaseNumber,
@@ -68,7 +78,8 @@ case class SCTYCase(
       totalClaimAmount,
       claimantName,
       claimantEmailAddress,
-      Some(reasonForSecurity)
+      Some(reasonForSecurity),
+      getSecurityGoodsDescription
     )
   }
 
