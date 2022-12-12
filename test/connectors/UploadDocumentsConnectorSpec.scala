@@ -76,7 +76,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
       }
     }
 
-    "return None if the response header is empty" in new Setup {
+    "return default UCDF location if the response header is empty" in new Setup {
       when(mockUploadDocumentsCache.initializeRecord(any, any, any))
         .thenReturn(Future.successful(true))
       when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
@@ -87,7 +87,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
-        result shouldBe None
+        result shouldBe Some("/upload-customs-documents")
       }
     }
 
@@ -130,19 +130,22 @@ class UploadDocumentsConnectorSpec extends SpecBase {
   }
 
   trait Setup {
-    val mockHttp: HttpClient = mock[HttpClient]
+    val mockHttp: HttpClient                         = mock[HttpClient]
     val mockUploadDocumentsCache: UploadedFilesCache = mock[UploadedFilesCache]
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val app: Application = GuiceApplicationBuilder().overrides(
-      inject.bind[HttpClient].toInstance(mockHttp),
-      inject.bind[UploadedFilesCache].toInstance(mockUploadDocumentsCache)
-    ).configure(
-      "play.filters.csp.nonce.enabled" -> "false",
-      "auditing.enabled" -> "false",
-      "metrics.enabled" -> "false"
-    ).build()
+    val app: Application = GuiceApplicationBuilder()
+      .overrides(
+        inject.bind[HttpClient].toInstance(mockHttp),
+        inject.bind[UploadedFilesCache].toInstance(mockUploadDocumentsCache)
+      )
+      .configure(
+        "play.filters.csp.nonce.enabled" -> "false",
+        "auditing.enabled"               -> "false",
+        "metrics.enabled"                -> "false"
+      )
+      .build()
 
     val connector: UploadDocumentsConnector = app.injector.instanceOf[UploadDocumentsConnector]
   }
