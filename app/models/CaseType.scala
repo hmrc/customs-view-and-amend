@@ -24,6 +24,7 @@ sealed trait CaseType
 
 case object Single extends CaseType
 case object Multiple extends CaseType
+case object Other extends CaseType
 
 object CaseType {
   implicit def pathBindable: PathBindable[CaseType] = new PathBindable[CaseType] {
@@ -45,14 +46,15 @@ object CaseType {
   implicit val format: Format[CaseType] = new Format[CaseType] {
     override def writes(o: CaseType): JsValue =
       o match {
-        case Single => JsString("Single")
+        case Single => JsString("Individual")
         case Multiple => JsString("Bulk")
       }
 
     override def reads(json: JsValue): JsResult[CaseType] =
       json match {
-        case JsString("Single") => JsSuccess(Single)
+        case JsString("Individual") => JsSuccess(Single)
         case JsString("Bulk") => JsSuccess(Multiple)
+        case JsString(_) => JsSuccess(Other)
         case e => JsError(s"Unexpected caseType from TPI02: $e")
       }
   }
