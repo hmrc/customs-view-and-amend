@@ -64,11 +64,11 @@
             },
             {
                 val content = claimDetail.claimType match {
-                    case Some(`C&E1179`) if claimDetail.caseType == Multiple => "claim.detail.type.multiple.CE1179"
-                    case Some(`C&E1179`) if claimDetail.caseType == Single  => "claim.detail.type.Single.CE1179"
+                    case Some(`C&E1179`) if claimDetail.caseType.get == Multiple => "claim.detail.type.multiple.CE1179"
+                    case Some(`C&E1179`) if claimDetail.caseType.get == Single  => "claim.detail.type.single.CE1179"
                     case Some(`C&E1179`) => "claim.detail.type.CE1179"
-                    case Some(_) if claimDetail.caseType == Multiple => "claim.detail.type.multiple.C285"
-                    case Some(_) if claimDetail.caseType == Single  => "claim.detail.type.Single.C285"
+                    case Some(_) if claimDetail.caseType.get == Multiple => "claim.detail.type.multiple.C285"
+                    case Some(_) if claimDetail.caseType.get == Single  => "claim.detail.type.single.C285"
                     case Some(_) => "claim.detail.type.C285"
                     case None => "claim.detail.type.security"
                 }
