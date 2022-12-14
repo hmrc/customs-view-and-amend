@@ -21,7 +21,7 @@ import akka.stream.testkit.NoMaterializer
 import com.codahale.metrics.MetricRegistry
 import com.kenshoo.play.metrics.Metrics
 import connector.DataStoreConnector
-import models.Reimbursement
+import models.{Reimbursement, Single}
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
@@ -72,7 +72,7 @@ trait SpecBase
       CDFPayCaseNumber = "CaseNumber",
       declarationID = "DeclarationId",
       claimType = C285,
-      caseType = "NDRC",
+      caseType = Single,
       caseStatus = "Closed",
       caseSubStatus = Some("Refused"),
       descOfGoods = Some("description of goods"),
@@ -116,6 +116,7 @@ trait SpecBase
     "Procedure Code",
     "Closed",
     Some("Refused"),
+    None,
     Some(Seq(Goods("itemNumber", Some("description")))),
     "someEori",
     "someOtherEori",

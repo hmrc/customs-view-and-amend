@@ -169,6 +169,7 @@ class FileUploadControllerSpec extends SpecBase {
       InProgress,
       None,
       Some(C285),
+      Some(Single),
       LocalDate.now,
       None,
       Some("1200"),

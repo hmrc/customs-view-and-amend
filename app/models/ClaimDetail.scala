@@ -56,11 +56,6 @@ case class ClaimDetail(caseNumber: String,
     entryNumberRegex.findFirstIn(declarationId).isDefined
   }
 
-  def multipleDeclarations: Boolean = caseType match {
-    case Some(_) if caseType.get == Multiple => true
-    case _ => false
-  }
-
   def isPending: Boolean = claimStatus match {
     case Pending => true
     case _ => false

@@ -35,7 +35,7 @@ case class SCTYCase(
                      totalCustomsClaimAmount: Option[String],
                      totalVATClaimAmount: Option[String],
                      totalClaimAmount: Option[String],
-                     totalReimbursmentAmount: Option[String],
+                     totalReimbursementAmount: Option[String],
                      claimStartDate: String,
                      claimantName: Option[String],
                      claimantEmailAddress: Option[String],
