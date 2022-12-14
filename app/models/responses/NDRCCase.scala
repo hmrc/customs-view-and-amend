@@ -48,6 +48,7 @@ case class NDRCCase(
       transformCaseStatus,
       NDRCDetail.caseSubStatus,
       Some(NDRCDetail.claimType),
+      Some(NDRCDetail.caseType),
       DateTimeUtil.toDateTime(NDRCDetail.claimStartDate),
       NDRCDetail.closedDate.map(DateTimeUtil.toDateTime),
       NDRCAmounts.totalClaimAmount,
