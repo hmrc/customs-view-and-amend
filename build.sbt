@@ -19,7 +19,8 @@ lazy val microservice = Project(appName, file("."))
     majorVersion := 0,
     scalaVersion := "2.13.10",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    Assets / pipelineStages := Seq(gzip),
+    Assets / pipelineStages := Seq(uglify, gzip),
+    uglifyCompressOptions := Seq("unused=false", "dead_code=false"),
     scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s"
   )
   .settings(publishingSettings: _*)

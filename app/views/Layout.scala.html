@@ -67,8 +67,11 @@
             @navigationPanel()
         }
         @hmrcLanguageSelectHelper()
-        @backLink.map(link => govukBackLink(BackLink(href = link, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"))))
-
+        @if(backLink.isDefined){
+            @govukBackLink(BackLink(href = backLink.get, content = Text(messages("back.link")), attributes = Map("id" -> "back-link")))
+        } else {
+            @govukBackLink(BackLink(content = Text(messages("back.text")), attributes = Map("id" -> "back-link")))
+        }
     }
 
     @additionalHead = {
@@ -91,6 +94,10 @@
         }
     }
 
+    @scripts = {
+        <script @{CSPNonce.attr} src='@_root_.controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
+    }
+
     @hmrcLayout(
         userResearchBannerUrl = if(userResearchBanner) Some(appConfig.helpMakeGovUkBetterUrl) else None,
         pageTitle = fullPageTitle,
@@ -99,6 +106,7 @@
         nonce = CSPNonce.get,
         mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
         additionalHeadBlock = Some(additionalHead),
+        additionalScriptsBlock = Some(scripts),
         beforeContentBlock = Some(beforeContent),
         phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
         isWelshTranslationAvailable = welshToggle,
