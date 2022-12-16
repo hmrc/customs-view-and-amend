@@ -51,7 +51,7 @@ class NDRCCaseSpec extends SpecBase {
           |            "mainDeclarationReference": true
           |        }
           |    ],
-          |    "caseType": "NDRC",
+          |    "caseType": "Individual",
           |    "importerEORI": "SomeOtherEori",
           |    "claimType": "C285",
           |    "closedDate": "20221112",

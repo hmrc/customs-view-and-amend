@@ -16,14 +16,14 @@
 
 package models.responses
 
-import models.Reimbursement
+import models.{CaseType, Reimbursement}
 import play.api.libs.json.{Json, OFormat}
 
 case class NDRCDetail(
                        CDFPayCaseNumber: String,
                        declarationID: String,
                        claimType: ClaimType,
-                       caseType: String,
+                       caseType: CaseType,
                        caseStatus: String,
                        caseSubStatus: Option[String],
                        descOfGoods: Option[String],

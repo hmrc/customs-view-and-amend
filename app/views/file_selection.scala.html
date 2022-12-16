@@ -35,6 +35,7 @@
 @(form: Form[_], serviceType: ServiceType, caseNumber: String, claimType: ClaimType, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
+    fullWidth = false,
     pageTitle = Some(messages("file.selection.title")),
         backLink = Some(routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched = false).url)) {
 

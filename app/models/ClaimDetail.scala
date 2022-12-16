@@ -33,6 +33,7 @@ case class ClaimDetail(caseNumber: String,
                        claimStatus: ClaimStatus,
                        caseSubStatus: Option[String],
                        claimType: Option[ClaimType],
+                       caseType: Option[CaseType],
                        claimStartDate: LocalDate,
                        claimClosedDate: Option[LocalDate],
                        totalClaimAmount: Option[String],
@@ -53,10 +54,6 @@ case class ClaimDetail(caseNumber: String,
   def isEntryNumber: Boolean = {
     val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r
     entryNumberRegex.findFirstIn(declarationId).isDefined
-  }
-
-  def multipleDeclarations: Boolean = {
-    mrn.size > 1 || entryNumbers.size > 1
   }
 
   def isPending: Boolean = claimStatus match {
