@@ -18,39 +18,46 @@ package controllers
 
 import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
+import connector.ClaimsConnector
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.claims_overview
+import views.html.search_claims
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-class ClaimsOverviewController @Inject() (
+@Singleton
+class ClaimSearchController @Inject() (
+  connector: ClaimsConnector,
   mcc: MessagesControllerComponents,
+  searchClaim: search_claims,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
-  allClaimsAction: AllClaimsAction,
-  claimsOverview: claims_overview
+  allClaimsAction: AllClaimsAction
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
   val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
 
-  def show: Action[AnyContent] =
-    preconditions { case (request, allClaims) =>
+  def onPageLoad(): Action[AnyContent] =
+    preconditions { case (request, _) =>
       implicit val r = request
-      Ok(
-        claimsOverview(
-          0,
-          allClaims,
-          SearchFormHelper.form,
-          routes.ClaimSearchController.onSubmit(),
-          request.companyName.orNull,
-          request.eori
-        )
-      )
+      Ok(searchClaim())
     }
 
+  def onSubmit(): Action[AnyContent] =
+    preconditions { case (request, allClaims) =>
+      implicit val r = request
+      SearchFormHelper.form
+        .bindFromRequest()
+        .fold(
+          _ => BadRequest(searchClaim()),
+          query => {
+            val claims = allClaims.searchForClaim(query)
+            Ok(searchClaim(claims, Some(query)))
+          }
+        )
+    }
 }

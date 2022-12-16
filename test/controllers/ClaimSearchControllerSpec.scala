@@ -17,12 +17,12 @@
 package controllers
 
 import models._
+import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import repositories.SearchCache
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -33,7 +33,7 @@ class ClaimSearchControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK" in new Setup {
       running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearch.onPageLoad().url)
+        val request                = fakeRequest(GET, routes.ClaimSearchController.onPageLoad().url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
       }
@@ -43,51 +43,23 @@ class ClaimSearchControllerSpec extends SpecBase {
   "onSubmit" should {
     "return BAD_REQUEST when field is empty" in new Setup {
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("value" -> "")
+        fakeRequest(POST, routes.ClaimSearchController.onSubmit().url).withFormUrlEncodedBody("value" -> "")
       val result: Future[Result]                           = route(app, request).value
       status(result) mustBe BAD_REQUEST
-      verify(mockSearchCache, times(0)).get(any)
-      verify(mockSearchCache, times(0)).set(any, any, any)
-      verify(mockClaimsConnector, times(0)).getAllClaims(any)
+      verify(mockClaimsConnector, times(1)).getAllClaims(any)
     }
 
     "return OK when the field is not empty and search cache is available" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(Some(SearchQuery(allClaims, "query"))))
-
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
+        fakeRequest(POST, routes.ClaimSearchController.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
       val result: Future[Result]                           = route(app, request).value
 
       status(result) mustBe OK
-      verify(mockSearchCache, times(1)).get(any)
-      verify(mockSearchCache, times(0)).set(any, any, any)
-      verify(mockClaimsConnector, times(0)).getAllClaims(any)
-    }
-
-    "return OK when the field is not empty and search cache is NOT available" in new Setup {
-      when(mockSearchCache.get(any))
-        .thenReturn(Future.successful(None))
-
-      when(mockSearchCache.set(any, any, any))
-        .thenReturn(Future.successful(true))
-
-      when(mockClaimsConnector.getAllClaims(any))
-        .thenReturn(Future.successful(allClaims))
-
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
-      val result: Future[Result]                           = route(app, request).value
-
-      status(result) mustBe OK
-      verify(mockSearchCache, times(1)).get(any)
-      verify(mockSearchCache, times(1)).set(any, any, any)
       verify(mockClaimsConnector, times(1)).getAllClaims(any)
     }
   }
 
   trait Setup extends SetupBase {
-    val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims =
@@ -97,11 +69,12 @@ class ClaimSearchControllerSpec extends SpecBase {
         Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1), "Closed"))
     )
 
-    val app: Application = application
-      .overrides(
-        inject.bind[SearchCache].toInstance(mockSearchCache)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
+
+    Mockito
+      .lenient()
+      .when(mockClaimsConnector.getAllClaims(any))
+      .thenReturn(Future.successful(allClaims))
   }
 
 }

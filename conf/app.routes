@@ -20,8 +20,8 @@ GET         /:serviceType/:claim/upload-check-your-answers        controllers.Fi
 +nocsrf
 POST        /update-files                                         controllers.FileUploadController.updateFiles()
 
-GET         /find-a-claim                                         controllers.ClaimSearch.onPageLoad()
-POST        /find-a-claim                                         controllers.ClaimSearch.onSubmit()
+GET         /find-a-claim                                         controllers.ClaimSearchController.onPageLoad()
+POST        /find-a-claim                                         controllers.ClaimSearchController.onSubmit()
 
 GET         /logout-survey                                        controllers.LogoutController.logout
 GET         /logout                                               controllers.LogoutController.logoutNoSurvey

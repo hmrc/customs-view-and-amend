@@ -24,14 +24,14 @@
         p: components.p,
         bullets: components.bullets)
 
-@(claims: Seq[Claim] = Seq.empty, query: Option[String] = None, searched: Boolean = false)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claims: Seq[Claim] = Seq.empty, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim.search"}
 
 @layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true) {
 
     @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false)
 
-    @if(searched) {
+    @if(query.isDefined){
         @if(claims.nonEmpty) {
             @subHeading(Html(messages(s"$key.result.title")), classes = "govuk-heading-m")
             @searchTable(claims)

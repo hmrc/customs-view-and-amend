@@ -55,7 +55,7 @@
         ul(titleAndDescriptionList(key, 2))
     )
 
-    @if(allClaims.collectAll.nonEmpty) {
+    @if(allClaims.nonEmpty) {
         @card(
             if(allClaims.pendingClaims.size > 1 || allClaims.pendingClaims.isEmpty){
             messages(s"$key.more-information.title", allClaims.pendingClaims.size)

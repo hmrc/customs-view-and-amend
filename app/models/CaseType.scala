@@ -16,9 +16,6 @@
 
 package models
 
-import models.responses.ClaimType
-import play.api.libs.json._
-import play.api.mvc.PathBindable
 import utils.EnumerationFormat
 
 sealed trait CaseType
@@ -33,4 +30,3 @@ object CaseType extends EnumerationFormat[CaseType] {
   override val values: Set[CaseType] = Set(Individual, Bulk, CMA, C18)
 
 }
-

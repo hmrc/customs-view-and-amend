@@ -145,6 +145,23 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         c.caseNumber shouldBe "NDRC-3078"
       }
     }
+    "search claim by query" in {
+      allClaims.searchForClaim("NDRC-3033") should have size 1
+      allClaims.searchForClaim("NDRC-2001") should have size 1
+      allClaims.searchForClaim("SCTY-1099") should have size 1
+      allClaims.searchForClaim("NDRC-1099") should have size 0
+      allClaims.searchForClaim("NDRC-4000") should have size 0
+      allClaims.searchForClaim("")          should have size 0
+      allClaims.searchForClaim("foo")       should have size 0
+    }
+    "check claims not empty" in {
+      allClaims.nonEmpty                                                               shouldBe true
+      allClaims.copy(pendingClaims = Seq.empty).nonEmpty                               shouldBe true
+      allClaims.copy(pendingClaims = Seq.empty, inProgressClaims = Seq.empty).nonEmpty shouldBe true
+      allClaims
+        .copy(pendingClaims = Seq.empty, inProgressClaims = Seq.empty, closedClaims = Seq.empty)
+        .nonEmpty                                                                      shouldBe false
+    }
   }
 
   trait Setup {
