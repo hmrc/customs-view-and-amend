@@ -17,11 +17,11 @@
 package models
 
 import models.responses.{NDRCCaseDetails, ProcedureDetail, SCTYCaseDetails, `C&E1179`}
+import org.scalatest.Inside
 import play.api.i18n.{DefaultMessagesApi, Lang, Messages}
 import utils.SpecBase
 
 import java.time.LocalDate
-import org.scalatest.Inside
 
 class AllClaimDetailsSpec extends SpecBase with Inside {
 
@@ -169,22 +169,23 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         declarantReferenceNumber = Some("broomer007")
       )
 
-    def createNdrcDetailsClaim(status: String): NDRCCaseDetails = NDRCCaseDetails(
-      CDFPayCaseNumber = "NDRC-2109",
-      declarationID = "21LLLLLLLLLLLLLLL9",
-      claimStartDate = "20210320",
-      closedDate = Some("20210520"),
-      caseStatus = status,
-      caseSubStatus = Option(status),
-      declarantEORI = "GB744638982000",
-      importerEORI = "GB744638982000",
-      claimantEORI = Some("GB744638982000"),
-      totalCustomsClaimAmount = Some("3000.20"),
-      totalVATClaimAmount = Some("784.66"),
-      totalExciseClaimAmount = Some("1200.00"),
-      declarantReferenceNumber = Some("KWMREF1"),
-      basisOfClaim = Some("Duplicate Entry")
-    )
+    def createNdrcDetailsClaim(status: String): NDRCCaseDetails =
+      NDRCCaseDetails(
+        CDFPayCaseNumber = "NDRC-2109",
+        declarationID = "21LLLLLLLLLLLLLLL9",
+        claimStartDate = "20210320",
+        closedDate = Some("20210520"),
+        caseStatus = status,
+        caseSubStatus = Option(status),
+        declarantEORI = "GB744638982000",
+        importerEORI = "GB744638982000",
+        claimantEORI = Some("GB744638982000"),
+        totalCustomsClaimAmount = Some("3000.20"),
+        totalVATClaimAmount = Some("784.66"),
+        totalExciseClaimAmount = Some("1200.00"),
+        declarantReferenceNumber = Some("KWMREF1"),
+        basisOfClaim = Some("Duplicate Entry")
+      )
   }
 
   val claimDetail: ClaimDetail = ClaimDetail(
@@ -204,7 +205,8 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     claimantsName = None,
     claimantsEmail = None,
     reasonForSecurity = None,
-    securityGoodsDescription = None
+    securityGoodsDescription = None,
+    caseType = Some(CaseType.Individual)
   )
 
   val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>

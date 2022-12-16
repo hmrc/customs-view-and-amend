@@ -18,6 +18,7 @@ package controllers
 
 import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models._
+import models.CaseType._
 import models.email.UnverifiedEmail
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
 import models.responses.{C285, ProcedureDetail}

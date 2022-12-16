@@ -31,7 +31,7 @@
     paragraph: components.paragraph
 )
 
-@(claimDetail: ClaimDetail, email: Option[String], fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimDetail: ClaimDetail, verifiedEmail: Option[String], fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
@@ -126,12 +126,12 @@
                     actions = None
                 )
             },
-            email.map{ email =>
-            Some(SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.email"))),
-                Value(content = HtmlContent(email)),
-                actions = None
-            )
+            verifiedEmail.map{ email =>
+                SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.email"))),
+                    Value(content = HtmlContent(email)),
+                    actions = None
+                )
             }
         ).flatten
     ))

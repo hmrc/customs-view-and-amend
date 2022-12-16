@@ -20,28 +20,40 @@ import models._
 import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.toDateTime
 
-case class NDRCCaseDetails(CDFPayCaseNumber: String,
-                           declarationID: String,
-                           claimStartDate: String,
-                           closedDate: Option[String],
-                           caseStatus: String,
-                           caseSubStatus: Option[String],
-                           declarantEORI: String,
-                           importerEORI: String,
-                           claimantEORI: Option[String],
-                           totalCustomsClaimAmount: Option[String],
-                           totalVATClaimAmount: Option[String],
-                           totalExciseClaimAmount: Option[String],
-                           declarantReferenceNumber: Option[String],
-                           basisOfClaim: Option[String]) {
+case class NDRCCaseDetails(
+  CDFPayCaseNumber: String,
+  declarationID: String,
+  claimStartDate: String,
+  closedDate: Option[String],
+  caseStatus: String,
+  caseSubStatus: Option[String],
+  declarantEORI: String,
+  importerEORI: String,
+  claimantEORI: Option[String],
+  totalCustomsClaimAmount: Option[String],
+  totalVATClaimAmount: Option[String],
+  totalExciseClaimAmount: Option[String],
+  declarantReferenceNumber: Option[String],
+  basisOfClaim: Option[String]
+) {
 
   def toClaim: Claim = {
     val startDate = toDateTime(claimStartDate)
     caseStatus match {
       case "In Progress" => InProgressClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate)
-      case "Pending" => PendingClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, startDate.plusDays(30))
-      case "Closed" => ClosedClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, toDateTime(closedDate.getOrElse("")), caseSubStatus.getOrElse(""))
-      case e => throw new RuntimeException(s"Unknown Case Status: $e")
+      case "Pending"     =>
+        PendingClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, startDate.plusDays(30))
+      case "Closed"      =>
+        ClosedClaim(
+          declarationID,
+          CDFPayCaseNumber,
+          NDRC,
+          declarantReferenceNumber,
+          startDate,
+          toDateTime(closedDate.getOrElse("")),
+          caseSubStatus.getOrElse("")
+        )
+      case e             => throw new RuntimeException(s"Unknown Case Status: $e")
     }
   }
 }

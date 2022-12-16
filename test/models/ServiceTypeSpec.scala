@@ -28,6 +28,11 @@ class ServiceTypeSpec extends SpecBase {
       ServiceType.pathBindable.bind("someKey", "INVALID") shouldBe Left("Invalid service type")
     }
 
+    "perform correct path unbindings" in {
+      ServiceType.pathBindable.unbind("someKey", NDRC) shouldBe "NDRC"
+      ServiceType.pathBindable.unbind("someKey", SCTY) shouldBe "SCTY"
+    }
+
     "perform correct query bindings" in {
       ServiceType.queryBindable.bind("serviceType", Map(("serviceType", Seq("NDRC"))))    shouldBe Some(Right(NDRC))
       ServiceType.queryBindable.bind("serviceType", Map(("serviceType", Seq("SCTY"))))    shouldBe Some(Right(SCTY))
