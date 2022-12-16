@@ -21,7 +21,6 @@ import config.AppConfig
 import models._
 import models.responses.{AllClaimsResponse, NDRCCase, SCTYCase, SpecificClaimResponse}
 import play.api.Logging
-import repositories.ClaimsCache
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
@@ -31,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {
 
-  def getClaims(eori: String)(implicit hc: HeaderCarrier): Future[AllClaims]
+  def getAllClaims(implicit hc: HeaderCarrier): Future[AllClaims]
 
   def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
@@ -40,39 +39,30 @@ trait ClaimsConnector {
 }
 
 @Singleton
-class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, claimsCache: ClaimsCache, appConfig: AppConfig)(implicit
+class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig)(implicit
   executionContext: ExecutionContext
 ) extends ClaimsConnector
     with Logging {
 
-  private val baseUrl      = appConfig.cdsReimbursementClaim
-  private val getClaimsUrl = s"$baseUrl/claims"
+  private val baseUrl         = appConfig.cdsReimbursementClaim
+  private val getAllClaimsUrl = s"$baseUrl/claims"
 
   private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String) =
     s"$baseUrl/claims/$serviceType/$caseNumber"
 
-  final def getClaims(eori: String)(implicit hc: HeaderCarrier): Future[AllClaims] =
-    for {
-      cachedClaims <- claimsCache.get(eori)
-      claims       <- cachedClaims match {
-                        case Some(claims) =>
-                          Future.successful(claims)
-                        case None         =>
-                          httpClient
-                            .GET[AllClaimsResponse](getClaimsUrl)
-                            .flatMap { claimsResponse =>
-                              val claims =
-                                claimsResponse.claims.ndrcClaims.map(_.toClaim) ++
-                                  claimsResponse.claims.sctyClaims
-                                    .map(_.toClaim)
-                              claimsCache.set(eori, claims).map(_ => claims)
-                            }
-                      }
-    } yield AllClaims(
-      claims.collect { case e: PendingClaim => e },
-      claims.collect { case e: InProgressClaim => e },
-      claims.collect { case e: ClosedClaim => e }
-    )
+  final def getAllClaims(implicit hc: HeaderCarrier): Future[AllClaims] = httpClient
+    .GET[AllClaimsResponse](getAllClaimsUrl)
+    .map { claimsResponse =>
+      val claims =
+        claimsResponse.claims.ndrcClaims.map(_.toClaim) ++
+          claimsResponse.claims.sctyClaims
+            .map(_.toClaim)
+      AllClaims(
+        claims.collect { case e: PendingClaim => e },
+        claims.collect { case e: InProgressClaim => e },
+        claims.collect { case e: ClosedClaim => e }
+      )
+    }
 
   final def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier

@@ -18,7 +18,6 @@ package actions
 
 import com.google.inject.Inject
 import config.AppConfig
-import connector.DataStoreConnector
 import controllers.routes
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
@@ -35,7 +34,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class AuthActionSpec extends SpecBase {
 
   class Harness(authAction: IdentifierAction) {
-    def onPageLoad(): Action[AnyContent] = authAction { _ => Results.Ok }
+    def onPageLoad(): Action[AnyContent] = authAction(_ => Results.Ok)
   }
 
   implicit class Ops[A](a: A) {
@@ -44,21 +43,25 @@ class AuthActionSpec extends SpecBase {
 
   "Auth Action" when {
     "successfully passes all checks" should {
-      "call block" in {
+      "call block" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
         when(mockDataStoreConnector.getCompanyName(any)(any))
           .thenReturn(Future.successful(None))
 
         when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(Future.successful(
-              Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "test")), "Active")))))
+          .thenReturn(
+            Future.successful(
+              Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "test")), "Active")))
+            )
+          )
 
-        val app = application.overrides().build()
-        val config = app.injector.instanceOf[AppConfig]
+        val app         = application.overrides().build()
+        val config      = app.injector.instanceOf[AppConfig]
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
-        val authAction = new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+        val authAction =
+          new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -69,18 +72,22 @@ class AuthActionSpec extends SpecBase {
     }
 
     "the user does not have the correct enrolment" should {
-      "return unauthorised" in {
+      "return unauthorised" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
-        
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(Future.successful(
-            Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("INVALID", "test")), "Active")))))
 
-        val app = application.overrides().build()
-        val config = app.injector.instanceOf[AppConfig]
+        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
+          .thenReturn(
+            Future.successful(
+              Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("INVALID", "test")), "Active")))
+            )
+          )
+
+        val app         = application.overrides().build()
+        val config      = app.injector.instanceOf[AppConfig]
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
-        val authAction = new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+        val authAction =
+          new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -92,17 +99,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user hasn't logged in" should {
 
-      "redirect the user to log in " in {
+      "redirect the user to log in " in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
 
-        val mockDataStoreConnector = mock[DataStoreConnector]
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new MissingBearerToken), mockDataStoreConnector, config, bodyParsers)
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new MissingBearerToken),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -112,18 +123,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user's session has expired" should {
 
-      "redirect the user to log in " in {
+      "redirect the user to log in " in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
 
-        val mockDataStoreConnector = mock[DataStoreConnector]
-
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new BearerTokenExpired), mockDataStoreConnector, config, bodyParsers)
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new BearerTokenExpired),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -133,16 +147,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user doesn't have sufficient enrolments" should {
 
-      "redirect the user to the unauthorised page" in {
+      "redirect the user to the unauthorised page" in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
-        val mockDataStoreConnector = mock[DataStoreConnector]
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientEnrolments), mockDataStoreConnector, config, bodyParsers)
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
+
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new InsufficientEnrolments),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -152,16 +171,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user doesn't have sufficient confidence level" should {
 
-      "redirect the user to the unauthorised page" in {
+      "redirect the user to the unauthorised page" in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
-        val mockDataStoreConnector = mock[DataStoreConnector]
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new InsufficientConfidenceLevel), mockDataStoreConnector, config, bodyParsers)
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
+
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new InsufficientConfidenceLevel),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -171,17 +195,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user used an unaccepted auth provider" should {
 
-      "redirect the user to the unauthorised page" in {
+      "redirect the user to the unauthorised page" in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
 
-        val mockDataStoreConnector = mock[DataStoreConnector]
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAuthProvider), mockDataStoreConnector, config, bodyParsers)
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new UnsupportedAuthProvider),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -191,18 +219,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user has an unsupported affinity group" should {
 
-      "redirect the user to the unauthorised page" in {
+      "redirect the user to the unauthorised page" in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
 
-        val mockDataStoreConnector = mock[DataStoreConnector]
-
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedAffinityGroup), mockDataStoreConnector, config, bodyParsers)
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new UnsupportedAffinityGroup),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -212,17 +243,21 @@ class AuthActionSpec extends SpecBase {
 
     "the user has an unsupported credential role" should {
 
-      "redirect the user to the unauthorised page" in {
+      "redirect the user to the unauthorised page" in new SetupBase {
 
-        val app = application.build()
+        val app    = application.build()
         val config = app.injector.instanceOf[AppConfig]
 
-        val bodyParsers = application.injector.instanceOf[BodyParsers.Default]
+        val bodyParsers = application.injector().instanceOf[BodyParsers.Default]
 
-        val mockDataStoreConnector = mock[DataStoreConnector]
-        val authAction = new AuthenticatedIdentifierAction(new FakeFailingAuthConnector(new UnsupportedCredentialRole), mockDataStoreConnector, config, bodyParsers)
+        val authAction = new AuthenticatedIdentifierAction(
+          new FakeFailingAuthConnector(new UnsupportedCredentialRole),
+          mockDataStoreConnector,
+          config,
+          bodyParsers
+        )
         val controller = new Harness(authAction)
-        val result = controller.onPageLoad()(fakeRequest())
+        val result     = controller.onPageLoad()(fakeRequest())
 
         status(result) mustBe SEE_OTHER
 
@@ -232,9 +267,12 @@ class AuthActionSpec extends SpecBase {
   }
 }
 
-class FakeFailingAuthConnector @Inject()(exceptionToReturn: Throwable) extends AuthConnector {
+class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends AuthConnector {
   val serviceUrl: String = ""
 
-  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[A] =
+  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+    hc: HeaderCarrier,
+    ec: ExecutionContext
+  ): Future[A] =
     Future.failed(exceptionToReturn)
 }

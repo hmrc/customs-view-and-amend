@@ -16,7 +16,6 @@
 
 package controllers
 
-import connector.ClaimsConnector
 import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
@@ -31,7 +30,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showInProgressClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -44,7 +43,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showPendingClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -57,7 +56,7 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showClosedClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
 
       running(app) {
@@ -68,9 +67,8 @@ class ClaimListControllerSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val mockClaimsCache: ClaimsCache         = mock[ClaimsCache]
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
+  trait Setup extends SetupBase {
+    val mockClaimsCache: ClaimsCache = mock[ClaimsCache]
 
     val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
       ClosedClaim(
@@ -105,8 +103,7 @@ class ClaimListControllerSpec extends SpecBase {
 
     val app: Application = application
       .overrides(
-        inject.bind[ClaimsCache].toInstance(mockClaimsCache),
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector)
+        inject.bind[ClaimsCache].toInstance(mockClaimsCache)
       )
       .build()
   }

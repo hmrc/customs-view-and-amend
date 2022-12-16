@@ -21,17 +21,17 @@ import utils.SpecBase
 class SCTYCaseSpec extends SpecBase {
 
   "SCTYCase.toClaimDetail" should {
-    "transform the caseStatus to the correct object" in {
-      val closedCase = sctyCase.copy(caseStatus = "Closed")
-      val pendingCase = sctyCase.copy(caseStatus = "Pending")
+    "transform the caseStatus to the correct object" in new SetupBase {
+      val closedCase     = sctyCase.copy(caseStatus = "Closed")
+      val pendingCase    = sctyCase.copy(caseStatus = "Pending")
       val inProgressCase = sctyCase.copy(caseStatus = "In Progress")
 
-      closedCase.toClaimDetail(None).claimStatus shouldBe Closed
-      pendingCase.toClaimDetail(None).claimStatus shouldBe Pending
+      closedCase.toClaimDetail(None).claimStatus     shouldBe Closed
+      pendingCase.toClaimDetail(None).claimStatus    shouldBe Pending
       inProgressCase.toClaimDetail(None).claimStatus shouldBe InProgress
     }
 
-    "throw an exception on an invalid case status" in {
+    "throw an exception on an invalid case status" in new SetupBase {
       val invalid = sctyCase.copy(caseStatus = "INVALID")
       intercept[RuntimeException] {
         invalid.toClaimDetail(None)

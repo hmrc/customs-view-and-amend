@@ -30,63 +30,52 @@ class ClaimsCacheSpec extends SpecBase {
   "set and get" should {
     "populate data into the mongo" in new Setup {
       await(for {
-        _ <- database.set("someId", claims)
+        _      <- database.set("someId", claims)
         result <- database.get("someId")
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result.value mustBe claims
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result.value mustBe claims)
     }
   }
 
   "get" should {
     "return data if populated in the mongo" in new Setup {
       await(for {
-        _ <- database.set("someId", claims)
+        _      <- database.set("someId", claims)
         result <- database.get("someId")
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result.value mustBe claims
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result.value mustBe claims)
     }
 
     "return None if no data populated in the mongo" in new Setup {
       await(for {
-        _ <- database.set("someId", claims)
+        _      <- database.set("someId", claims)
         result <- database.get("empty")
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result mustBe None
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result mustBe None)
     }
   }
 
   "hasCaseNumber" should {
     "return true if case number present in database" in new Setup {
       await(for {
-        _ <- database.set("someId", claims)
+        _      <- database.set("someId", claims)
         result <- database.getSpecificCase("someId", "NDRC-2022")
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result.nonEmpty mustBe true
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result.nonEmpty mustBe true)
     }
 
     "return false if case number present in database" in new Setup {
       await(for {
-        _ <- database.set("someId", claims)
+        _      <- database.set("someId", claims)
         result <- database.getSpecificCase("someId", "INVALID")
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result.nonEmpty mustBe false
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result.nonEmpty mustBe false)
     }
   }
 
-
-  trait Setup {
-    val app: Application = application.build()
-    val claims = Seq(InProgressClaim("MRN","NDRC-2022", NDRC, None, LocalDate.of(2019, 1, 1)))
+  trait Setup extends SetupBase {
+    val app: Application             = application.build()
+    val claims                       = Seq(InProgressClaim("MRN", "NDRC-2022", NDRC, None, LocalDate.of(2019, 1, 1)))
     val database: DefaultClaimsCache = app.injector.instanceOf[DefaultClaimsCache]
   }
 }

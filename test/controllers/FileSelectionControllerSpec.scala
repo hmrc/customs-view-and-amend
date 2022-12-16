@@ -39,8 +39,9 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
@@ -52,8 +53,9 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.unit)
 
       running(app) {
-        val request = fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
+        val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
@@ -65,8 +67,11 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.unit)
 
       running(app) {
-        val request = fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, `C&E1179`, initialRequest = true).url)
-        val result = route(app, request).value
+        val request = fakeRequest(
+          GET,
+          routes.FileSelectionController.onPageLoad("claim", NDRC, `C&E1179`, initialRequest = true).url
+        )
+        val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
@@ -80,10 +85,11 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(Some("/url")))
 
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, `C&E1179`).url).withFormUrlEncodedBody(
-          "value" -> "commercial-invoice"
-        )
-        val result = route(app, request).value
+        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, `C&E1179`).url)
+          .withFormUrlEncodedBody(
+            "value" -> "commercial-invoice"
+          )
+        val result  = route(app, request).value
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe "http://localhost:10110/url"
       }
@@ -91,11 +97,13 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "return BAD_REQUEST if an invalid payload sent" in new Setup {
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "invalid-file-type"
-        )
-        val result = route(app, request).value
-        status(result) mustBe BAD_REQUEST}
+        val request =
+          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
+            "value" -> "invalid-file-type"
+          )
+        val result  = route(app, request).value
+        status(result) mustBe BAD_REQUEST
+      }
     }
 
     "return NOT_FOUND if the user not authorised to make file uploads against the claim" in new Setup {
@@ -103,10 +111,11 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "proof-of-authority"
-        )
-        val result = route(app, request).value
+        val request =
+          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
+            "value" -> "proof-of-authority"
+          )
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
@@ -118,26 +127,31 @@ class FileSelectionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-          "value" -> "proof-of-authority"
-        )
-        val result = route(app, request).value
+        val request =
+          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
+            "value" -> "proof-of-authority"
+          )
+        val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
   }
 
-
-  trait Setup {
-    val mockClaimService: ClaimService = mock[ClaimService]
+  trait Setup extends SetupBase {
+    val mockClaimService: ClaimService                         = mock[ClaimService]
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
 
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
+    val claimsMongo: ClaimsMongo = ClaimsMongo(
+      Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
+      LocalDateTime.now()
+    )
 
-    val app: Application = application.overrides(
-      inject.bind[ClaimService].toInstance(mockClaimService),
-      inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
-    ).build()
+    val app: Application = application
+      .overrides(
+        inject.bind[ClaimService].toInstance(mockClaimService),
+        inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
+      )
+      .build()
   }
 
 }

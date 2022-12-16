@@ -44,8 +44,7 @@ class ClaimsOverview @Inject() (
     searchCache
       .removeSearch(request.eori)
       .flatMap { _ =>
-        claimsConnector
-          .getClaims(request.eori)
+        claimsConnector.getAllClaims
           .map(allClaims =>
             Ok(
               claimsOverview(

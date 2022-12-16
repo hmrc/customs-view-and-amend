@@ -40,6 +40,9 @@ import play.api.test.Helpers.stubPlayBodyParsers
 import uk.gov.hmrc.auth.core.retrieve.Email
 
 import scala.concurrent.Future
+import repositories.SessionCache
+import connector.ClaimsConnector
+import org.mockito.Mockito
 
 class FakeMetrics extends Metrics {
   override val defaultRegistry: MetricRegistry = new MetricRegistry
@@ -61,88 +64,97 @@ trait SpecBase
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest("", ""))
 
-  val mockDataStoreConnector: DataStoreConnector = mock[DataStoreConnector]
+  trait SetupBase {
 
-  when(mockDataStoreConnector.getEmail(any)(any))
-    .thenReturn(Future.successful(Right(Email("some@email.com"))))
+    val mockDataStoreConnector: DataStoreConnector = mock[DataStoreConnector]
+    val mockSessionCache: SessionCache             = mock[SessionCache]
+    val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
 
-  val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
+    Mockito
+      .lenient()
+      .when(mockDataStoreConnector.getEmail(any)(any))
+      .thenReturn(Future.successful(Right(Email("some@email.com"))))
 
-  val ndrcCase: NDRCCase = NDRCCase(
-    NDRCDetail(
-      CDFPayCaseNumber = "CaseNumber",
-      declarationID = "DeclarationId",
-      claimType = C285,
-      caseType = Individual,
-      caseStatus = "Closed",
-      caseSubStatus = Some("Refused"),
-      descOfGoods = Some("description of goods"),
-      descOfRejectedGoods = Some("description of rejected goods"),
-      declarantEORI = "SomeEori",
-      importerEORI = "SomeOtherEori",
-      claimantEORI = Some("ClaimaintEori"),
-      basisOfClaim = Some("basis of claim"),
-      claimStartDate = "20221012",
-      claimantName = Some("name"),
-      claimantEmailAddress = Some("email@email.com"),
-      closedDate = Some("20221112"),
-      MRNDetails = Some(
-        Seq(
-          ProcedureDetail("MRN", true)
-        )
+    val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
+
+    val ndrcCase: NDRCCase = NDRCCase(
+      NDRCDetail(
+        CDFPayCaseNumber = "CaseNumber",
+        declarationID = "DeclarationId",
+        claimType = C285,
+        caseType = Individual,
+        caseStatus = "Closed",
+        caseSubStatus = Some("Refused"),
+        descOfGoods = Some("description of goods"),
+        descOfRejectedGoods = Some("description of rejected goods"),
+        declarantEORI = "SomeEori",
+        importerEORI = "SomeOtherEori",
+        claimantEORI = Some("ClaimaintEori"),
+        basisOfClaim = Some("basis of claim"),
+        claimStartDate = "20221012",
+        claimantName = Some("name"),
+        claimantEmailAddress = Some("email@email.com"),
+        closedDate = Some("20221112"),
+        MRNDetails = Some(
+          Seq(
+            ProcedureDetail("MRN", true)
+          )
+        ),
+        entryDetails = Some(
+          Seq(
+            EntryDetail("entryNumber", true)
+          )
+        ),
+        reimbursement = Some(Seq(reimbursement))
       ),
-      entryDetails = Some(
-        Seq(
-          EntryDetail("entryNumber", true)
-        )
-      ),
-      reimbursement = Some(Seq(reimbursement))
-    ),
-    NDRCAmounts(
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000"),
-      Some("600000")
+      NDRCAmounts(
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000"),
+        Some("600000")
+      )
     )
-  )
-  val sctyCase: SCTYCase = SCTYCase(
-    "caseNumber",
-    "declarationId",
-    "Reason for security",
-    "Procedure Code",
-    "Closed",
-    Some("Refused"),
-    None,
-    Some(Seq(Goods("itemNumber", Some("description")))),
-    "someEori",
-    "someOtherEori",
-    Some("claimantEori"),
-    Some("600000"),
-    Some("600000"),
-    Some("600000"),
-    Some("600000"),
-    "20221210",
-    Some("name"),
-    Some("email@email.com"),
-    Some("20221012"),
-    Some(Seq(reimbursement))
-  )
+    val sctyCase: SCTYCase = SCTYCase(
+      "caseNumber",
+      "declarationId",
+      "Reason for security",
+      "Procedure Code",
+      "Closed",
+      Some("Refused"),
+      None,
+      Some(Seq(Goods("itemNumber", Some("description")))),
+      "someEori",
+      "someOtherEori",
+      Some("claimantEori"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      Some("600000"),
+      "20221210",
+      Some("name"),
+      Some("email@email.com"),
+      Some("20221012"),
+      Some(Seq(reimbursement))
+    )
 
-  def application: GuiceApplicationBuilder = new GuiceApplicationBuilder()
-    .overrides(
-      bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
-      bind[DataStoreConnector].toInstance(mockDataStoreConnector),
-      bind[Metrics].toInstance(new FakeMetrics)
-    )
-    .configure(
-      "play.filters.csp.nonce.enabled" -> "false",
-      "auditing.enabled"               -> "false",
-      "metrics.enabled"                -> "false"
-    )
+    def application: GuiceApplicationBuilder = new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
+        bind[DataStoreConnector].toInstance(mockDataStoreConnector),
+        bind[SessionCache].toInstance(mockSessionCache),
+        bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        bind[Metrics].toInstance(new FakeMetrics)
+      )
+      .configure(
+        "play.filters.csp.nonce.enabled" -> "false",
+        "auditing.enabled"               -> "false",
+        "metrics.enabled"                -> "false"
+      )
+  }
 
 }

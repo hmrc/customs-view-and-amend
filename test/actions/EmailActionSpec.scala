@@ -31,21 +31,23 @@ class EmailActionSpec extends SpecBase {
 
   "EmailAction" should {
     "Let requests with validated email through" in new Setup {
-      running (app) {
-        when(mockDataStoreConnector.getEmail(any)(any)).thenReturn(Future.successful(Right(Email("last.man@standing.co.uk"))))
+      running(app) {
+        when(mockDataStoreConnector.getEmail(any)(any))
+          .thenReturn(Future.successful(Right(Email("last.man@standing.co.uk"))))
         val response = await(emailAction.filter(authenticatedRequest))
         response mustBe None
       }
     }
 
     "Display undeliverable page when getEmail returns undeliverable" in new Setup {
-      when(mockDataStoreConnector.getEmail(any)(any)).thenReturn(Future.successful(Left(UndeliverableEmail("some@email.com"))))
+      when(mockDataStoreConnector.getEmail(any)(any))
+        .thenReturn(Future.successful(Left(UndeliverableEmail("some@email.com"))))
       val response = await(emailAction.filter(authenticatedRequest)).value
       response.header.status mustBe OK
     }
 
     "Let request through, when getEmail throws service unavailable exception" in new Setup {
-      running(app){
+      running(app) {
         when(mockDataStoreConnector.getEmail(any)(any)).thenReturn(Future.failed(new ServiceUnavailableException("")))
         val response = await(emailAction.filter(authenticatedRequest))
         response mustBe None
@@ -62,9 +64,9 @@ class EmailActionSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val app = application.build()
-    val emailAction = app.injector.instanceOf[EmailAction]
-    val authenticatedRequest = IdentifierRequest(FakeRequest("GET","/"), "someEori", Some("companyName"))
+  trait Setup extends SetupBase {
+    val app                  = application.build()
+    val emailAction          = app.injector.instanceOf[EmailAction]
+    val authenticatedRequest = IdentifierRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
   }
 }

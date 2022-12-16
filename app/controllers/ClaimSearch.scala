@@ -54,18 +54,21 @@ class ClaimSearch @Inject() (
       .bindFromRequest()
       .fold(
         _ => Future.successful(BadRequest(searchClaim())),
-        query => getClaim(query).map( claim =>
-          Ok(searchClaim(claim, Some(query), searched = true))
-        ))
+        query => getClaim(query).map(claim => Ok(searchClaim(claim, Some(query), searched = true)))
+      )
   }
 
-  def getClaim(query: String)(implicit request: IdentifierRequest[AnyContent]): Future[Seq[Claim]] = {
-    searchCache.get(request.eori).map[Future[AllClaims]] {
-      case Some(searchQuery) => Future.successful(searchQuery.claims)
-      case _ => connector.getClaims(request.eori).map(claims => {
-        searchCache.set(request.eori, claims, query)
-        claims
-      })
-    }.flatten.map(claims => claims.findClaim(query))
-  }
+  def getClaim(query: String)(implicit request: IdentifierRequest[AnyContent]): Future[Seq[Claim]] =
+    searchCache
+      .get(request.eori)
+      .map[Future[AllClaims]] {
+        case Some(searchQuery) => Future.successful(searchQuery.claims)
+        case _                 =>
+          connector.getAllClaims.map { claims =>
+            searchCache.set(request.eori, claims, query)
+            claims
+          }
+      }
+      .flatten
+      .map(claims => claims.findClaim(query))
 }

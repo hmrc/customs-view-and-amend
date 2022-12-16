@@ -16,7 +16,6 @@
 
 package controllers
 
-import connector.ClaimsConnector
 import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{AnyContentAsEmpty, Result}
@@ -33,7 +32,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
   "show" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
       when(mockSearchCache.removeSearch(any))
         .thenReturn(Future.successful(true))
@@ -44,9 +43,8 @@ class ClaimsOverviewControllerSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
-    val mockSearchCache: SearchCache                       = mock[SearchCache]
+  trait Setup extends SetupBase {
+    val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims =
@@ -58,7 +56,6 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
     val app: Application = application
       .overrides(
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
         inject.bind[SearchCache].toInstance(mockSearchCache)
       )
       .build()

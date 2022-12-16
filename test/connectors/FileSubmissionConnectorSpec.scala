@@ -87,7 +87,7 @@ class FileSubmissionConnectorSpec extends SpecBase {
     }
   }
 
-  trait Setup {
+  trait Setup extends SetupBase {
     val mockHttp: HttpClient        = mock[HttpClient]
     val mockClaimCache: ClaimsCache = mock[ClaimsCache]
     implicit val hc: HeaderCarrier  = HeaderCarrier()

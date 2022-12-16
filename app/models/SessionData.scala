@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.test.Helpers._
-import utils.SpecBase
+import cats.Eq
+import play.api.libs.json.Json
+import play.api.libs.json.Format
 
-class UnauthorisedControllerSpec extends SpecBase {
+final case class SessionData(claims: Option[AllClaims] = None)
 
-  "onPageLoad" should {
-    "return OK" in new SetupBase {
-      val app = application.build()
-
-      running(app) {
-        val result = route(app, fakeRequest("GET", routes.UnauthorisedController.onPageLoad.url)).value
-        status(result) mustBe OK
-      }
-    }
-  }
+object SessionData {
+  implicit val format: Format[SessionData] = Json.format[SessionData]
+  implicit val eq: Eq[SessionData]         = Eq.fromUniversalEquals[SessionData]
 }

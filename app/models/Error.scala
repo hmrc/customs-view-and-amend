@@ -14,22 +14,24 @@
  * limitations under the License.
  */
 
-package controllers
+package models
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.test.Helpers._
-import utils.SpecBase
+sealed trait Error {
+  type Value
+  val value: Value
+  def exception: Throwable
+}
 
-class UnauthorisedControllerSpec extends SpecBase {
+object Error {
+  def apply(t: Throwable): Error = new Error {
+    final override type Value = Throwable
+    final override val value: Throwable = t
+    final override def exception          = value
+  }
 
-  "onPageLoad" should {
-    "return OK" in new SetupBase {
-      val app = application.build()
-
-      running(app) {
-        val result = route(app, fakeRequest("GET", routes.UnauthorisedController.onPageLoad.url)).value
-        status(result) mustBe OK
-      }
-    }
+  def apply(message: String): Error = new Error {
+    final override type Value = String
+    final override val value: String = message
+    final override def exception       = new Exception(message)
   }
 }

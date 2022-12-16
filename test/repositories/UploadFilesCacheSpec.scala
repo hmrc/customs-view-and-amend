@@ -31,11 +31,11 @@ class UploadFilesCacheSpec extends SpecBase {
   "initializeRecord" should {
     "populate data into the mongo with no upload documents and a stored nonce" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _      <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         result <- database.collection.find(Filters.equal("caseNumber", caseNumber)).toSingle().toFuture()
-        _ <- database.collection.drop().toFuture()
+        _      <- database.collection.drop().toFuture()
       } yield {
-        result.caseNumber  mustBe "NDRC-2341"
+        result.caseNumber mustBe "NDRC-2341"
         result.uploadedFilesMetadata.nonce mustBe nonce
         result.uploadedFilesMetadata.cargo mustBe None
         result.uploadedFilesMetadata.uploadedFiles mustBe Seq.empty
@@ -43,13 +43,13 @@ class UploadFilesCacheSpec extends SpecBase {
     }
   }
 
-  "updateRecord" should {
+  "updateRecord"                   should {
     "update the record if the case number and nonce match" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _               <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata)
-        result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.collection.drop().toFuture()
+        result          <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _               <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe true
         result mustBe Seq(uploadedFile)
@@ -58,10 +58,10 @@ class UploadFilesCacheSpec extends SpecBase {
 
     "not update a record if the case number does not match" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _               <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord("Invalid-case-number", validUploadedFileMetadata)
-        result <- database.retrieveCurrentlyUploadedFiles("Invalid-case-number")
-        _ <- database.collection.drop().toFuture()
+        result          <- database.retrieveCurrentlyUploadedFiles("Invalid-case-number")
+        _               <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe false
         result mustBe Seq.empty
@@ -70,10 +70,10 @@ class UploadFilesCacheSpec extends SpecBase {
 
     "not update a record if the nonce does not match" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _               <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata.copy(nonce = Nonce(123)))
-        result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.collection.drop().toFuture()
+        result          <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _               <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe false
         result mustBe Seq.empty
@@ -83,12 +83,12 @@ class UploadFilesCacheSpec extends SpecBase {
   "retrieveCurrentlyUploadedFiles" should {
     "return a sequence of uploaded files if case number exists" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _               <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata)
-        result1 <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.removeRecord(caseNumber)
-        result2 <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.collection.drop().toFuture()
+        result1         <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _               <- database.removeRecord(caseNumber)
+        result2         <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _               <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe true
         result1 mustBe Seq(uploadedFile)
@@ -99,20 +99,18 @@ class UploadFilesCacheSpec extends SpecBase {
     "return an empty sequence of uploaded files if case number does not exist" in new Setup {
       await(for {
         result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.collection.drop().toFuture()
-      } yield {
-        result mustBe Seq.empty
-      })
+        _      <- database.collection.drop().toFuture()
+      } yield result mustBe Seq.empty)
     }
   }
 
   "removeRecord" should {
     "remove a record based on the case number" in new Setup {
       await(for {
-        _ <- database.initializeRecord(caseNumber, nonce, Seq.empty)
+        _               <- database.initializeRecord(caseNumber, nonce, Seq.empty)
         successfulWrite <- database.updateRecord(caseNumber, validUploadedFileMetadata)
-        result <- database.retrieveCurrentlyUploadedFiles(caseNumber)
-        _ <- database.collection.drop().toFuture()
+        result          <- database.retrieveCurrentlyUploadedFiles(caseNumber)
+        _               <- database.collection.drop().toFuture()
       } yield {
         successfulWrite mustBe true
         result mustBe Seq(uploadedFile)
@@ -120,13 +118,23 @@ class UploadFilesCacheSpec extends SpecBase {
     }
   }
 
-
-  trait Setup {
+  trait Setup extends SetupBase {
     val app: Application = application.build()
 
-    val caseNumber: String = "NDRC-2341"
-    val nonce: Nonce = Nonce(111)
-    val uploadedFile: UploadedFile = UploadedFile("reference", "downloadUrl", "someTimestamp", "someChecksum", "someFileName", "mimeType", 10, None, AdditionalSupportingDocuments, None)
+    val caseNumber: String                              = "NDRC-2341"
+    val nonce: Nonce                                    = Nonce(111)
+    val uploadedFile: UploadedFile                      = UploadedFile(
+      "reference",
+      "downloadUrl",
+      "someTimestamp",
+      "someChecksum",
+      "someFileName",
+      "mimeType",
+      10,
+      None,
+      AdditionalSupportingDocuments,
+      None
+    )
     val validUploadedFileMetadata: UploadedFileMetadata = UploadedFileMetadata(nonce, Seq(uploadedFile), None)
 
     val database: DefaultUploadedFilesCache = app.injector.instanceOf[DefaultUploadedFilesCache]

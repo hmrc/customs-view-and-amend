@@ -16,8 +16,6 @@
 
 package controllers
 
-import connector.ClaimsConnector
-import models.CaseType.Bulk
 import models._
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
@@ -38,6 +36,20 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a in progress claim has been found" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail)))
+      when(mockClaimService.authorisedToView(any, any)(any))
+        .thenReturn(Future.successful(Some(claimsMongo)))
+
+      running(app) {
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
+        val result  = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "return OK when a in progress claim has been found without claimType" in new Setup {
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail.copy(claimType = None))))
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
 
@@ -130,14 +142,13 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val mockClaimsCache: ClaimsCache         = mock[ClaimsCache]
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
-    val claimsMongo: ClaimsMongo             = ClaimsMongo(
+  trait Setup extends SetupBase {
+    val mockClaimsCache: ClaimsCache   = mock[ClaimsCache]
+    val claimsMongo: ClaimsMongo       = ClaimsMongo(
       Seq(InProgressClaim("MRN", "someClaim", NDRC, Some("LRN"), LocalDate.of(2021, 10, 23))),
       LocalDateTime.now()
     )
-    val mockClaimService: ClaimService       = mock[ClaimService]
+    val mockClaimService: ClaimService = mock[ClaimService]
 
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
@@ -164,7 +175,6 @@ class ClaimDetailControllerSpec extends SpecBase {
     val app: Application = application
       .overrides(
         inject.bind[ClaimsCache].toInstance(mockClaimsCache),
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
         inject.bind[ClaimService].toInstance(mockClaimService)
       )
       .build()

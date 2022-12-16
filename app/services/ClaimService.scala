@@ -32,7 +32,7 @@ class ClaimService @Inject() (
 
   def authorisedToView(caseNumber: String, eori: String)(implicit hc: HeaderCarrier): Future[Option[ClaimsMongo]] =
     for {
-      _      <- claimsConnector.getClaims(eori)
+      _      <- claimsConnector.getAllClaims
       result <- claimsCache.getSpecificCase(eori, caseNumber)
     } yield result
 

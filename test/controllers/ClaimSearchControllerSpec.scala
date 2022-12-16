@@ -16,7 +16,6 @@
 
 package controllers
 
-import connector.ClaimsConnector
 import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
@@ -49,7 +48,7 @@ class ClaimSearchControllerSpec extends SpecBase {
       status(result) mustBe BAD_REQUEST
       verify(mockSearchCache, times(0)).get(any)
       verify(mockSearchCache, times(0)).set(any, any, any)
-      verify(mockClaimsConnector, times(0)).getClaims(any)(any)
+      verify(mockClaimsConnector, times(0)).getAllClaims(any)
     }
 
     "return OK when the field is not empty and search cache is available" in new Setup {
@@ -63,7 +62,7 @@ class ClaimSearchControllerSpec extends SpecBase {
       status(result) mustBe OK
       verify(mockSearchCache, times(1)).get(any)
       verify(mockSearchCache, times(0)).set(any, any, any)
-      verify(mockClaimsConnector, times(0)).getClaims(any)(any)
+      verify(mockClaimsConnector, times(0)).getAllClaims(any)
     }
 
     "return OK when the field is not empty and search cache is NOT available" in new Setup {
@@ -73,23 +72,22 @@ class ClaimSearchControllerSpec extends SpecBase {
       when(mockSearchCache.set(any, any, any))
         .thenReturn(Future.successful(true))
 
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
 
       val request: FakeRequest[AnyContentAsFormUrlEncoded] =
         fakeRequest(POST, routes.ClaimSearch.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
-      val result: Future[Result] = route(app, request).value
+      val result: Future[Result]                           = route(app, request).value
 
       status(result) mustBe OK
       verify(mockSearchCache, times(1)).get(any)
       verify(mockSearchCache, times(1)).set(any, any, any)
-      verify(mockClaimsConnector, times(1)).getClaims(any)(any)
+      verify(mockClaimsConnector, times(1)).getAllClaims(any)
     }
   }
 
-  trait Setup {
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
-    val mockSearchCache: SearchCache                       = mock[SearchCache]
+  trait Setup extends SetupBase {
+    val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims =
@@ -101,7 +99,6 @@ class ClaimSearchControllerSpec extends SpecBase {
 
     val app: Application = application
       .overrides(
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
         inject.bind[SearchCache].toInstance(mockSearchCache)
       )
       .build()

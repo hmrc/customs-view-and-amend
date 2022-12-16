@@ -36,16 +36,33 @@ class FileUploadCYAControllerSpec extends SpecBase {
     "return OK on a successful request" in new Setup {
       when(mockClaimService.authorisedToView(any, any)(any))
         .thenReturn(Future.successful(Some(claimsMongo)))
-      val uploadedFiles = Seq(UploadedFile("reference", "/url", "timestamp", "sum", "file name", "PDF", 10, None, AdditionalSupportingDocuments, None))
+      val uploadedFiles = Seq(
+        UploadedFile(
+          "reference",
+          "/url",
+          "timestamp",
+          "sum",
+          "file name",
+          "PDF",
+          10,
+          None,
+          AdditionalSupportingDocuments,
+          None
+        )
+      )
       when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
         .thenReturn(Future.successful(uploadedFiles))
 
       running(app) {
         val identifierRequest: IdentifierRequest[AnyContentAsEmpty.type] =
-          IdentifierRequest(fakeRequest(GET, routes.FileUploadCYAController.onPageLoad("NDRC-1234", NDRC).url), "exampleEori", Some("companyName"))
-        val result = route(app, identifierRequest).value
-        status(result) shouldBe OK
-        contentAsString(result).contains("file name") shouldBe true
+          IdentifierRequest(
+            fakeRequest(GET, routes.FileUploadCYAController.onPageLoad("NDRC-1234", NDRC).url),
+            "exampleEori",
+            Some("companyName")
+          )
+        val result                                                       = route(app, identifierRequest).value
+        status(result)                                                            shouldBe OK
+        contentAsString(result).contains("file name")                             shouldBe true
         contentAsString(result).contains("Other documents supporting your claim") shouldBe true
       }
     }
@@ -56,22 +73,26 @@ class FileUploadCYAControllerSpec extends SpecBase {
 
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadCYAController.onPageLoad("NDRC-1234", NDRC).url)
-        val result = route(app, request).value
+        val result  = route(app, request).value
         status(result) shouldBe NOT_FOUND
       }
     }
   }
 
-
-  trait Setup {
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
-    val mockClaimService: ClaimService = mock[ClaimService]
+  trait Setup extends SetupBase {
+    val claimsMongo: ClaimsMongo                   = ClaimsMongo(
+      Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
+      LocalDateTime.now()
+    )
+    val mockClaimService: ClaimService             = mock[ClaimService]
     val mockUploadedFilesCache: UploadedFilesCache = mock[UploadedFilesCache]
 
-    val app: Application = application.overrides(
-      inject.bind[ClaimService].toInstance(mockClaimService),
-      inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache)
-    ).build()
+    val app: Application = application
+      .overrides(
+        inject.bind[ClaimService].toInstance(mockClaimService),
+        inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache)
+      )
+      .build()
 
     implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 

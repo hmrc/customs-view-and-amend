@@ -16,7 +16,7 @@
 
 package services
 
-import connector.{ClaimsConnector, UploadDocumentsConnector}
+import connector.UploadDocumentsConnector
 import models.{AllClaims, ClosedClaim, InProgressClaim, NDRC, PendingClaim}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
@@ -32,7 +32,7 @@ class ClaimServiceSpec extends SpecBase {
 
   "authorisedToView" should {
     "return the result of getSpecificCase" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
+      when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
       when(mockClaimsCache.getSpecificCase(any, any))
         .thenReturn(Future.successful(Some(claimsMongo)))
@@ -64,7 +64,7 @@ class ClaimServiceSpec extends SpecBase {
     }
   }
 
-  trait Setup {
+  trait Setup extends SetupBase {
     val claimsMongo: ClaimsMongo = ClaimsMongo(
       Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
       LocalDateTime.now()
@@ -103,14 +103,12 @@ class ClaimServiceSpec extends SpecBase {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val mockClaimsConnector: ClaimsConnector                   = mock[ClaimsConnector]
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
     val mockUploadedFilesCache: UploadedFilesCache             = mock[UploadedFilesCache]
     val mockClaimsCache: ClaimsCache                           = mock[ClaimsCache]
 
     val app: Application = application
       .overrides(
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
         inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
         inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
         inject.bind[ClaimsCache].toInstance(mockClaimsCache)

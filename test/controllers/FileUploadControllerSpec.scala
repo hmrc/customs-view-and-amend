@@ -16,8 +16,7 @@
 
 package controllers
 
-import connector.{ClaimsConnector, FileSubmissionConnector, UploadDocumentsConnector}
-import models.CaseType.Individual
+import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models._
 import models.email.UnverifiedEmail
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
@@ -148,9 +147,8 @@ class FileUploadControllerSpec extends SpecBase {
     }
   }
 
-  trait Setup {
+  trait Setup extends SetupBase {
     val mockFileSubmissionConnector: FileSubmissionConnector   = mock[FileSubmissionConnector]
-    val mockClaimsConnector: ClaimsConnector     = mock[ClaimsConnector]
     val claimsMongo: ClaimsMongo                               = ClaimsMongo(
       Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
       LocalDateTime.now()
@@ -185,7 +183,6 @@ class FileUploadControllerSpec extends SpecBase {
       .overrides(
         inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
         inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
         inject.bind[FileSubmissionConnector].toInstance(mockFileSubmissionConnector),
         inject.bind[ClaimService].toInstance(mockClaimService)
       )
