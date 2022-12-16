@@ -16,48 +16,41 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
-import connector.ClaimsConnector
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SearchCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claims_overview
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
-class ClaimsOverview @Inject() (
+class ClaimsOverviewController @Inject() (
   mcc: MessagesControllerComponents,
-  searchCache: SearchCache,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
-  claimsConnector: ClaimsConnector,
+  allClaimsAction: AllClaimsAction,
   claimsOverview: claims_overview
-)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+)(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
-    searchCache
-      .removeSearch(request.eori)
-      .flatMap { _ =>
-        claimsConnector.getAllClaims
-          .map(allClaims =>
-            Ok(
-              claimsOverview(
-                0,
-                allClaims,
-                SearchFormHelper.form,
-                routes.ClaimSearch.onSubmit(),
-                request.companyName.orNull,
-                request.eori
-              )
-            )
-          )
-      }
-  }
+  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
+
+  def show: Action[AnyContent] =
+    preconditions { case (request, allClaims) =>
+      implicit val r = request
+      Ok(
+        claimsOverview(
+          0,
+          allClaims,
+          SearchFormHelper.form,
+          routes.ClaimSearch.onSubmit(),
+          request.companyName.orNull,
+          request.eori
+        )
+      )
+    }
 
 }

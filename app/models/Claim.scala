@@ -29,16 +29,21 @@ sealed trait Claim extends DateFormatters with ServiceTypeFormatters {
   val claimStartDate: LocalDate
   val lrn: Option[String]
   val claimStatus: ClaimStatus
-  def url(searched: Boolean): String = controllers.routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched).url
-  def formattedStartDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(claimStartDate)
+  def url: String                                                 = controllers.routes.ClaimDetailController.claimDetail(caseNumber).url
+  def formattedStartDate()(implicit messages: Messages): String   = dateAsDayMonthAndYear(claimStartDate)
   def formattedServiceType()(implicit messages: Messages): String = serviceTypeAsMessage(serviceType)
 }
 
- 
 object Claim {
   implicit val format: OFormat[Claim] = Json.format[Claim]
 }
-case class InProgressClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate) extends Claim {
+case class InProgressClaim(
+  declarationId: String,
+  caseNumber: String,
+  serviceType: ServiceType,
+  lrn: Option[String],
+  claimStartDate: LocalDate
+) extends Claim {
   override val claimStatus: ClaimStatus = InProgress
 }
 
@@ -46,9 +51,16 @@ object InProgressClaim {
   implicit val format: OFormat[InProgressClaim] = Json.format[InProgressClaim]
 }
 
-case class PendingClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, respondByDate: LocalDate) extends Claim {
-  //TODO: Removed the respond by date until secure messaging timestamp available
-  //def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
+case class PendingClaim(
+  declarationId: String,
+  caseNumber: String,
+  serviceType: ServiceType,
+  lrn: Option[String],
+  claimStartDate: LocalDate,
+  respondByDate: LocalDate
+) extends Claim {
+  // TODO: Removed the respond by date until secure messaging timestamp available
+  // def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
   override val claimStatus: ClaimStatus = Pending
 }
 
@@ -56,8 +68,16 @@ object PendingClaim {
   implicit val format: OFormat[PendingClaim] = Json.format[PendingClaim]
 }
 
-case class ClosedClaim(declarationId: String, caseNumber: String, serviceType: ServiceType, lrn: Option[String], claimStartDate: LocalDate, removalDate: LocalDate, caseSubStatus: String) extends Claim {
-  override val claimStatus: ClaimStatus = Closed
+case class ClosedClaim(
+  declarationId: String,
+  caseNumber: String,
+  serviceType: ServiceType,
+  lrn: Option[String],
+  claimStartDate: LocalDate,
+  removalDate: LocalDate,
+  caseSubStatus: String
+) extends Claim {
+  override val claimStatus: ClaimStatus                           = Closed
   def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
 
 }

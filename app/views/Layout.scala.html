@@ -97,7 +97,6 @@
         serviceUrl = Some(appConfig.homepage),
         signOutUrl = Some(routes.LogoutController.logout.url),
         nonce = CSPNonce.get,
-        backLinkUrl = backLink,
         mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
         additionalHeadBlock = Some(additionalHead),
         beforeContentBlock = Some(beforeContent),

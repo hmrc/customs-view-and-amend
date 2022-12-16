@@ -21,8 +21,9 @@ import play.api.i18n.{DefaultMessagesApi, Lang, Messages}
 import utils.SpecBase
 
 import java.time.LocalDate
+import org.scalatest.Inside
 
-class AllClaimDetailsSpec extends SpecBase {
+class AllClaimDetailsSpec extends SpecBase with Inside {
 
   "toClaim for SCTY" should {
     "return InProgressClaim when case status is 'In Progress'" in new Setup {
@@ -106,7 +107,7 @@ class AllClaimDetailsSpec extends SpecBase {
     }
   }
 
-  "claimDetail" should {
+  "ClaimDetail" should {
     "format startDate" in {
       implicit val messages: Messages = new DefaultMessagesApi(
         Map("en" -> Map("month.12" -> "Foo"))
@@ -129,6 +130,20 @@ class AllClaimDetailsSpec extends SpecBase {
 
     "check multipleDeclarations" in {
       claimDetail.multipleDeclarations shouldBe false
+    }
+  }
+
+  "AllClaims" should {
+    "find claim by caseNumber" in {
+      inside(allClaims.findByCaseNumber("SCTY-1099")) { case Some(c: ClosedClaim) =>
+        c.caseNumber shouldBe "SCTY-1099"
+      }
+      inside(allClaims.findByCaseNumber("NDRC-2021")) { case Some(c: PendingClaim) =>
+        c.caseNumber shouldBe "NDRC-2021"
+      }
+      inside(allClaims.findByCaseNumber("NDRC-3078")) { case Some(c: InProgressClaim) =>
+        c.caseNumber shouldBe "NDRC-3078"
+      }
     }
   }
 
@@ -190,5 +205,36 @@ class AllClaimDetailsSpec extends SpecBase {
     claimantsEmail = None,
     reasonForSecurity = None,
     securityGoodsDescription = None
+  )
+
+  val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
+    ClosedClaim(
+      "MRN",
+      s"SCTY-${1000 + value}",
+      SCTY,
+      None,
+      LocalDate.of(2021, 2, 1).plusDays(value),
+      LocalDate.of(2022, 1, 1).plusDays(value),
+      "Closed"
+    )
+  }
+  val pendingClaims: Seq[PendingClaim]      = (1 to 100).map { value =>
+    PendingClaim(
+      "MRN",
+      s"NDRC-${2000 + value}",
+      NDRC,
+      None,
+      LocalDate.of(2021, 2, 1).plusDays(value),
+      LocalDate.of(2022, 1, 1).plusDays(value)
+    )
+  }
+  val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
+    InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value))
+  }
+
+  val allClaims: AllClaims = AllClaims(
+    pendingClaims = pendingClaims,
+    inProgressClaims = inProgressClaim,
+    closedClaims = closedClaims
   )
 }

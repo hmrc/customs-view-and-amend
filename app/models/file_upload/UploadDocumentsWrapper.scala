@@ -26,16 +26,19 @@ case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: 
 
 object UploadDocumentsWrapper {
 
-  def createPayload(nonce: Nonce,
-                    caseNumber: String,
-                    serviceType: ServiceType,
-                    claimType: ClaimType,
-                    documentType: FileSelection,
-                    previouslyUploaded: Seq[UploadedFile] = Seq.empty
-                   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
+  def createPayload(
+    nonce: Nonce,
+    caseNumber: String,
+    serviceType: ServiceType,
+    claimType: ClaimType,
+    documentType: FileSelection,
+    previouslyUploaded: Seq[UploadedFile] = Seq.empty
+  )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
     val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber, serviceType)
-    val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber, serviceType, claimType, initialRequest = false).url
-    val callBack = controllers.routes.FileUploadController.updateFiles()
+    val backLinkUrl = controllers.routes.FileSelectionController
+      .onPageLoad(caseNumber, serviceType, claimType, initialRequest = false)
+      .url
+    val callBack    = controllers.routes.FileUploadController.updateFiles()
 
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
@@ -51,21 +54,23 @@ object UploadDocumentsWrapper {
         newFileDescription = documentType,
         allowedContentTypes = Some("image/jpeg,image/png,application/pdf"),
         allowedFileExtensions = Some(".jpg,.jpeg,.png,.pdf"),
-        content = Some(UploadDocumentsContent(
-          serviceName = Some(messages("service.name")),
-          title = Some(messages("file.upload.title", documentType.message.toLowerCase)),
-          descriptionHtml = Some(messages("file.upload.description", documentType.message)),
-          serviceUrl = Some(appConfig.homepage),
-          accessibilityStatementUrl = Some(appConfig.fileUploadAccessibilityUrl),
-          phaseBanner = Some(appConfig.fileUploadPhase),
-          phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
-          userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
-          contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
-          yesNoQuestionText = Some(messages("file.upload.yes-no-question-text")),
-          yesNoQuestionRequiredError = Some(messages("file.upload.yes-no-question-required-error")),
-          allowedFilesTypesHint = Some(messages("file.upload.allowed-file-types-hint")),
-          fileUploadedProgressBarLabel = Some(messages("file.upload.progress-bar-label"))
-        )),
+        content = Some(
+          UploadDocumentsContent(
+            serviceName = Some(messages("service.name")),
+            title = Some(messages("file.upload.title", documentType.message.toLowerCase)),
+            descriptionHtml = Some(messages("file.upload.description", documentType.message)),
+            serviceUrl = Some(appConfig.homepage),
+            accessibilityStatementUrl = Some(appConfig.fileUploadAccessibilityUrl),
+            phaseBanner = Some(appConfig.fileUploadPhase),
+            phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
+            userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
+            contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
+            yesNoQuestionText = Some(messages("file.upload.yes-no-question-text")),
+            yesNoQuestionRequiredError = Some(messages("file.upload.yes-no-question-required-error")),
+            allowedFilesTypesHint = Some(messages("file.upload.allowed-file-types-hint")),
+            fileUploadedProgressBarLabel = Some(messages("file.upload.progress-bar-label"))
+          )
+        ),
         features = Some(
           UploadDocumentsFeatures(
             showUploadMultiple = Some(appConfig.fileUploadMultiple),

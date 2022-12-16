@@ -31,35 +31,43 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DefaultSearchCache @Inject()(mongo: MongoComponent, config: Configuration)(implicit executionContext: ExecutionContext)
-  extends PlayMongoRepository[SearchQueryMongo](
-    collectionName = "search-cache",
-    mongoComponent = mongo,
-    domainFormat = SearchQueryMongo.format,
-    indexes = Seq(
-      IndexModel(
-        ascending("lastUpdated"),
-        IndexOptions().name("search-cache-last-updated-index")
-          .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+class DefaultSearchCache @Inject() (mongo: MongoComponent, config: Configuration)(implicit
+  executionContext: ExecutionContext
+) extends PlayMongoRepository[SearchQueryMongo](
+      collectionName = "search-cache",
+      mongoComponent = mongo,
+      domainFormat = SearchQueryMongo.format,
+      indexes = Seq(
+        IndexModel(
+          ascending("lastUpdated"),
+          IndexOptions()
+            .name("search-cache-last-updated-index")
+            .expireAfter(config.get[Int]("mongodb.timeToLiveInSeconds"), TimeUnit.SECONDS)
+        )
       )
-    )) with SearchCache {
+    )
+    with SearchCache {
 
   override def get(id: String): Future[Option[SearchQuery]] =
-    collection.find(equal("_id", id))
+    collection
+      .find(equal("_id", id))
       .toSingle()
       .toFutureOption()
       .map(_.map(_.toSearchQuery))
 
-
   override def set(id: String, claims: AllClaims, query: String): Future[Boolean] =
-    collection.replaceOne(
-      equal("_id", id),
-      SearchQueryMongo(claims, query, LocalDateTime.now()),
-      ReplaceOptions().upsert(true)
-    ).toFuture().map(_.wasAcknowledged())
+    collection
+      .replaceOne(
+        equal("_id", id),
+        SearchQueryMongo(claims, query, LocalDateTime.now()),
+        ReplaceOptions().upsert(true)
+      )
+      .toFuture()
+      .map(_.wasAcknowledged())
 
   override def removeSearch(id: String): Future[Boolean] =
-    collection.deleteOne(equal("_id", id))
+    collection
+      .deleteOne(equal("_id", id))
       .toFuture()
       .map(_.wasAcknowledged())
 }

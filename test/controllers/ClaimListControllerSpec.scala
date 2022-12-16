@@ -17,9 +17,10 @@
 package controllers
 
 import models._
+import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.test.Helpers._
-import play.api.{Application, inject}
 import repositories.ClaimsCache
 import utils.SpecBase
 
@@ -30,9 +31,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showInProgressClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getAllClaims(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showInProgressClaimList(Some(1)).url)
         val result  = route(app, request).value
@@ -43,9 +41,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showPendingClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getAllClaims(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showPendingClaimList(None).url)
         val result  = route(app, request).value
@@ -56,9 +51,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showClosedClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getAllClaims(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showClosedClaimList(None).url)
         val result  = route(app, request).value
@@ -101,11 +93,12 @@ class ClaimListControllerSpec extends SpecBase {
       closedClaims = closedClaims
     )
 
-    val app: Application = application
-      .overrides(
-        inject.bind[ClaimsCache].toInstance(mockClaimsCache)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
+
+    Mockito
+      .lenient()
+      .when(mockClaimsConnector.getAllClaims(any))
+      .thenReturn(Future.successful(allClaims))
   }
 
 }

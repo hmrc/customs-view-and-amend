@@ -16,52 +16,51 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
-import models.{AllClaims, IdentifierRequest}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, ActionBuilder, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import viewmodels.{ClosedClaimListViewModel, InProgressClaimListViewModel, PendingClaimListViewModel}
-import views.html.{claims_closed, claims_in_progress, claims_pending}
 import views.components.hints.DropdownHints
+import views.html.{claims_closed, claims_in_progress, claims_pending}
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
 
 class ClaimListController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
+  allClaimsAction: AllClaimsAction,
   claimsConnector: ClaimsConnector,
   claimsClosed: claims_closed,
   claimsPending: claims_pending,
   claimsInProgress: claims_in_progress
-)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+)(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
+
+  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
 
   private val caseStatusHints: DropdownHints =
     DropdownHints.range(elementIndex = 0, maxHints = 6)
 
-  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
+  def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
+    implicit val r = request
+    Ok(claimsInProgress(InProgressClaimListViewModel(allClaims.inProgressClaims, page)))
 
-  def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    claimsConnector.getAllClaims.map { claims: AllClaims =>
-      Ok(claimsInProgress(InProgressClaimListViewModel(claims.inProgressClaims, page)))
-    }
   }
 
-  def showPendingClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    claimsConnector.getAllClaims.map { claims =>
-      Ok(claimsPending(PendingClaimListViewModel(claims.pendingClaims, page)))
-    }
+  def showPendingClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
+    implicit val r = request
+    Ok(claimsPending(PendingClaimListViewModel(allClaims.pendingClaims, page)))
+
   }
 
-  def showClosedClaimList(page: Option[Int]): Action[AnyContent] = actions.async { implicit request =>
-    claimsConnector.getAllClaims.map { claims =>
-      Ok(claimsClosed(ClosedClaimListViewModel(claims.closedClaims, page), caseStatusHints))
-    }
+  def showClosedClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
+    implicit val r = request
+    Ok(claimsClosed(ClosedClaimListViewModel(allClaims.closedClaims, page), caseStatusHints))
+
   }
 }

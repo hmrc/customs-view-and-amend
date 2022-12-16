@@ -62,13 +62,6 @@ case class ClaimDetail(
     case Pending => true
     case _       => false
   }
-
-  def backLink(): String =
-    claimStatus match {
-      case InProgress => controllers.routes.ClaimListController.showInProgressClaimList(None).url
-      case Pending    => controllers.routes.ClaimListController.showPendingClaimList(None).url
-      case Closed     => controllers.routes.ClaimListController.showClosedClaimList(None).url
-    }
 }
 
 object ClaimDetail {

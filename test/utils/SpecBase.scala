@@ -43,6 +43,7 @@ import scala.concurrent.Future
 import repositories.SessionCache
 import connector.ClaimsConnector
 import org.mockito.Mockito
+import java.util.UUID
 
 class FakeMetrics extends Metrics {
   override val defaultRegistry: MetricRegistry = new MetricRegistry
@@ -60,7 +61,7 @@ trait SpecBase
   def fakeRequest(method: String = "", path: String = ""): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, path).withCSRFToken
       .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
-      .withHeaders("X-Session-Id" -> "someSessionId")
+      .withHeaders("X-Session-Id" -> UUID.randomUUID().toString())
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest("", ""))
 
@@ -153,7 +154,22 @@ trait SpecBase
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",
         "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "metrics.enabled"                -> "false",
+        "session-store.expiry-time"      -> "15 seconds"
+      )
+
+    def applicationWithMongoCache: GuiceApplicationBuilder = new GuiceApplicationBuilder()
+      .overrides(
+        bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
+        bind[DataStoreConnector].toInstance(mockDataStoreConnector),
+        bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        bind[Metrics].toInstance(new FakeMetrics)
+      )
+      .configure(
+        "play.filters.csp.nonce.enabled" -> "false",
+        "auditing.enabled"               -> "false",
+        "metrics.enabled"                -> "false",
+        "session-store.expiry-time"      -> "15 seconds"
       )
   }
 

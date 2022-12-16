@@ -18,9 +18,11 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class AllClaims(pendingClaims: Seq[PendingClaim],
-                     inProgressClaims: Seq[InProgressClaim],
-                     closedClaims: Seq[ClosedClaim]) {
+case class AllClaims(
+  pendingClaims: Seq[PendingClaim],
+  inProgressClaims: Seq[InProgressClaim],
+  closedClaims: Seq[ClosedClaim]
+) {
 
   def collectAll: Seq[Claim] = pendingClaims ++ inProgressClaims ++ closedClaims
 
@@ -28,6 +30,12 @@ case class AllClaims(pendingClaims: Seq[PendingClaim],
     claim.caseNumber.toUpperCase == query.toUpperCase ||
       claim.declarationId.toUpperCase == query.toUpperCase
   )
+
+  def findByCaseNumber(caseNumber: String): Option[Claim] =
+    pendingClaims
+      .find(_.caseNumber == caseNumber)
+      .orElse(inProgressClaims.find(_.caseNumber == caseNumber))
+      .orElse(closedClaims.find(_.caseNumber == caseNumber))
 
 }
 

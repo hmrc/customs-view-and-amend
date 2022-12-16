@@ -36,8 +36,7 @@
 
 @layout(
     fullWidth = false,
-    pageTitle = Some(messages("file.selection.title")),
-        backLink = Some(routes.ClaimDetailController.claimDetail(caseNumber, serviceType, searched = false).url)) {
+    pageTitle = Some(messages("file.selection.title"))) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit(caseNumber, serviceType, claimType)) {
         @errorSummary(form.errors)

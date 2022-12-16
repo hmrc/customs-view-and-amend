@@ -34,32 +34,32 @@ class EmailActionSpec extends SpecBase {
       running(app) {
         when(mockDataStoreConnector.getEmail(any)(any))
           .thenReturn(Future.successful(Right(Email("last.man@standing.co.uk"))))
-        val response = await(emailAction.filter(authenticatedRequest))
-        response mustBe None
+        val response = await(emailAction.refine(authenticatedRequest))
+        response mustBe Right(authenticatedRequest.withVerifiedEmail("last.man@standing.co.uk"))
       }
     }
 
     "Display undeliverable page when getEmail returns undeliverable" in new Setup {
       when(mockDataStoreConnector.getEmail(any)(any))
         .thenReturn(Future.successful(Left(UndeliverableEmail("some@email.com"))))
-      val response = await(emailAction.filter(authenticatedRequest)).value
+      val response = await(emailAction.refine(authenticatedRequest)).swap.getOrElse(fail("Expected Left response"))
       response.header.status mustBe OK
     }
 
     "Let request through, when getEmail throws service unavailable exception" in new Setup {
       running(app) {
         when(mockDataStoreConnector.getEmail(any)(any)).thenReturn(Future.failed(new ServiceUnavailableException("")))
-        val response = await(emailAction.filter(authenticatedRequest))
-        response mustBe None
+        val response = await(emailAction.refine(authenticatedRequest))
+        response mustBe Right(authenticatedRequest)
       }
     }
 
     "Redirect users with unvalidated emails" in new Setup {
       running(app) {
         when(mockDataStoreConnector.getEmail(any)(any)).thenReturn(Future.successful(Left(UnverifiedEmail)))
-        val response = await(emailAction.filter(authenticatedRequest))
-        response.get.header.status mustBe SEE_OTHER
-        response.get.header.headers(LOCATION) must include("/verify-your-email")
+        val response = await(emailAction.refine(authenticatedRequest)).swap.getOrElse(fail("Expected Left response"))
+        response.header.status mustBe SEE_OTHER
+        response.header.headers(LOCATION) must include("/verify-your-email")
       }
     }
   }

@@ -18,26 +18,27 @@ package controllers
 
 import models._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Application, inject}
 import repositories.SearchCache
 import utils.SpecBase
 
 import java.time.LocalDate
 import scala.concurrent.Future
+import org.mockito.Mockito
 
 class ClaimsOverviewControllerSpec extends SpecBase {
 
   "show" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getAllClaims(any))
+      Mockito
+        .lenient()
+        .when(mockClaimsConnector.getAllClaims(any))
         .thenReturn(Future.successful(allClaims))
-      when(mockSearchCache.removeSearch(any))
-        .thenReturn(Future.successful(true))
 
-      val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverview.show.url)
+      val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverviewController.show.url)
       val result: Future[Result]                       = route(app, request).value
       status(result) mustBe OK
     }
@@ -54,11 +55,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
         Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1), "Closed"))
     )
 
-    val app: Application = application
-      .overrides(
-        inject.bind[SearchCache].toInstance(mockSearchCache)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
   }
 
 }

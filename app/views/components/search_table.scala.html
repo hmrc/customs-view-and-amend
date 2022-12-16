@@ -32,7 +32,7 @@
     <tbody class="govuk-table__body">
         @for(claim <- claims) {
             <tr class="govuk-table__row">
-                @claimListRows(claim.url(true), claim.caseNumber, claim.declarationId, Some(claim.formattedServiceType()), Some(messages(claim.claimStatus.messageKey)), None)
+                @claimListRows(claim.url, claim.caseNumber, claim.declarationId, Some(claim.formattedServiceType()), Some(messages(claim.claimStatus.messageKey)), None)
             </tr>
         }
     </tbody>
