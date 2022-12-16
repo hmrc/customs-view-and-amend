@@ -16,7 +16,8 @@
 
 package controllers
 
-import connector.{FileSubmissionConnector, ClaimsConnector, UploadDocumentsConnector}
+import connector.{ClaimsConnector, FileSubmissionConnector, UploadDocumentsConnector}
+import models.CaseType.Individual
 import models._
 import models.email.UnverifiedEmail
 import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
@@ -169,7 +170,7 @@ class FileUploadControllerSpec extends SpecBase {
       InProgress,
       None,
       Some(C285),
-      Some(Single),
+      Some(Individual),
       LocalDate.now,
       None,
       Some("1200"),

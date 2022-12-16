@@ -17,6 +17,7 @@
 package controllers
 
 import connector.ClaimsConnector
+import models.CaseType.Bulk
 import models._
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
@@ -149,7 +150,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       InProgress,
       None,
       Some(C285),
-      Some(Multiple),
+      Some(Bulk),
       LocalDate.now,
       None,
       Some("1200"),

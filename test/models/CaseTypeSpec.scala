@@ -32,7 +32,6 @@ class CaseTypeSpec extends SpecBase {
       CaseType.format.reads(JsString("Bulk")) shouldBe JsSuccess(Bulk)
       CaseType.format.reads(JsString("CMA")) shouldBe JsSuccess(CMA)
       CaseType.format.reads(JsString("C18")) shouldBe JsSuccess(C18)
-      CaseType.format.reads(JsString("Unknown")).isError shouldBe true
     }
   }
 }
