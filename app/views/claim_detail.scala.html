@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
 @import models.responses.`C&E1179`
+@import models.CaseType.{Bulk, Individual}
 
 @this(
     layout: Layout,
@@ -30,6 +31,7 @@
     insetText: components.inset_text,
     paragraph: components.paragraph
 )
+
 
 @(claimDetail: ClaimDetail, searched: Boolean, email: String, fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
@@ -64,11 +66,11 @@
             },
             {
                 val content = claimDetail.claimType match {
-                    case Some(`C&E1179`) if claimDetail.caseType.get == Multiple => "claim.detail.type.multiple.CE1179"
-                    case Some(`C&E1179`) if claimDetail.caseType.get == Single  => "claim.detail.type.single.CE1179"
+                    case Some(`C&E1179`) if claimDetail.caseType.get == Bulk => "claim.detail.type.multiple.CE1179"
+                    case Some(`C&E1179`) if claimDetail.caseType.get == Individual  => "claim.detail.type.single.CE1179"
                     case Some(`C&E1179`) => "claim.detail.type.CE1179"
-                    case Some(_) if claimDetail.caseType.get == Multiple => "claim.detail.type.multiple.C285"
-                    case Some(_) if claimDetail.caseType.get == Single  => "claim.detail.type.single.C285"
+                    case Some(_) if claimDetail.caseType.get == Bulk => "claim.detail.type.multiple.C285"
+                    case Some(_) if claimDetail.caseType.get == Individual  => "claim.detail.type.single.C285"
                     case Some(_) => "claim.detail.type.C285"
                     case None => "claim.detail.type.security"
                 }
