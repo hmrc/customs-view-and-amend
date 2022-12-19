@@ -21,7 +21,6 @@ import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.test.Helpers._
-import repositories.ClaimsCache
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -60,7 +59,6 @@ class ClaimListControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockClaimsCache: ClaimsCache = mock[ClaimsCache]
 
     val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
       ClosedClaim(

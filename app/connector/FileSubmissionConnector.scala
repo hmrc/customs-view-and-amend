@@ -22,7 +22,6 @@ import models._
 import models.file_upload.UploadedFile
 import play.api.Logging
 import play.api.http.Status.ACCEPTED
-import repositories.ClaimsCache
 import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
@@ -45,8 +44,8 @@ trait FileSubmissionConnector {
 }
 
 @Singleton
-class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, claimsCache: ClaimsCache, appConfig: AppConfig)(
-  implicit executionContext: ExecutionContext
+class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig)(implicit
+  executionContext: ExecutionContext
 ) extends FileSubmissionConnector
     with Logging {
 

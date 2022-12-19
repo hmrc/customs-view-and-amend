@@ -22,7 +22,6 @@ import models.responses.{AllClaimsResponse, C285, Claims, NDRCCaseDetails, Proce
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
-import repositories.ClaimsCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import utils.SpecBase
 
@@ -144,9 +143,8 @@ class ClaimsConnectorSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockHttp: HttpClient        = mock[HttpClient]
-    val mockClaimCache: ClaimsCache = mock[ClaimsCache]
-    implicit val hc: HeaderCarrier  = HeaderCarrier()
+    val mockHttp: HttpClient       = mock[HttpClient]
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
       "NDRC",
@@ -215,8 +213,7 @@ class ClaimsConnectorSpec extends SpecBase {
 
     val app: Application = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp),
-        inject.bind[ClaimsCache].toInstance(mockClaimCache)
+        inject.bind[HttpClient].toInstance(mockHttp)
       )
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",

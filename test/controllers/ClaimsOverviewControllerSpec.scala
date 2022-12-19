@@ -22,7 +22,6 @@ import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import repositories.SearchCache
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -45,7 +44,6 @@ class ClaimsOverviewControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockSearchCache: SearchCache = mock[SearchCache]
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims =
