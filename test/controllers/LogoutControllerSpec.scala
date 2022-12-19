@@ -17,11 +17,10 @@
 package controllers
 
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SpecBase
 
 class LogoutControllerSpec extends SpecBase {
@@ -51,11 +50,7 @@ class LogoutControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockAuthConnector: AuthConnector = mock[AuthConnector]
-    val app: Application                 = application
-      .overrides(
-        inject.bind[AuthConnector].toInstance(mockAuthConnector)
-      )
+    val app: Application = application
       .build()
   }
 }

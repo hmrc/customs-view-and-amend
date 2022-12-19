@@ -23,12 +23,16 @@
         p: components.p,
         ul: components.unordered_list)
 
-@(claimNumber: String, email: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimNumber: String, verifiedEmail: Option[String])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.progress.title")), navigationBannerEnabled = false) {
     @confirmation(claimNumber)
-    @p(messages("claim.upload.confirmation.email", email))
-    @p("claim.upload.confirmation.email.description")
+    
+    @verifiedEmail.map{ email =>
+        @p(messages("claim.upload.confirmation.email", email))
+        @p("claim.upload.confirmation.email.description")
+    }
+
     @h2("claim.upload.confirmation.h2")
     @p("claim.upload.confirmation.p1")
     @ul("claim.upload.confirmation.li.1", "claim.upload.confirmation.li.2", "claim.upload.confirmation.li.3")

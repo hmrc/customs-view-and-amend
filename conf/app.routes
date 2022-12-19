@@ -9,19 +9,21 @@ GET         /claims-closed                                        controllers.Cl
 GET         /claim/:claim                                         controllers.ClaimDetailController.claimDetail(claim: String)
 GET         /verify-your-email                                    controllers.EmailController.showUnverified()
 
-GET         /:serviceType/:claim/upload-confirmation              controllers.FileUploadController.continue(claim: String, serviceType: models.ServiceType)
 
-GET         /choose-file-type                                     controllers.FileSelectionController.onPageLoad(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType, initialRequest: Boolean)
-POST        /choose-file-type                                     controllers.FileSelectionController.onSubmit(claim: String, serviceType: models.ServiceType, claimType: models.responses.ClaimType)
 
-GET         /:serviceType/:claim/upload-check-your-answers        controllers.FileUploadCYAController.onPageLoad(claim: String, serviceType: models.ServiceType)
+GET         /choose-file-type/:claim                              controllers.FileSelectionController.onPageLoad(claim: String)
+POST        /choose-file-type                                     controllers.FileSelectionController.onSubmit
+
+GET         /upload-check-your-answers                            controllers.FileUploadCYAController.onPageLoad
+POST        /upload-confirmation                                  controllers.FileUploadCYAController.onSubmit
+GET         /upload-confirmation                                  controllers.FileUploadCYAController.onConfirmationReload
 
 
 +nocsrf
-POST        /update-files                                         controllers.FileUploadController.updateFiles()
+POST        /upscan-notification                                  controllers.FileUploadController.receiveUpscanCallback
 
-GET         /find-a-claim                                         controllers.ClaimSearchController.onPageLoad()
-POST        /find-a-claim                                         controllers.ClaimSearchController.onSubmit()
+GET         /find-a-claim                                         controllers.ClaimSearchController.onPageLoad
+POST        /find-a-claim                                         controllers.ClaimSearchController.onSubmit
 
 GET         /logout-survey                                        controllers.LogoutController.logout
 GET         /logout                                               controllers.LogoutController.logoutNoSurvey

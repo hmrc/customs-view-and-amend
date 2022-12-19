@@ -19,10 +19,55 @@ package models
 import cats.Eq
 import play.api.libs.json.Json
 import play.api.libs.json.Format
+import models.file_upload.UploadedFile
+import models.Nonce
 
-final case class SessionData(claims: Option[AllClaims] = None)
+final case class SessionData(claims: Option[AllClaims] = None, fileUploadJourney: Option[FileUploadJourney] = None) {
+
+  def withInitialFileUploadData(caseNumber: String): SessionData =
+    fileUploadJourney match {
+      case Some(value) if value.claim.caseNumber == caseNumber =>
+        this
+
+      case _ =>
+        copy(fileUploadJourney = claims.flatMap {
+          _.findByCaseNumber(caseNumber).flatMap {
+            case claim: PendingClaim => Some(FileUploadJourney(claim))
+            case _                   => None
+          }
+        })
+    }
+
+  def withDocumentType(documentType: FileSelection): SessionData =
+    copy(fileUploadJourney =
+      fileUploadJourney
+        .map(_.copy(documentType = Some(documentType)))
+    )
+
+  def withUploadedFiles(uploadedFiles: Seq[UploadedFile]): SessionData =
+    copy(fileUploadJourney =
+      fileUploadJourney
+        .map(_.copy(previouslyUploaded = uploadedFiles))
+    )
+
+  def clearFileUploadJourney: SessionData =
+    copy(fileUploadJourney = None)
+
+}
 
 object SessionData {
   implicit val format: Format[SessionData] = Json.format[SessionData]
   implicit val eq: Eq[SessionData]         = Eq.fromUniversalEquals[SessionData]
+}
+
+final case class FileUploadJourney(
+  claim: PendingClaim,
+  documentType: Option[FileSelection] = None,
+  previouslyUploaded: Seq[UploadedFile] = Seq.empty,
+  nonce: Nonce = Nonce.random
+)
+
+object FileUploadJourney {
+  implicit val format: Format[FileUploadJourney] = Json.format[FileUploadJourney]
+  implicit val eq: Eq[FileUploadJourney]         = Eq.fromUniversalEquals[FileUploadJourney]
 }

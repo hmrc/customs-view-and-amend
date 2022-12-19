@@ -16,14 +16,14 @@
 
 package utils
 
-import actions.IdentifierAction
 import akka.stream.testkit.NoMaterializer
 import com.codahale.metrics.MetricRegistry
 import com.kenshoo.play.metrics.Metrics
-import connector.DataStoreConnector
+import connector.{ClaimsConnector, DataStoreConnector}
 import models.CaseType.Individual
 import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
+import org.mockito.Mockito
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
@@ -37,13 +37,13 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
 import play.api.test.Helpers.stubPlayBodyParsers
-import uk.gov.hmrc.auth.core.retrieve.Email
-
-import scala.concurrent.Future
 import repositories.SessionCache
-import connector.ClaimsConnector
-import org.mockito.Mockito
+import uk.gov.hmrc.auth.core.AuthConnector
+import uk.gov.hmrc.auth.core.retrieve.Email
+import uk.gov.hmrc.http.HeaderCarrier
+
 import java.util.UUID
+import scala.concurrent.Future
 
 class FakeMetrics extends Metrics {
   override val defaultRegistry: MetricRegistry = new MetricRegistry
@@ -58,10 +58,15 @@ trait SpecBase
     with Matchers
     with IntegrationPatience {
 
-  def fakeRequest(method: String = "", path: String = ""): FakeRequest[AnyContentAsEmpty.type] =
+  def fakeRequest(method: String = "", path: String = "")(implicit
+    hc: HeaderCarrier = HeaderCarrier()
+  ): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, path).withCSRFToken
       .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
-      .withHeaders("X-Session-Id" -> UUID.randomUUID().toString())
+      .withHeaders(
+        "X-Session-Id" ->
+          hc.sessionId.map(_.value).getOrElse(UUID.randomUUID().toString())
+      )
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest("", ""))
 
@@ -75,6 +80,11 @@ trait SpecBase
       .lenient()
       .when(mockDataStoreConnector.getEmail(any)(any))
       .thenReturn(Future.successful(Right(Email("some@email.com"))))
+
+    Mockito
+      .lenient()
+      .when(mockDataStoreConnector.getCompanyName(any)(any))
+      .thenReturn(Future.successful(Some("companyName")))
 
     val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
 
@@ -145,7 +155,7 @@ trait SpecBase
 
     def application: GuiceApplicationBuilder = new GuiceApplicationBuilder()
       .overrides(
-        bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
+        bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[SessionCache].toInstance(mockSessionCache),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
@@ -160,7 +170,7 @@ trait SpecBase
 
     def applicationWithMongoCache: GuiceApplicationBuilder = new GuiceApplicationBuilder()
       .overrides(
-        bind[IdentifierAction].toInstance(new FakeIdentifierAction(stubPlayBodyParsers(NoMaterializer))),
+        bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
         bind[Metrics].toInstance(new FakeMetrics)

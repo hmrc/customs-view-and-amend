@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package models.file_upload
+package forms
 
-import play.api.libs.json.Format
+import models.{Enumerable, FileSelection}
+import play.api.data.Form
 
-import scala.util.Random
+object FileSelectionForm extends Mappings {
 
-case class Nonce(value: Int) {
-  override def equals(o: Any): Boolean =
-    o match {
-      case nonce: Nonce => nonce.value == value
-      case _ => false
-    }
-}
+  implicit val enumerable: Enumerable[FileSelection] =
+    FileSelection.enumerable
 
-object Nonce {
-  final def random: Nonce = Nonce(Random.nextInt())
-  implicit final val formats: Format[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value))
+  val form: Form[FileSelection] =
+    Form(
+      "value" -> enumerable[FileSelection]("file.selection.error.required")
+    )
 }

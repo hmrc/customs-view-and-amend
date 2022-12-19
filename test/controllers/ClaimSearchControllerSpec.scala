@@ -20,8 +20,7 @@ import models._
 import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
-import play.api.mvc.{AnyContentAsFormUrlEncoded, Result}
-import play.api.test.FakeRequest
+import play.api.mvc.Result
 import play.api.test.Helpers._
 import utils.SpecBase
 
@@ -33,29 +32,33 @@ class ClaimSearchControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK" in new Setup {
       running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearchController.onPageLoad().url)
+        val request                = fakeRequest(GET, routes.ClaimSearchController.onPageLoad.url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)
       }
     }
   }
 
   "onSubmit" should {
     "return BAD_REQUEST when field is empty" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearchController.onSubmit().url).withFormUrlEncodedBody("value" -> "")
-      val result: Future[Result]                           = route(app, request).value
-      status(result) mustBe BAD_REQUEST
-      verify(mockClaimsConnector, times(1)).getAllClaims(any)
+      running(app) {
+        val request                = fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("value" -> "")
+        val result: Future[Result] = route(app, request).value
+        status(result) mustBe BAD_REQUEST
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)
+      }
     }
 
-    "return OK when the field is not empty and search cache is available" in new Setup {
-      val request: FakeRequest[AnyContentAsFormUrlEncoded] =
-        fakeRequest(POST, routes.ClaimSearchController.onSubmit().url).withFormUrlEncodedBody("search" -> "NDRC-2000")
-      val result: Future[Result]                           = route(app, request).value
+    "return OK when the field is not empty" in new Setup {
+      running(app) {
+        val request                =
+          fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-2000")
+        val result: Future[Result] = route(app, request).value
 
-      status(result) mustBe OK
-      verify(mockClaimsConnector, times(1)).getAllClaims(any)
+        status(result) mustBe OK
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)
+      }
     }
   }
 

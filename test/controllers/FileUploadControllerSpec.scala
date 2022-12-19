@@ -16,177 +16,111 @@
 
 package controllers
 
-import connector.{FileSubmissionConnector, UploadDocumentsConnector}
-import models._
-import models.CaseType._
-import models.email.UnverifiedEmail
-import models.file_upload.{Nonce, UploadCargo, UploadedFileMetadata}
-import models.responses.{C285, ProcedureDetail}
+import models.file_upload.{UploadCargo, UploadedFileMetadata}
+import models.{Nonce, _}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import repositories.{ClaimsMongo, UploadedFilesCache}
-import services.ClaimService
-import uk.gov.hmrc.auth.core.retrieve.Email
+import repositories.SessionCache
+import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 import utils.SpecBase
 
-import java.time.{LocalDate, LocalDateTime}
-import scala.concurrent.Future
+import java.time.LocalDate
+import java.util.UUID
 
 class FileUploadControllerSpec extends SpecBase {
 
-  "updateFiles" should {
-    "return NO_CONTENT when valid payload sent to mongo" in new Setup {
-      when(mockUploadedFilesCache.updateRecord(any, any))
-        .thenReturn(Future.successful(true))
-
+  "receiveUpscanCallback" should {
+    "return NO_CONTENT when valid callback" in new Setup {
       running(app) {
-        val request = fakeRequest(POST, routes.FileUploadController.updateFiles().url).withJsonBody(
-          Json.toJson(UploadedFileMetadata(Nonce(111), Seq.empty, Some(UploadCargo("NDRC-1000"))))
-        )
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
+          .withJsonBody(
+            Json.toJson(
+              UploadedFileMetadata(sessionData.fileUploadJourney.get.nonce, Seq.empty, Some(UploadCargo("NDRC-1000")))
+            )
+          )
         val result  = route(app, request).value
         status(result) mustBe NO_CONTENT
       }
     }
 
-    "return BAD_REQUEST when a valid payload sent but there is no case number in the cargo" in new Setup {
+    "return UNAUTHORIZED when session not found" in new Setup {
       running(app) {
-        val request = fakeRequest(POST, routes.FileUploadController.updateFiles().url).withJsonBody(
-          Json.toJson(UploadedFileMetadata(Nonce(111), Seq.empty, None))
-        )
+        val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
+          .withJsonBody(
+            Json.toJson(
+              UploadedFileMetadata(Nonce.random, Seq.empty, Some(UploadCargo("NDRC-1000")))
+            )
+          )
         val result  = route(app, request).value
-        status(result) mustBe BAD_REQUEST
-      }
-    }
-  }
-
-  "continue" should {
-    "return OK" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail)))
-      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadedFilesCache.removeRecord(any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsConnector.wipeData()(any))
-        .thenReturn(Future.successful(true))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
-        val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) mustBe UNAUTHORIZED
       }
     }
 
-    "return NOT_FOUND if the user is not authorised to view the claim" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(None))
-
+    "return UNAUTHORIZED when file upload journey not found in session" in new Setup {
       running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val sessionData = SessionData(Some(allClaimsWithPending))
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
+          .withJsonBody(
+            Json.toJson(
+              UploadedFileMetadata(Nonce.random, Seq.empty, Some(UploadCargo("NDRC-1000")))
+            )
+          )
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) mustBe UNAUTHORIZED
       }
     }
 
-    "return NOT_FOUND if no information returned for the specific claim" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(None))
-
+    "return UNAUTHORIZED when different nonce then in session" in new Setup {
       running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
+          .withJsonBody(
+            Json.toJson(
+              UploadedFileMetadata(Nonce.random, Seq.empty, Some(UploadCargo("NDRC-1000")))
+            )
+          )
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) mustBe UNAUTHORIZED
       }
     }
 
-    "return NOT_FOUND if files not successfully uploaded" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail)))
-      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
-        .thenReturn(Future.successful(false))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
-        val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
-
-    "return NOT_FOUND if an email not returned a second time" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail)))
-      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadedFilesCache.removeRecord(any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsConnector.wipeData()(any))
-        .thenReturn(Future.successful(true))
-      when(mockDataStoreConnector.getEmail(any)(any))
-        .thenReturn(Future.successful(Right(Email("email@email.com"))), Future.successful(Left(UnverifiedEmail)))
-
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadController.continue("NDRC-1000", NDRC).url)
-        val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
   }
 
   trait Setup extends SetupBase {
-    val mockFileSubmissionConnector: FileSubmissionConnector   = mock[FileSubmissionConnector]
-    val claimsMongo: ClaimsMongo                               = ClaimsMongo(
-      Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
-      LocalDateTime.now()
-    )
-    val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
-    val mockUploadedFilesCache: UploadedFilesCache             = mock[UploadedFilesCache]
-    val mockClaimService: ClaimService                         = mock[ClaimService]
+    val app: Application = applicationWithMongoCache.build()
 
-    val claimDetail: ClaimDetail = ClaimDetail(
-      "caseNumber",
-      NDRC,
-      "DeclarationId",
-      Seq(ProcedureDetail("DeclarationId", true)),
-      Seq.empty,
-      Some("SomeLrn"),
-      Some("GB746502538945"),
-      InProgress,
-      None,
-      Some(C285),
-      Some(Individual),
-      LocalDate.now,
-      None,
-      Some("1200"),
-      Some("Sarah Philips"),
-      Some("sarah.philips@acmecorp.com")
-    )
+    def sessionCache = app.injector.instanceOf[SessionCache]
 
-    when(mockDataStoreConnector.getEmail(any)(any))
-      .thenReturn(Future.successful(Right(Email("some@email.com"))))
-
-    val app: Application = application
-      .overrides(
-        inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector),
-        inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache),
-        inject.bind[FileSubmissionConnector].toInstance(mockFileSubmissionConnector),
-        inject.bind[ClaimService].toInstance(mockClaimService)
+    implicit val hc: HeaderCarrier =
+      HeaderCarrier(
+        authorization = Some(Authorization(UUID.randomUUID().toString)),
+        sessionId = Some(SessionId(UUID.randomUUID().toString))
       )
-      .build()
+
+    val allClaimsWithPending: AllClaims = AllClaims(
+      pendingClaims = Seq(
+        PendingClaim(
+          "MRN",
+          "claim-123",
+          NDRC,
+          None,
+          LocalDate.of(2021, 2, 1),
+          LocalDate.of(2022, 1, 1)
+        )
+      ),
+      inProgressClaims = Seq.empty,
+      closedClaims = Seq.empty
+    )
   }
 }

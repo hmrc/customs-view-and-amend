@@ -39,16 +39,16 @@ class ClaimSearchController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
 
-  def onPageLoad(): Action[AnyContent] =
-    preconditions { case (request, _) =>
+  final val onPageLoad: Action[AnyContent] =
+    actions { case (request, _) =>
       implicit val r = request
       Ok(searchClaim())
     }
 
-  def onSubmit(): Action[AnyContent] =
-    preconditions { case (request, allClaims) =>
+  final val onSubmit: Action[AnyContent] =
+    actions { case (request, allClaims) =>
       implicit val r = request
       SearchFormHelper.form
         .bindFromRequest()

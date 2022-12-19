@@ -19,16 +19,16 @@ package controllers
 import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.{ClaimsConnector, DataStoreConnector}
-import models.responses.C285
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
 import views.html.errors.not_found
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ClaimDetailController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
@@ -42,10 +42,10 @@ class ClaimDetailController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
 
-  def claimDetail(caseNumber: String): Action[AnyContent] =
-    preconditions.async { case (request, allClaims) =>
+  final def claimDetail(caseNumber: String): Action[AnyContent] =
+    actions.async { case (request, allClaims) =>
       implicit val r = request
       allClaims.findByCaseNumber(caseNumber) match {
         case Some(claim) =>
@@ -57,14 +57,7 @@ class ClaimDetailController @Inject() (
                   .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
 
               case Some(claimDetails) =>
-                val fileSelectionUrl =
-                  routes.FileSelectionController
-                    .onPageLoad(
-                      claimDetails.caseNumber,
-                      claimDetails.serviceType,
-                      claimDetails.claimType.getOrElse(C285),
-                      initialRequest = false
-                    )
+                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
                 Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
             }
 

@@ -16,79 +16,91 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction}
-import cats.data.EitherT
-import cats.data.EitherT._
+import actions.{EmailAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.UploadDocumentsConnector
-import forms.FileSelectionFormProvider
-import models.responses.ClaimType
-import models.{FileSelection, IdentifierRequest, ServiceType}
+import forms.FileSelectionForm
+import models.{FileSelection, SessionData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
-import services.ClaimService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.errors.not_found
 import views.html.file_selection
 
-import javax.inject.Inject
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
+import scala.concurrent.Future
+import models.FileUploadJourney
+import forms.FormUtils._
 
+@Singleton
 class FileSelectionController @Inject() (
   uploadDocumentsConnector: UploadDocumentsConnector,
-  claimService: ClaimService,
   mcc: MessagesControllerComponents,
   fileSelection: file_selection,
   notFound: not_found,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction
+  verifyEmail: EmailAction,
+  modifySessionAction: ModifySessionAction
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val actions: ActionBuilder[IdentifierRequest, AnyContent] = authenticate andThen verifyEmail
+  private val actions = authenticate andThen verifyEmail andThen modifySessionAction
 
-  def onPageLoad(
-    caseNumber: String,
-    serviceType: ServiceType,
-    claimType: ClaimType,
-    initialRequest: Boolean
-  ): Action[AnyContent] = actions.async { implicit request =>
-    val form: Form[FileSelection]               = new FileSelectionFormProvider(claimType)()
-    val result: EitherT[Future, Result, Result] = for {
-      _ <- fromOptionF(
-             claimService.authorisedToView(caseNumber, request.eori),
-             NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
-           )
-      _ <- liftF(claimService.clearUploaded(caseNumber, initialRequest))
-    } yield Ok(fileSelection(form, serviceType, caseNumber, claimType, FileSelection.options(form)))
-    result.merge
-  }
+  final def onPageLoad(caseNumber: String): Action[AnyContent] =
+    actions.async { case (request, session) =>
+      implicit val r = request
+      session
+        .update(_.withInitialFileUploadData(caseNumber))
+        .map {
+          case Some(SessionData(Some(allClaims), Some(fileUploadJourney))) =>
+            val form: Form[FileSelection] = FileSelectionForm.form
+            Ok(
+              fileSelection(
+                form.withDefault(fileUploadJourney.documentType),
+                fileUploadJourney.claim.serviceType,
+                fileUploadJourney.claim.caseNumber,
+                FileSelection.options(form)
+              )
+            )
 
-  def onSubmit(caseNumber: String, serviceType: ServiceType, claimType: ClaimType): Action[AnyContent] = actions.async {
-    implicit request =>
-      val form: Form[FileSelection] = new FileSelectionFormProvider(claimType)()
-      form
-        .bindFromRequest()
-        .fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(fileSelection(formWithErrors, serviceType, caseNumber, claimType, FileSelection.options(form)))
-            ),
-          documentType =>
-            (for {
-              _      <- fromOptionF(
-                          claimService.authorisedToView(caseNumber, request.eori),
-                          NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
-                        )
-              result <- fromOptionF(
-                          uploadDocumentsConnector
-                            .startFileUpload(caseNumber, claimType, serviceType, documentType)
-                            .map(_.map(relativeUrl => Redirect(s"${appConfig.fileUploadPublicUrl}$relativeUrl"))),
-                          NotFound(notFound()).withHeaders("X-Explanation" -> "START_UPLOAD_HAS_FAILED")
-                        )
-            } yield result).merge
-        )
-  }
+          case _ =>
+            Redirect(routes.ClaimDetailController.claimDetail(caseNumber))
+        }
+    }
+
+  final val onSubmit: Action[AnyContent] =
+    actions.async { case (request, session) =>
+      implicit val r = request
+      session.current.fileUploadJourney match {
+        case None =>
+          Future.successful(Redirect(routes.ClaimsOverviewController.show))
+
+        case Some(FileUploadJourney(claim, _, previouslyUploaded, nonce)) =>
+          val form: Form[FileSelection] = FileSelectionForm.form
+          form
+            .bindFromRequest()
+            .fold(
+              formWithErrors =>
+                Future.successful(
+                  BadRequest(
+                    fileSelection(formWithErrors, claim.serviceType, claim.caseNumber, FileSelection.options(form))
+                  )
+                ),
+              documentType =>
+                for {
+                  _                 <- session.update(_.withDocumentType(documentType))
+                  chooseFilesUrlOpt <-
+                    uploadDocumentsConnector
+                      .startFileUpload(nonce, claim.caseNumber, claim.serviceType, documentType, previouslyUploaded)
+                } yield Redirect(
+                  s"${appConfig.fileUploadPublicUrl}${chooseFilesUrlOpt.getOrElse("/choose-files")}"
+                )
+            )
+
+      }
+
+    }
 }

@@ -16,7 +16,8 @@
 
 package repositories
 
-import models.file_upload.{Nonce, UploadedFile, UploadedFileMetadata}
+import models.file_upload.{UploadedFile, UploadedFileMetadata}
+import models.Nonce
 import org.mongodb.scala.model.Filters.equal
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions, ReplaceOptions}

@@ -18,13 +18,11 @@ package connectors
 
 import connector.UploadDocumentsConnector
 import models.FileSelection.AdditionalSupportingDocuments
-import models.NDRC
-import models.responses.C285
+import models.{NDRC, Nonce}
 import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
-import repositories.UploadedFilesCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
 
@@ -35,73 +33,45 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
   "startFileUpload" should {
     "return the response header on a successful request" in new Setup {
-      when(mockUploadDocumentsCache.initializeRecord(any, any, any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-
       when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))))
 
       running(app) {
-        val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
+        val result =
+          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
         result shouldBe Some("/location")
       }
     }
 
-    "return None if write to mongo fails" in new Setup {
-      when(mockUploadDocumentsCache.initializeRecord(any, any, any))
-        .thenReturn(Future.successful(false))
-      when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-
-      running(app) {
-        val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
-        result shouldBe None
-      }
-    }
-
     "return None if other status returned" in new Setup {
-      when(mockUploadDocumentsCache.initializeRecord(any, any, any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-
       when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "", Map.empty[String, Seq[String]])))
 
       running(app) {
-        val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
+        val result =
+          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
         result shouldBe None
       }
     }
 
     "return default UCDF location if the response header is empty" in new Setup {
-      when(mockUploadDocumentsCache.initializeRecord(any, any, any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-
       when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.successful(HttpResponse(CREATED, "", Map.empty[String, Seq[String]])))
 
       running(app) {
-        val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
+        val result =
+          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
         result shouldBe Some("/upload-customs-documents")
       }
     }
 
     "return None if the api request fails" in new Setup {
-      when(mockUploadDocumentsCache.initializeRecord(any, any, any))
-        .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(Seq.empty))
-
       when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
-        val result = await(connector.startFileUpload("NDRC-1234", C285, NDRC, AdditionalSupportingDocuments))
+        val result =
+          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
         result shouldBe None
       }
     }
@@ -113,7 +83,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
-        val result = await(connector.wipeData())
+        val result = await(connector.wipeData)
         result shouldBe false
       }
     }
@@ -123,22 +93,20 @@ class UploadDocumentsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       running(app) {
-        val result = await(connector.wipeData())
+        val result = await(connector.wipeData)
         result shouldBe true
       }
     }
   }
 
   trait Setup {
-    val mockHttp: HttpClient                         = mock[HttpClient]
-    val mockUploadDocumentsCache: UploadedFilesCache = mock[UploadedFilesCache]
+    val mockHttp: HttpClient = mock[HttpClient]
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val app: Application = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp),
-        inject.bind[UploadedFilesCache].toInstance(mockUploadDocumentsCache)
+        inject.bind[HttpClient].toInstance(mockHttp)
       )
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",
@@ -148,5 +116,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
       .build()
 
     val connector: UploadDocumentsConnector = app.injector.instanceOf[UploadDocumentsConnector]
+
+    val nonce = Nonce.random
   }
 }

@@ -17,11 +17,11 @@
 package models.file_upload
 
 import config.AppConfig
-import models.responses.ClaimType
 import models.{FileSelection, ServiceType}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
 
+import models.Nonce
 case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
 
 object UploadDocumentsWrapper {
@@ -30,15 +30,12 @@ object UploadDocumentsWrapper {
     nonce: Nonce,
     caseNumber: String,
     serviceType: ServiceType,
-    claimType: ClaimType,
     documentType: FileSelection,
     previouslyUploaded: Seq[UploadedFile] = Seq.empty
   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
-    val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad(caseNumber, serviceType)
-    val backLinkUrl = controllers.routes.FileSelectionController
-      .onPageLoad(caseNumber, serviceType, claimType, initialRequest = false)
-      .url
-    val callBack    = controllers.routes.FileUploadController.updateFiles()
+    val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad
+    val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber).url
+    val callBack    = controllers.routes.FileUploadController.receiveUpscanCallback
 
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
@@ -82,5 +79,6 @@ object UploadDocumentsWrapper {
     )
   }
 
-  implicit val format: OFormat[UploadDocumentsWrapper] = Json.format[UploadDocumentsWrapper]
+  implicit val format: OFormat[UploadDocumentsWrapper] =
+    Json.format[UploadDocumentsWrapper]
 }

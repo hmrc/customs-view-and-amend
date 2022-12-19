@@ -20,21 +20,22 @@ import actions.IdentifierAction
 import config.AppConfig
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import play.api.{Logger, LoggerLike}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.email.verify_your_email
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-class EmailController @Inject()(authenticate: IdentifierAction,
-                                verifyEmailView: verify_your_email,
-                                implicit val mcc: MessagesControllerComponents)
-                               (implicit val appConfig: AppConfig)
-  extends FrontendController(mcc) with I18nSupport {
+@Singleton
+class EmailController @Inject() (
+  authenticate: IdentifierAction,
+  verifyEmailView: verify_your_email,
+  implicit val mcc: MessagesControllerComponents
+)(implicit val appConfig: AppConfig)
+    extends FrontendController(mcc)
+    with I18nSupport {
 
-  val log: LoggerLike = Logger(this.getClass)
-
-  def showUnverified():Action[AnyContent] = authenticate { implicit request =>
-    Ok(verifyEmailView(appConfig.emailFrontendUrl))
-  }
+  final val showUnverified: Action[AnyContent] =
+    authenticate { implicit request =>
+      Ok(verifyEmailView(appConfig.emailFrontendUrl))
+    }
 }

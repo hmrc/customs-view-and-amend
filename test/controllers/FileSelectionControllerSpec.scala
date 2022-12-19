@@ -17,141 +17,211 @@
 package controllers
 
 import connector.UploadDocumentsConnector
-import models.responses.{C285, `C&E1179`}
-import models.{InProgressClaim, NDRC}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.i18n.Messages
 import play.api.test.Helpers._
 import play.api.{Application, inject}
-import repositories.ClaimsMongo
-import services.ClaimService
 import utils.SpecBase
 
-import java.time.{LocalDate, LocalDateTime}
+import repositories.SessionCache
+import models.SessionData
+import uk.gov.hmrc.http.HeaderCarrier
+import models.InProgressClaim
+import models.NDRC
+import java.time.LocalDate
+import models.AllClaims
+import uk.gov.hmrc.http.SessionId
+import java.util.UUID
+import models.PendingClaim
 import scala.concurrent.Future
+import models.FileSelection
 
 class FileSelectionControllerSpec extends SpecBase {
   implicit val messages: Messages = stubMessages()
 
   "onPageLoad" should {
-    "return NOT_FOUND if the user is not authorised to view the page" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(None))
-
+    "return OK on a successful first request" in new Setup {
       running(app) {
+        await(sessionCache.store(SessionData(Some(allClaimsWithPending)))) shouldBe Right(())
         val request =
-          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
-        val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
-
-    "return OK on a successful C285 request" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimService.clearUploaded(any, any)(any))
-        .thenReturn(Future.unit)
-
-      running(app) {
-        val request =
-          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim", NDRC, C285, initialRequest = true).url)
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
 
-    "return OK on a successful C&E1179 request" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimService.clearUploaded(any, any)(any))
-        .thenReturn(Future.unit)
-
+    "return OK on a successful returning request with same case number" in new Setup {
       running(app) {
-        val request = fakeRequest(
-          GET,
-          routes.FileSelectionController.onPageLoad("claim", NDRC, `C&E1179`, initialRequest = true).url
-        )
+        await(
+          sessionCache.store(
+            SessionData(Some(allClaimsWithPending))
+              .withInitialFileUploadData("claim-123")
+              .withDocumentType(FileSelection.CalculationWorksheet)
+          )
+        ) shouldBe Right(())
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
         status(result) mustBe OK
+      }
+    }
+
+    "return OK on a successful returning request with different case number" in new Setup {
+      running(app) {
+        await(
+          sessionCache.store(
+            SessionData(Some(allClaimsWithPending))
+              .withInitialFileUploadData("other-claim")
+          )
+        ) shouldBe Right(())
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
+        val result  = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "redirect back to the claim details if the claim is not found" in new Setup {
+      running(app) {
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
+      }
+    }
+
+    "redirect back to the claim details if not pending claim" in new Setup {
+      running(app) {
+        await(sessionCache.store(SessionData(Some(allClaimsWithInProgress)))) shouldBe Right(())
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
       }
     }
   }
 
   "onSubmit" should {
     "return OK on a successful request" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any, any))
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
         .thenReturn(Future.successful(Some("/url")))
 
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
       running(app) {
-        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, `C&E1179`).url)
+        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit.url)
           .withFormUrlEncodedBody(
             "value" -> "commercial-invoice"
           )
         val result  = route(app, request).value
         status(result) mustBe SEE_OTHER
         redirectLocation(result).value mustBe "http://localhost:10110/url"
+
+        await(sessionCache.get()) shouldBe
+          Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
+      }
+    }
+
+    "return OK on a successful request if file upload url not returned" in new Setup {
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
+        .thenReturn(Future.successful(None))
+
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(POST, routes.FileSelectionController.onSubmit.url)
+          .withFormUrlEncodedBody(
+            "value" -> "commercial-invoice"
+          )
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe "http://localhost:10110/choose-files"
+
+        await(sessionCache.get()) shouldBe
+          Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
       }
     }
 
     "return BAD_REQUEST if an invalid payload sent" in new Setup {
       running(app) {
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
         val request =
-          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-            "value" -> "invalid-file-type"
-          )
-        val result  = route(app, request).value
+          fakeRequest(POST, routes.FileSelectionController.onSubmit.url)
+            .withFormUrlEncodedBody("value" -> "invalid-file-type")
+
+        val result = route(app, request).value
         status(result) mustBe BAD_REQUEST
       }
     }
 
-    "return NOT_FOUND if the user not authorised to make file uploads against the claim" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(None))
-
+    "redirect to the overview if file upload journey not initialized" in new Setup {
       running(app) {
-        val request =
-          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-            "value" -> "proof-of-authority"
-          )
-        val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
-      }
-    }
+        val sessionData = SessionData(Some(allClaimsWithInProgress))
+        await(sessionCache.store(sessionData)) shouldBe Right(())
 
-    "return NOT_FOUND if no redirect location provided from the file upload service" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any)(any, any))
-        .thenReturn(Future.successful(None))
-
-      running(app) {
         val request =
-          fakeRequest(POST, routes.FileSelectionController.onSubmit("claim", NDRC, C285).url).withFormUrlEncodedBody(
-            "value" -> "proof-of-authority"
-          )
-        val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+          fakeRequest(POST, routes.FileSelectionController.onSubmit.url)
+            .withFormUrlEncodedBody("value" -> "proof-of-authority")
+
+        val result = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status")
       }
     }
   }
 
   trait Setup extends SetupBase {
-    val mockClaimService: ClaimService                         = mock[ClaimService]
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
 
-    val claimsMongo: ClaimsMongo = ClaimsMongo(
-      Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))),
-      LocalDateTime.now()
-    )
-
-    val app: Application = application
+    val app: Application = applicationWithMongoCache
       .overrides(
-        inject.bind[ClaimService].toInstance(mockClaimService),
         inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
       )
       .build()
+
+    def sessionCache = app.injector.instanceOf[SessionCache]
+
+    implicit val hc: HeaderCarrier =
+      HeaderCarrier(sessionId = Some(SessionId(UUID.randomUUID().toString)))
+
+    val pendingClaims: Seq[PendingClaim] =
+      Seq(
+        PendingClaim(
+          "MRN",
+          "claim-123",
+          NDRC,
+          None,
+          LocalDate.of(2021, 2, 1),
+          LocalDate.of(2022, 1, 1)
+        )
+      )
+
+    val inProgressClaims: Seq[InProgressClaim] =
+      Seq(InProgressClaim("MRN", "claim-123", NDRC, None, LocalDate.of(2021, 2, 1)))
+
+    val allClaimsWithInProgress: AllClaims = AllClaims(
+      pendingClaims = Seq.empty,
+      inProgressClaims = inProgressClaims,
+      closedClaims = Seq.empty
+    )
+
+    val allClaimsWithPending: AllClaims = AllClaims(
+      pendingClaims = pendingClaims,
+      inProgressClaims = Seq.empty,
+      closedClaims = Seq.empty
+    )
   }
 
 }

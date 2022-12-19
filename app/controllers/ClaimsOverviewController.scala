@@ -24,8 +24,9 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claims_overview
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ClaimsOverviewController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
@@ -36,17 +37,17 @@ class ClaimsOverviewController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
 
-  def show: Action[AnyContent] =
-    preconditions { case (request, allClaims) =>
+  final val show: Action[AnyContent] =
+    actions { case (request, allClaims) =>
       implicit val r = request
       Ok(
         claimsOverview(
           0,
           allClaims,
           SearchFormHelper.form,
-          routes.ClaimSearchController.onSubmit(),
+          routes.ClaimSearchController.onSubmit,
           request.companyName.orNull,
           request.eori
         )

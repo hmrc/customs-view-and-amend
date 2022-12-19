@@ -23,7 +23,7 @@
 <nav id="secondary-nav" class="hmrc-account-menu">
     <ul class="hmrc-account-menu__main govuk-grid-column-full">
         <li>@link("service.banner.home", routes.ClaimsOverviewController.show.url, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
-        <li>@link("service.banner.search", routes.ClaimSearchController.onPageLoad().url, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
+        <li>@link("service.banner.search", routes.ClaimSearchController.onPageLoad.url, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
         <li>@link("service.banner.start", appConfig.claimServiceUrl, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
     </ul>
 </nav>

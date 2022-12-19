@@ -17,7 +17,8 @@
 package repositories
 
 import models.FileSelection.AdditionalSupportingDocuments
-import models.file_upload.{Nonce, UploadedFile, UploadedFileMetadata}
+import models.file_upload.{UploadedFile, UploadedFileMetadata}
+import models.Nonce
 import org.mongodb.scala.model.Filters
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application

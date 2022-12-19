@@ -76,7 +76,7 @@ class DefaultSessionCache @Inject() (
   private val sessionDataKey: DataKey[SessionData] =
     DataKey[SessionData]("customs-view-and-amend-session")
 
-  final def get()(implicit
+  final override def get()(implicit
     hc: HeaderCarrier
   ): Future[Either[Error, Option[SessionData]]] =
     try
@@ -87,7 +87,7 @@ class DefaultSessionCache @Inject() (
       case NonFatal(e) => Future.successful(Left(Error(e)))
     }
 
-  final def store(
+  final override def store(
     sessionData: SessionData
   )(implicit hc: HeaderCarrier): Future[Either[Error, Unit]] =
     try
@@ -98,7 +98,7 @@ class DefaultSessionCache @Inject() (
       case NonFatal(e) => Future.successful(Left(Error(e)))
     }
 
-  final def update(modify: SessionData => SessionData)(implicit
+  final override def update(modify: SessionData => SessionData)(implicit
     hc: HeaderCarrier,
     ec: ExecutionContext
   ): Future[Either[Error, SessionData]] =

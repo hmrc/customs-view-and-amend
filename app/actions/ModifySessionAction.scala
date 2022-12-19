@@ -25,16 +25,13 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.Success
-import scala.util.Failure
+import scala.util.{Failure, Success}
 
 @Singleton
 class ModifySessionAction @Inject(
 ) (sessionCache: SessionCache)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
     extends ActionTransformer[IdentifierRequest, ModifySessionAction.RequestWithSessionModifier]
     with I18nSupport {
-
-  private val sessionModifier = new ModifySessionAction.SessionModifier(sessionCache)
 
   override def transform[A](
     request: IdentifierRequest[A]
@@ -53,11 +50,12 @@ class ModifySessionAction @Inject(
                 .flatMap(
                   _.fold(
                     error => Future.failed(error.exception),
-                    _ => Future.successful((request, sessionModifier))
+                    _ =>
+                      Future.successful((request, new ModifySessionAction.SessionModifier(sessionCache, sessionData)))
                   )
                 )
             case Some(sessionData) =>
-              Future.successful((request, sessionModifier))
+              Future.successful((request, new ModifySessionAction.SessionModifier(sessionCache, sessionData)))
           }
         )
       )
@@ -66,8 +64,8 @@ class ModifySessionAction @Inject(
 
 object ModifySessionAction {
 
-  final class SessionModifier(sessionCache: SessionCache) {
-    def updateSessionData(
+  final class SessionModifier(sessionCache: SessionCache, val current: SessionData) {
+    def update(
       f: SessionData => SessionData
     )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[Option[SessionData]] =
       sessionCache
@@ -77,7 +75,6 @@ object ModifySessionAction {
           case Success(Left(error))                => Failure(error.exception)
           case Failure(error)                      => Failure(error)
         }
-
   }
 
   type RequestWithSessionModifier[A] = (IdentifierRequest[A], SessionModifier)

@@ -26,8 +26,9 @@ import viewmodels.{ClosedClaimListViewModel, InProgressClaimListViewModel, Pendi
 import views.components.hints.DropdownHints
 import views.html.{claims_closed, claims_in_progress, claims_pending}
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
+@Singleton
 class ClaimListController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
@@ -41,26 +42,26 @@ class ClaimListController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val preconditions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
 
   private val caseStatusHints: DropdownHints =
     DropdownHints.range(elementIndex = 0, maxHints = 6)
 
-  def showInProgressClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
-    implicit val r = request
-    Ok(claimsInProgress(InProgressClaimListViewModel(allClaims.inProgressClaims, page)))
+  final def showInProgressClaimList(page: Option[Int]): Action[AnyContent] =
+    actions { case (request, allClaims) =>
+      implicit val r = request
+      Ok(claimsInProgress(InProgressClaimListViewModel(allClaims.inProgressClaims, page)))
+    }
 
-  }
+  final def showPendingClaimList(page: Option[Int]): Action[AnyContent] =
+    actions { case (request, allClaims) =>
+      implicit val r = request
+      Ok(claimsPending(PendingClaimListViewModel(allClaims.pendingClaims, page)))
+    }
 
-  def showPendingClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
-    implicit val r = request
-    Ok(claimsPending(PendingClaimListViewModel(allClaims.pendingClaims, page)))
-
-  }
-
-  def showClosedClaimList(page: Option[Int]): Action[AnyContent] = preconditions { case (request, allClaims) =>
-    implicit val r = request
-    Ok(claimsClosed(ClosedClaimListViewModel(allClaims.closedClaims, page), caseStatusHints))
-
-  }
+  final def showClosedClaimList(page: Option[Int]): Action[AnyContent] =
+    actions { case (request, allClaims) =>
+      implicit val r = request
+      Ok(claimsClosed(ClosedClaimListViewModel(allClaims.closedClaims, page), caseStatusHints))
+    }
 }

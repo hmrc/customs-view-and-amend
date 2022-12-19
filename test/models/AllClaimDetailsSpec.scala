@@ -125,7 +125,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     }
 
     "check isEntryNumber" in {
-      claimDetail.isEntryNumber shouldBe false
+      EntryNumber.isEntryNumber(claimDetail.declarationId) shouldBe false
     }
 
     "check multipleDeclarations" in {

@@ -38,7 +38,7 @@ class ModifySessionActionSpec extends SpecBase {
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
         request mustBe authenticatedRequest
 
-        val newSession = await(modifier.updateSessionData(_.copy(claims = Some(testClaims))))
+        val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
         newSession mustBe Some(SessionData(Some(testClaims)))
       }
     }
@@ -54,7 +54,7 @@ class ModifySessionActionSpec extends SpecBase {
         request mustBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
-          await(modifier.updateSessionData(_.copy(claims = Some(testClaims))))
+          await(modifier.update(_.copy(claims = Some(testClaims))))
         }
       }
     }
@@ -70,7 +70,7 @@ class ModifySessionActionSpec extends SpecBase {
         request mustBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
-          await(modifier.updateSessionData(_.copy(claims = Some(testClaims))))
+          await(modifier.update(_.copy(claims = Some(testClaims))))
         }
       }
     }
@@ -87,7 +87,7 @@ class ModifySessionActionSpec extends SpecBase {
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
         request mustBe authenticatedRequest
 
-        val newSession = await(modifier.updateSessionData(_.copy(claims = Some(testClaims))))
+        val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
         newSession mustBe Some(SessionData(Some(testClaims)))
       }
     }

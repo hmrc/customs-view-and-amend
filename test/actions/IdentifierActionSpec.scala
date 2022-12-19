@@ -31,7 +31,7 @@ import utils.SpecBase
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthActionSpec extends SpecBase {
+class IdentifierActionSpec extends SpecBase {
 
   class Harness(authAction: IdentifierAction) {
     def onPageLoad(): Action[AnyContent] = authAction(_ => Results.Ok)
@@ -41,7 +41,7 @@ class AuthActionSpec extends SpecBase {
     def ~[B](b: B): A ~ B = new ~(a, b)
   }
 
-  "Auth Action" when {
+  "IdentifierAction" when {
     "successfully passes all checks" should {
       "call block" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
@@ -265,14 +265,14 @@ class AuthActionSpec extends SpecBase {
       }
     }
   }
-}
 
-class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends AuthConnector {
-  val serviceUrl: String = ""
+  class FakeFailingAuthConnector @Inject() (exceptionToReturn: Throwable) extends AuthConnector {
+    val serviceUrl: String = ""
 
-  override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
-    hc: HeaderCarrier,
-    ec: ExecutionContext
-  ): Future[A] =
-    Future.failed(exceptionToReturn)
+    override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
+      hc: HeaderCarrier,
+      ec: ExecutionContext
+    ): Future[A] =
+      Future.failed(exceptionToReturn)
+  }
 }

@@ -19,7 +19,6 @@ package actions
 import com.google.inject.ImplementedBy
 import config.AppConfig
 import connector.DataStoreConnector
-import controllers.routes
 import models.IdentifierRequest
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -31,40 +30,38 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-@ImplementedBy(classOf[AuthenticatedIdentifierAction])
-trait IdentifierAction
+@ImplementedBy(classOf[AuthorisedCallbackAction])
+trait CallbackAction
     extends ActionBuilder[IdentifierRequest, AnyContent]
     with ActionFunction[Request, IdentifierRequest]
 
 @Singleton
-class AuthenticatedIdentifierAction @Inject() (
+class AuthorisedCallbackAction @Inject() (
   override val authConnector: AuthConnector,
   dataStoreConnector: DataStoreConnector,
   config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
-    extends IdentifierAction
+    extends CallbackAction
     with AuthorisedFunctions {
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier =
-      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+      HeaderCarrierConverter.fromRequest(request)
 
     authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
-      allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
+      allEnrolments
+        .getEnrolment("HMRC-CUS-ORG")
+        .flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
           dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
             block(IdentifierRequest(request, eori.value, maybeCompanyName))
           }
-        case None       => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+        case None       =>
+          Future.successful(Forbidden)
       }
-    } recover {
-      case _: NoActiveSession        =>
-        Redirect(config.loginUrl, Map("continue_url" -> Seq(config.loginContinueUrl)))
-      case _: InsufficientEnrolments =>
-        Redirect(routes.UnauthorisedController.onPageLoad)
-      case _: AuthorisationException =>
-        Redirect(routes.UnauthorisedController.onPageLoad)
+    } recover { case _ =>
+      Forbidden
     }
   }
 }

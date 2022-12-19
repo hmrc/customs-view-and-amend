@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package models.file_upload
+package models
 
 import play.api.libs.json._
 

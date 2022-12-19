@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-package models.file_upload
+package models
 
-import play.api.libs.json.{Json, OFormat}
-
-import models.Nonce
-case class UploadedFileMetadata(nonce: Nonce, uploadedFiles: Seq[UploadedFile], cargo: Option[UploadCargo])
-
-object UploadedFileMetadata {
-  implicit val format: OFormat[UploadedFileMetadata] = Json.format[UploadedFileMetadata]
+object EntryNumber {
+  def isEntryNumber(value: String): Boolean = {
+    val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r
+    entryNumberRegex.findFirstIn(value).isDefined
+  }
 }
