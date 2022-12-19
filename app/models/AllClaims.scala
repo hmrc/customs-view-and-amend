@@ -18,16 +18,31 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class AllClaims(pendingClaims: Seq[PendingClaim],
-                     inProgressClaims: Seq[InProgressClaim],
-                     closedClaims: Seq[ClosedClaim]) {
+case class AllClaims(
+  pendingClaims: Seq[PendingClaim],
+  inProgressClaims: Seq[InProgressClaim],
+  closedClaims: Seq[ClosedClaim]
+) {
 
-  def collectAll: Seq[Claim] = pendingClaims ++ inProgressClaims ++ closedClaims
+  def nonEmpty: Boolean = pendingClaims.nonEmpty || inProgressClaims.nonEmpty || closedClaims.nonEmpty
 
-  def findClaim(query: String): Seq[Claim] = collectAll.filter(claim =>
-    claim.caseNumber.toUpperCase == query.toUpperCase ||
-      claim.declarationId.toUpperCase == query.toUpperCase
-  )
+  /** Searches for a claim based on the user's query */
+  def searchForClaim(query: String): Seq[Claim] = {
+    val predicate: Claim => Boolean = claim =>
+      claim.caseNumber.toUpperCase == query.toUpperCase ||
+        claim.declarationId.toUpperCase == query.toUpperCase
+
+    pendingClaims.filter(predicate) ++
+      inProgressClaims.filter(predicate) ++
+      closedClaims.filter(predicate)
+  }
+
+  /** Finds claim by its caseNumber */
+  def findByCaseNumber(caseNumber: String): Option[Claim] =
+    pendingClaims
+      .find(_.caseNumber == caseNumber)
+      .orElse(inProgressClaims.find(_.caseNumber == caseNumber))
+      .orElse(closedClaims.find(_.caseNumber == caseNumber))
 
 }
 

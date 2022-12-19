@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package models.file_upload
+package models
 
-import play.api.libs.json._
+sealed trait Error {
+  type Value
+  val value: Value
+  def exception: Throwable
+}
 
-object SimpleDecimalFormat {
+object Error {
+  def apply(t: Throwable): Error = new Error {
+    final override type Value = Throwable
+    final override val value: Throwable = t
+    final override def exception          = value
+  }
 
-  def apply[A](from: BigDecimal => A, to: A => BigDecimal): Format[A] =
-    Format(
-      Reads {
-        case JsNumber(value) => JsSuccess(from(value))
-        case json            => JsError(s"Expected json number but got ${json.getClass.getSimpleName}")
-      },
-      Writes.apply(entity => JsNumber(to(entity)))
-    )
-
+  def apply(message: String): Error = new Error {
+    final override type Value = String
+    final override val value: String = message
+    final override def exception       = new Exception(message)
+  }
 }

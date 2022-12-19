@@ -23,17 +23,18 @@ import utils.SpecBase
 class NDRCCaseSpec extends SpecBase {
 
   "toClaimDetail" should {
-    "transform the case status into the corresponding case object" in {
-      val inProgressCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "In Progress", MRNDetails = None, entryDetails = None))
-      val pendingCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Pending"))
-      val closedCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Closed"))
+    "transform the case status into the corresponding case object" in new SetupBase {
+      val inProgressCase =
+        ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "In Progress", MRNDetails = None, entryDetails = None))
+      val pendingCase    = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Pending"))
+      val closedCase     = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Closed"))
 
       inProgressCase.toClaimDetail(None).claimStatus shouldBe InProgress
-      pendingCase.toClaimDetail(None).claimStatus shouldBe Pending
-      closedCase.toClaimDetail(None).claimStatus shouldBe Closed
+      pendingCase.toClaimDetail(None).claimStatus    shouldBe Pending
+      closedCase.toClaimDetail(None).claimStatus     shouldBe Closed
     }
 
-    "read/write json correctly" in {
+    "read/write json correctly" in new SetupBase {
 
       val json =
         """{
@@ -87,15 +88,14 @@ class NDRCCaseSpec extends SpecBase {
           |    "totalRefundAmount": "600000"
           |}""".stripMargin
 
-
       Json.parse(json).as[NDRCCase] shouldBe ndrcCase
-      Json.toJson(ndrcCase) shouldBe Json.parse(json)
+      Json.toJson(ndrcCase)         shouldBe Json.parse(json)
     }
 
-    "throw an exception if an invalid case status passed from the api" in {
+    "throw an exception if an invalid case status passed from the api" in new SetupBase {
       val invalidCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "INVALID"))
 
-      intercept[RuntimeException]{
+      intercept[RuntimeException] {
         invalidCase.toClaimDetail(None)
       }.getMessage shouldBe "Unknown case status: INVALID"
     }

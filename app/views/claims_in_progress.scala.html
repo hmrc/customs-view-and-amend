@@ -24,9 +24,9 @@
 
     @key = @{"claim.list.progress"}
 
-    @layout(pageTitle = Some(messages(s"$key.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
+    @layout(pageTitle = Some(messages(s"$key.title")), backLink = Some(routes.ClaimsOverviewController.show.url)) {
         @headerArea(key, showInset = true)
 
-        @claimTable(model.visibleItems, InProgress, searched = false)
+        @claimTable(model.visibleItems, InProgress)
         @pager(model)
     }

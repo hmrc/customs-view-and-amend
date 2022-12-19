@@ -16,6 +16,7 @@
 
 package actions
 
+import com.google.inject.ImplementedBy
 import config.AppConfig
 import connector.DataStoreConnector
 import controllers.routes
@@ -27,31 +28,38 @@ import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
-trait IdentifierAction extends ActionBuilder[IdentifierRequest, AnyContent] with ActionFunction[Request, IdentifierRequest]
+@ImplementedBy(classOf[AuthenticatedIdentifierAction])
+trait IdentifierAction
+    extends ActionBuilder[IdentifierRequest, AnyContent]
+    with ActionFunction[Request, IdentifierRequest]
 
-class AuthenticatedIdentifierAction @Inject()(
-                                               override val authConnector: AuthConnector,
-                                               dataStoreConnector: DataStoreConnector,
-                                               config: AppConfig,
-                                               val parser: BodyParsers.Default
-                                             )
-                                             (implicit val executionContext: ExecutionContext) extends IdentifierAction with AuthorisedFunctions {
+@Singleton
+class AuthenticatedIdentifierAction @Inject() (
+  override val authConnector: AuthConnector,
+  dataStoreConnector: DataStoreConnector,
+  config: AppConfig,
+  val parser: BodyParsers.Default
+)(implicit val executionContext: ExecutionContext)
+    extends IdentifierAction
+    with AuthorisedFunctions {
   override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
+    implicit val hc: HeaderCarrier =
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
-        allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
-          case Some(eori) =>
-            dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
-              block(IdentifierRequest(request, eori.value, maybeCompanyName))
-            }
-          case None => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
-        }
+      allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
+        case Some(eori) =>
+          dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
+            block(IdentifierRequest(request, eori.value, maybeCompanyName))
+          }
+        case None       => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+      }
     } recover {
-      case _: NoActiveSession =>
+      case _: NoActiveSession        =>
         Redirect(config.loginUrl, Map("continue_url" -> Seq(config.loginContinueUrl)))
       case _: InsufficientEnrolments =>
         Redirect(routes.UnauthorisedController.onPageLoad)

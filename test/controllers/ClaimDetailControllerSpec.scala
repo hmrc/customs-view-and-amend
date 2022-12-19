@@ -16,20 +16,17 @@
 
 package controllers
 
-import connector.ClaimsConnector
-import models.CaseType.Bulk
 import models._
+import models.CaseType._
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
+import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers._
+import play.api.Application
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import repositories.{ClaimsCache, ClaimsMongo}
-import services.ClaimService
-import uk.gov.hmrc.auth.core.retrieve.Email
 import utils.SpecBase
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
 import scala.concurrent.Future
 
 class ClaimDetailControllerSpec extends SpecBase {
@@ -38,106 +35,106 @@ class ClaimDetailControllerSpec extends SpecBase {
     "return OK when a in progress claim has been found" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail)))
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result  = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
+    "return OK when a in progress claim has been found without claimType" in new Setup {
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail.copy(claimType = None))))
+
+      running(app) {
+        val request =
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
 
     "return OK when a pending claim has been found" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
 
     "return OK when a closed claim has been found" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
         status(result) mustBe OK
       }
     }
 
     "return NOT_FOUND when user not authorised to view claim" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(None))
-
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", SCTY, searched = false).url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
         val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
 
-    "return NOT_FOUND when there is no active email found" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
+    "redirect to the unverified email page when there is no active email found" in new Setup {
       when(mockDataStoreConnector.getEmail(any)(any))
         .thenReturn(Future.successful(Left(UnverifiedEmail)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) mustBe SEE_OTHER
+      }
+    }
+
+    "return OK when there is email check connectivity issue" in new Setup {
+      when(mockDataStoreConnector.getEmail(any)(any))
+        .thenReturn(Future.failed(new Exception("email check fails")))
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Some(claimDetail)))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result  = route(app, request).value
+        status(result) mustBe OK
       }
     }
 
     "return NOT_FOUND when claim not found from the API" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
         .thenReturn(Future.successful(None))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = true).url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
 
     "return NOT_FOUND when a claim is not present in the list of claims" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(None))
-
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim", NDRC, searched = false).url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
         val result  = route(app, request).value
         status(result) mustBe NOT_FOUND
       }
     }
   }
 
-  trait Setup {
-    val mockClaimsCache: ClaimsCache         = mock[ClaimsCache]
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
-    val claimsMongo: ClaimsMongo             = ClaimsMongo(
-      Seq(InProgressClaim("MRN", "someClaim", NDRC, Some("LRN"), LocalDate.of(2021, 10, 23))),
-      LocalDateTime.now()
-    )
-    val mockClaimService: ClaimService       = mock[ClaimService]
+  trait Setup extends SetupBase {
 
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
@@ -158,16 +155,20 @@ class ClaimDetailControllerSpec extends SpecBase {
       Some("sarah.philips@acmecorp.com")
     )
 
-    when(mockDataStoreConnector.getEmail(any)(any))
-      .thenReturn(Future.successful(Right(Email("some@email.com"))))
+    val allClaims: AllClaims = AllClaims(
+      pendingClaims = Seq.empty,
+      inProgressClaims = Seq(
+        InProgressClaim("MRN", "someClaim", NDRC, None, LocalDate.of(2021, 2, 1))
+      ),
+      closedClaims = Seq.empty
+    )
 
-    val app: Application = application
-      .overrides(
-        inject.bind[ClaimsCache].toInstance(mockClaimsCache),
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector),
-        inject.bind[ClaimService].toInstance(mockClaimService)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
+
+    Mockito
+      .lenient()
+      .when(mockClaimsConnector.getAllClaims(any))
+      .thenReturn(Future.successful(allClaims))
   }
 
 }

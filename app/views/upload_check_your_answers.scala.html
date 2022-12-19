@@ -35,12 +35,12 @@
 
 @layout(
  pageTitle = Some(messages("file.upload.cya.title")),
- navigationBannerEnabled = false,
- backLink = Some(appConfig.fileUploadSummaryUrl)) {
+ navigationBannerEnabled = false
+ ) {
 
  @h1("file.upload.cya.title",  classes = "govuk-heading-xl")
 
- @formHelper(routes.FileUploadController.continue(caseNumber, serviceType)) {
+ @formHelper(routes.FileUploadCYAController.onSubmit) {
   @h2("file.upload.cya.h2")
   @summaryList(viewmodels.SummaryList(fileUploadCheckYourAnswersHelper.rows))
   @p("file.upload.p1")

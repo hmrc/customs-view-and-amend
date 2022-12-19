@@ -20,17 +20,17 @@ import config.AppConfig
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 
-class LogoutController @Inject()(
-                                  appConfig: AppConfig,
-                                  mcc: MessagesControllerComponents) extends FrontendController(mcc) {
+@Singleton
+class LogoutController @Inject() (appConfig: AppConfig, mcc: MessagesControllerComponents)
+    extends FrontendController(mcc) {
 
-  def logout: Action[AnyContent] = Action {
+  final val logout: Action[AnyContent] = Action {
     Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.feedbackService)))
   }
 
-  def logoutNoSurvey: Action[AnyContent] = Action {
+  final val logoutNoSurvey: Action[AnyContent] = Action {
     Redirect(appConfig.signOutUrl)
   }
 }

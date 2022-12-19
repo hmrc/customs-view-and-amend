@@ -16,55 +16,56 @@
 
 package controllers
 
-import actions.IdentifierAction
-import cats.data.EitherT._
+import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
-import connector.{DataStoreConnector, ClaimsConnector}
-import models.responses.C285
-import models.{ClaimDetail, ServiceType}
+import connector.{ClaimsConnector, DataStoreConnector}
 import play.api.i18n.I18nSupport
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Result}
-import repositories.ClaimsCache
-import services.ClaimService
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.claim_detail
 import views.html.errors.not_found
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
+@Singleton
 class ClaimDetailController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
+  verifyEmail: EmailAction,
+  allClaimsAction: AllClaimsAction,
   dataStoreConnector: DataStoreConnector,
   claimsConnector: ClaimsConnector,
-  claimService: ClaimService,
   claimDetail: claim_detail,
-  claimsCache: ClaimsCache,
   notFound: not_found
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  def claimDetail(caseNumber: String, serviceType: ServiceType, searched: Boolean): Action[AnyContent] =
-    authenticate.async { implicit request =>
-      (for {
-        claims          <- fromOptionF(
-                             claimService.authorisedToView(caseNumber, request.eori),
-                             NotFound(notFound()).withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
-                           )
-        lrn              = claims.claims.find(_.caseNumber == caseNumber).flatMap(_.lrn)
-        email           <- fromOptionF(
-                             dataStoreConnector.getEmail(request.eori).map(_.toOption),
-                             NotFound(notFound()).withHeaders("X-Explanation" -> "EMAIL_NOT_FOUND")
-                           )
-        claim           <- fromOptionF[Future, Result, ClaimDetail](
-                             claimsConnector.getClaimInformation(caseNumber, serviceType, lrn),
-                             NotFound(notFound()).withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-                           )
-        fileSelectionUrl =
-          routes.FileSelectionController
-            .onPageLoad(claim.caseNumber, claim.serviceType, claim.claimType.getOrElse(C285), initialRequest = false)
-      } yield Ok(claimDetail(claim, searched, email.value, fileSelectionUrl.url))).merge
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
+
+  final def claimDetail(caseNumber: String): Action[AnyContent] =
+    actions.async { case (request, allClaims) =>
+      implicit val r = request
+      allClaims.findByCaseNumber(caseNumber) match {
+        case Some(claim) =>
+          claimsConnector
+            .getClaimInformation(caseNumber, claim.serviceType, claim.lrn)
+            .map {
+              case None =>
+                NotFound(notFound())
+                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
+
+              case Some(claimDetails) =>
+                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
+                Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
+            }
+
+        case _ =>
+          Future.successful(
+            NotFound(notFound())
+              .withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+          )
+      }
     }
 }

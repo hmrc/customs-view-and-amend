@@ -22,9 +22,9 @@
 
 @(model: PendingClaimListViewModel)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim.list.pending"}
-@layout(pageTitle = Some(messages(s"${key}.title")), backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(messages(s"${key}.title"))) {
     @headerArea(key, showInset = true)
-    @claimTable(model.visibleItems, Pending, searched = false)
+    @claimTable(model.visibleItems, Pending)
     @pager(model)
 
 }

@@ -31,14 +31,13 @@
 @key = @{"claim.list.closed"}
 @title = @{messages(s"$key.title")}
 
-@layout(pageTitle = Some(title),
-        backLink = Some(routes.ClaimsOverview.show.url)) {
+@layout(pageTitle = Some(title)) {
           
           @headerArea(key, showInset = true)
           
           @dropdownDetails( summary = (s"$key.details.heading"), content = caseStatusHints.renderHintsWithLabels(key))
           
-          @claimTable(model.visibleItems, Closed, searched = false)
+          @claimTable(model.visibleItems, Closed)
           
           @pager(model)
 }

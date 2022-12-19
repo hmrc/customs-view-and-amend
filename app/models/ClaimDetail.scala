@@ -23,50 +23,40 @@ import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
-case class ClaimDetail(caseNumber: String,
-                       serviceType: ServiceType,
-                       declarationId: String,
-                       mrn: Seq[ProcedureDetail],
-                       entryNumbers: Seq[EntryDetail],
-                       lrn: Option[String],
-                       claimantsEori: Option[String],
-                       claimStatus: ClaimStatus,
-                       caseSubStatus: Option[String],
-                       claimType: Option[ClaimType],
-                       caseType: Option[CaseType],
-                       claimStartDate: LocalDate,
-                       claimClosedDate: Option[LocalDate],
-                       totalClaimAmount: Option[String],
-                       claimantsName: Option[String],
-                       claimantsEmail: Option[String],
-                       reasonForSecurity: Option[String] = None,
-                       securityGoodsDescription: Option[String] = None
-                      ) extends DateFormatters {
+case class ClaimDetail(
+  caseNumber: String,
+  serviceType: ServiceType,
+  declarationId: String,
+  mrn: Seq[ProcedureDetail],
+  entryNumbers: Seq[EntryDetail],
+  lrn: Option[String],
+  claimantsEori: Option[String],
+  claimStatus: ClaimStatus,
+  caseSubStatus: Option[String],
+  claimType: Option[ClaimType],
+  caseType: Option[CaseType],
+  claimStartDate: LocalDate,
+  claimClosedDate: Option[LocalDate],
+  totalClaimAmount: Option[String],
+  claimantsName: Option[String],
+  claimantsEmail: Option[String],
+  reasonForSecurity: Option[String] = None,
+  securityGoodsDescription: Option[String] = None
+) extends DateFormatters {
 
- def formattedStartDate()(implicit messages: Messages): String = {
-   dateAsDayMonthAndYear(claimStartDate)
- }
+  def formattedStartDate()(implicit messages: Messages): String =
+    dateAsDayMonthAndYear(claimStartDate)
 
-  def formattedClosedDate()(implicit messages: Messages): Option[String] = {
+  def formattedClosedDate()(implicit messages: Messages): Option[String] =
     claimClosedDate.map(dateAsDayMonthAndYear)
-  }
 
-  def isEntryNumber: Boolean = {
-    val entryNumberRegex = "^[0-9]{9}[A-Za-z][0-9]{8}".r
-    entryNumberRegex.findFirstIn(declarationId).isDefined
-  }
+  def multipleDeclarations: Boolean =
+    mrn.size > 1 || entryNumbers.size > 1
 
   def isPending: Boolean = claimStatus match {
     case Pending => true
-    case _ => false
+    case _       => false
   }
-
-  def backLink(): String =
-    claimStatus match {
-      case InProgress => controllers.routes.ClaimListController.showInProgressClaimList(None).url
-      case Pending => controllers.routes.ClaimListController.showPendingClaimList(None).url
-      case Closed => controllers.routes.ClaimListController.showClosedClaimList(None).url
-    }
 }
 
 object ClaimDetail {

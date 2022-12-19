@@ -17,61 +17,41 @@
 package connector
 
 import config.AppConfig
-import models.file_upload.{Nonce, UploadDocumentsWrapper}
-import models.responses.ClaimType
+import models.file_upload.UploadDocumentsWrapper
+import models.Nonce
 import models.{FileSelection, ServiceType}
 import play.api.Logging
 import play.api.http.Status.{ACCEPTED, CREATED, NO_CONTENT}
 import play.api.i18n.Messages
 import play.mvc.Http.HeaderNames
-import repositories.UploadedFilesCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.http.HttpReads.Implicits._
 
-import javax.inject.Inject
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import models.file_upload.UploadedFile
 
-class UploadDocumentsConnector @Inject() (httpClient: HttpClient, uploadedFilesCache: UploadedFilesCache)(implicit
+@Singleton
+class UploadDocumentsConnector @Inject() (httpClient: HttpClient)(implicit
   executionContext: ExecutionContext,
   appConfig: AppConfig
 ) extends Logging {
 
-  def startFileUpload(caseNumber: String, claimType: ClaimType, serviceType: ServiceType, documentType: FileSelection)(
-    implicit
+  def startFileUpload(
+    nonce: Nonce,
+    caseNumber: String,
+    serviceType: ServiceType,
+    documentType: FileSelection,
+    previouslyUploaded: Seq[UploadedFile]
+  )(implicit
     hc: HeaderCarrier,
     messages: Messages
   ): Future[Option[String]] = {
-    val nonce = Nonce.random
-    for {
-      previouslyUploaded <- uploadedFilesCache.retrieveCurrentlyUploadedFiles(caseNumber)
-      successfulWrite    <- uploadedFilesCache.initializeRecord(caseNumber, nonce, previouslyUploaded)
-      payload             =
-        UploadDocumentsWrapper
-          .createPayload(nonce, caseNumber, serviceType, claimType, documentType, previouslyUploaded)
-      result             <- if (successfulWrite) { sendRequest(payload) }
-                            else {
-                              logger.error(
-                                s"Cannot initialize file upload:\nsuccessfulWrite = $successfulWrite\ninitalizationRequest = $payload"
-                              )
-                              Future.successful(None)
-                            }
-    } yield result
-  }
 
-  def wipeData()(implicit hc: HeaderCarrier): Future[Boolean] =
+    val payload = UploadDocumentsWrapper
+      .createPayload(nonce, caseNumber, serviceType, documentType, previouslyUploaded)
     httpClient
-      .POSTEmpty[HttpResponse](appConfig.fileUploadWipeOutUrl)
-      .map(_.status == NO_CONTENT)
-      .recover { case e =>
-        logger.warn(s"Failed to wipe data in upload-document-frontend: $e")
-        false
-      }
-
-  private def sendRequest(
-    uploadDocumentsWrapper: UploadDocumentsWrapper
-  )(implicit hc: HeaderCarrier): Future[Option[String]] =
-    httpClient
-      .POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializationUrl, uploadDocumentsWrapper)
+      .POST[UploadDocumentsWrapper, HttpResponse](appConfig.fileUploadInitializationUrl, payload)
       .map { response =>
         response.status match {
           case CREATED | ACCEPTED =>
@@ -86,4 +66,15 @@ class UploadDocumentsConnector @Inject() (httpClient: HttpClient, uploadedFilesC
         logger.error(s"Cannot initialize file upload:\nexception = $exception")
         None
       }
+  }
+
+  def wipeData(implicit hc: HeaderCarrier): Future[Boolean] =
+    httpClient
+      .POSTEmpty[HttpResponse](appConfig.fileUploadWipeOutUrl)
+      .map(_.status == NO_CONTENT)
+      .recover { case e =>
+        logger.warn(s"Failed to wipe out session data in the upload-customs-document-frontend: $e")
+        false
+      }
+
 }

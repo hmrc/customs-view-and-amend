@@ -16,17 +16,11 @@
 
 package forms
 
-import models.responses.ClaimType
-import models.{Enumerable, FileSelection}
 import play.api.data.Form
 
-class FileSelectionFormProvider(claimType: ClaimType) extends Mappings {
-
-  implicit val enumerable: Enumerable[FileSelection] =
-    FileSelection.enumerable
-
-  def apply(): Form[FileSelection] =
-    Form(
-      "value" -> enumerable[FileSelection]("file.selection.error.required")
-    )
+object FormUtils {
+  implicit class FormOps[A](val form: Form[A]) {
+    def withDefault(optValue: Option[A]): Form[A] =
+      optValue.map(form.fill).getOrElse(form)
+  }
 }

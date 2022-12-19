@@ -30,12 +30,12 @@ class EmailControllerSpec extends SpecBase {
   "showUnverified" should {
     "return OK" in new Setup {
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.EmailController.showUnverified().url)
-      val result: Future[Result] = route(app, request).value
+      val result: Future[Result]                       = route(app, request).value
       status(result) mustBe OK
     }
   }
-  
-  trait Setup {
+
+  trait Setup extends SetupBase {
     val app: Application = application.build()
   }
 

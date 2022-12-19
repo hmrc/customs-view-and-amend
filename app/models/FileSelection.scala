@@ -22,7 +22,6 @@ import play.api.libs.json._
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
-
 sealed trait FileSelection {
   def message(implicit messages: Messages): String =
     messages(s"file.selection.${this.toString}")
@@ -30,14 +29,14 @@ sealed trait FileSelection {
   def toDec64FileType: String =
     this match {
       case FileSelection.AdditionalSupportingDocuments => "Other"
-      case FileSelection.AirwayBill => "Air Waybill"
-      case FileSelection.BillOfLading => "Bill of Lading"
-      case FileSelection.CalculationWorksheet => "Other"
-      case FileSelection.CommercialInvoice => "Commercial Invoice"
-      case FileSelection.ImportAndExportDeclaration => "Import and Export Declaration"
-      case FileSelection.PackingList => "Packing List"
-      case FileSelection.ProofOfAuthority => "Proof of Authority (to be repaid)"
-      case FileSelection.SubstituteEntry => "Substitute Entry"
+      case FileSelection.AirwayBill                    => "Air Waybill"
+      case FileSelection.BillOfLading                  => "Bill of Lading"
+      case FileSelection.CalculationWorksheet          => "Other"
+      case FileSelection.CommercialInvoice             => "Commercial Invoice"
+      case FileSelection.ImportAndExportDeclaration    => "Import and Export Declaration"
+      case FileSelection.PackingList                   => "Packing List"
+      case FileSelection.ProofOfAuthority              => "Proof of Authority (to be repaid)"
+      case FileSelection.SubstituteEntry               => "Substitute Entry"
     }
 }
 
@@ -76,37 +75,36 @@ object FileSelection extends Enumerable.Implicits {
 
   case object AdditionalSupportingDocuments extends WithName("other-supporting-documents") with FileSelection
 
-
   implicit val format: Format[FileSelection] = new Format[FileSelection] {
     override def writes(o: FileSelection): JsValue =
       o match {
         case AdditionalSupportingDocuments => JsString("Additional supporting documents")
-        case AirwayBill => JsString("Air waybill")
-        case BillOfLading => JsString("Bill of lading")
-        case CalculationWorksheet => JsString("Calculation worksheet")
-        case CommercialInvoice => JsString("Commercial invoice")
-        case ImportAndExportDeclaration => JsString("Import and export declaration")
-        case PackingList => JsString("Packing list")
-        case ProofOfAuthority => JsString("Letter of authority")
-        case SubstituteEntry => JsString("Substitute entry")
+        case AirwayBill                    => JsString("Air waybill")
+        case BillOfLading                  => JsString("Bill of lading")
+        case CalculationWorksheet          => JsString("Calculation worksheet")
+        case CommercialInvoice             => JsString("Commercial invoice")
+        case ImportAndExportDeclaration    => JsString("Import and export declaration")
+        case PackingList                   => JsString("Packing list")
+        case ProofOfAuthority              => JsString("Letter of authority")
+        case SubstituteEntry               => JsString("Substitute entry")
       }
 
     override def reads(json: JsValue): JsResult[FileSelection] =
       json match {
         case JsString("Additional supporting documents") => JsSuccess(AdditionalSupportingDocuments)
-        case JsString("Air waybill") => JsSuccess(AirwayBill)
-        case JsString("Bill of lading") => JsSuccess(BillOfLading)
-        case JsString("Calculation worksheet") => JsSuccess(CalculationWorksheet)
-        case JsString("Commercial invoice") => JsSuccess(CommercialInvoice)
-        case JsString("Import and export declaration") => JsSuccess(ImportAndExportDeclaration)
-        case JsString("Packing list") => JsSuccess(PackingList)
-        case JsString("Letter of authority") => JsSuccess(ProofOfAuthority)
-        case JsString("Substitute entry") => JsSuccess(SubstituteEntry)
-        case e => JsError(s"Unknown document type: $e")
+        case JsString("Air waybill")                     => JsSuccess(AirwayBill)
+        case JsString("Bill of lading")                  => JsSuccess(BillOfLading)
+        case JsString("Calculation worksheet")           => JsSuccess(CalculationWorksheet)
+        case JsString("Commercial invoice")              => JsSuccess(CommercialInvoice)
+        case JsString("Import and export declaration")   => JsSuccess(ImportAndExportDeclaration)
+        case JsString("Packing list")                    => JsSuccess(PackingList)
+        case JsString("Letter of authority")             => JsSuccess(ProofOfAuthority)
+        case JsString("Substitute entry")                => JsSuccess(SubstituteEntry)
+        case e                                           => JsError(s"Unknown document type: $e")
       }
   }
 
-  def options(form: Form[_])(implicit messages: Messages): Seq[RadioItem] = {
+  def options(form: Form[_])(implicit messages: Messages): Seq[RadioItem] =
     values.map { fileType =>
       RadioItem(
         value = Some(fileType.toString),
@@ -114,7 +112,4 @@ object FileSelection extends Enumerable.Implicits {
         checked = form("value").value.contains(fileType.toString)
       )
     }
-  }
 }
-
-

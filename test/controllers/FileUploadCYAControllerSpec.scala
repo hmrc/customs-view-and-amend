@@ -16,64 +16,166 @@
 
 package controllers
 
+import play.api.inject.bind
 import config.AppConfig
 import models.FileSelection.AdditionalSupportingDocuments
 import models.file_upload.UploadedFile
-import models.{IdentifierRequest, InProgressClaim, NDRC}
-import play.api.mvc.AnyContentAsEmpty
+import models.{AllClaims, NDRC, PendingClaim, SessionData}
+import play.api.Application
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import repositories.{ClaimsMongo, UploadedFilesCache}
-import services.ClaimService
+import repositories.SessionCache
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.SpecBase
 
-import java.time.{LocalDate, LocalDateTime}
+import java.time.LocalDate
+import java.util.UUID
+import connector.FileSubmissionConnector
+import connector.UploadDocumentsConnector
 import scala.concurrent.Future
 
 class FileUploadCYAControllerSpec extends SpecBase {
 
   "onPageLoad" should {
     "return OK on a successful request" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(Some(claimsMongo)))
-      val uploadedFiles = Seq(UploadedFile("reference", "/url", "timestamp", "sum", "file name", "PDF", 10, None, AdditionalSupportingDocuments, None))
-      when(mockUploadedFilesCache.retrieveCurrentlyUploadedFiles(any))
-        .thenReturn(Future.successful(uploadedFiles))
-
       running(app) {
-        val identifierRequest: IdentifierRequest[AnyContentAsEmpty.type] =
-          IdentifierRequest(fakeRequest(GET, routes.FileUploadCYAController.onPageLoad("NDRC-1234", NDRC).url), "exampleEori", Some("companyName"))
-        val result = route(app, identifierRequest).value
-        status(result) shouldBe OK
-        contentAsString(result).contains("file name") shouldBe true
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withUploadedFiles(uploadedFiles)
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val identifierRequest = fakeRequest(GET, routes.FileUploadCYAController.onPageLoad.url)
+        val result            = route(app, identifierRequest).value
+
+        status(result)                                                            shouldBe OK
+        contentAsString(result).contains("file name QWERTY")                      shouldBe true
         contentAsString(result).contains("Other documents supporting your claim") shouldBe true
       }
     }
 
-    "return NOT_FOUND when user not authorised to view claim" in new Setup {
-      when(mockClaimService.authorisedToView(any, any)(any))
-        .thenReturn(Future.successful(None))
-
+    "redirect back to claims overview if file upload journey to found" in new Setup {
       running(app) {
-        val request = fakeRequest(GET, routes.FileUploadCYAController.onPageLoad("NDRC-1234", NDRC).url)
-        val result = route(app, request).value
-        status(result) shouldBe NOT_FOUND
+        val request =
+          fakeRequest(GET, routes.FileUploadCYAController.onPageLoad.url)
+        val result  = route(app, request).value
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
       }
     }
   }
 
+  "onSubmit" should {
+    "return OK" in new Setup {
+      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
+        .thenReturn(Future.successful(true))
+      when(mockUploadDocumentsConnector.wipeData(any))
+        .thenReturn(Future.successful(true))
 
-  trait Setup {
-    val claimsMongo: ClaimsMongo = ClaimsMongo(Seq(InProgressClaim("MRN", "caseNumber", NDRC, None, LocalDate.of(2021, 10, 23))), LocalDateTime.now())
-    val mockClaimService: ClaimService = mock[ClaimService]
-    val mockUploadedFilesCache: UploadedFilesCache = mock[UploadedFilesCache]
+      running(app) {
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withUploadedFiles(uploadedFiles)
+        await(sessionCache.store(sessionData)) shouldBe Right(())
 
-    val app: Application = application.overrides(
-      inject.bind[ClaimService].toInstance(mockClaimService),
-      inject.bind[UploadedFilesCache].toInstance(mockUploadedFilesCache)
-    ).build()
+        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val result  = route(app, request).value
+
+        status(result) shouldBe OK
+      }
+    }
+
+    "redirect back to claims overview if file upload journey to found" in new Setup {
+      running(app) {
+        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val result  = route(app, request).value
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
+      }
+    }
+
+    "throw an exception if file upload not successful" in new Setup {
+      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
+        .thenReturn(Future.successful(false))
+      when(mockUploadDocumentsConnector.wipeData(any))
+        .thenReturn(Future.successful(true))
+
+      running(app) {
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withUploadedFiles(uploadedFiles)
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val result  = route(app, request).value
+
+        an[Exception] shouldBe thrownBy {
+          await(result)
+        }
+      }
+    }
+  }
+
+  "onConfirmationReload" should {
+    "redirect back to claims overview" in new Setup {
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadCYAController.onConfirmationReload.url)
+        val result  = route(app, request).value
+
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
+      }
+    }
+  }
+
+  trait Setup extends SetupBase {
+
+    val mockFileSubmissionConnector  = mock[FileSubmissionConnector]
+    val mockUploadDocumentsConnector = mock[UploadDocumentsConnector]
+
+    val app: Application = applicationWithMongoCache
+      .overrides(
+        bind[FileSubmissionConnector].toInstance(mockFileSubmissionConnector),
+        bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
+      )
+      .build()
+
+    def sessionCache = app.injector.instanceOf[SessionCache]
 
     implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+
+    implicit val hc: HeaderCarrier =
+      HeaderCarrier(
+        sessionId = Some(SessionId(UUID.randomUUID().toString))
+      )
+
+    val allClaimsWithPending: AllClaims = AllClaims(
+      pendingClaims = Seq(
+        PendingClaim(
+          "MRN",
+          "claim-123",
+          NDRC,
+          None,
+          LocalDate.of(2021, 2, 1),
+          LocalDate.of(2022, 1, 1)
+        )
+      ),
+      inProgressClaims = Seq.empty,
+      closedClaims = Seq.empty
+    )
+
+    val uploadedFiles = Seq(
+      UploadedFile(
+        "reference",
+        "/url",
+        "timestamp",
+        "sum",
+        "file name QWERTY",
+        "PDF",
+        10,
+        None,
+        AdditionalSupportingDocuments,
+        None
+      )
+    )
 
   }
 }

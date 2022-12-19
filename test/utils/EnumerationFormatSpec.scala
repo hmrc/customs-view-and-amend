@@ -45,11 +45,11 @@ class EnumerationFormatSpec extends AnyWordSpec with Matchers {
       Foo.format.reads(JsString("Abc")) shouldBe JsSuccess(Foo.ABC)
       Foo.format.reads(JsString("ABc")) shouldBe JsSuccess(Foo.ABC)
 
-      Foo.format.reads(JsNull)          shouldBe a[JsError]
-      Foo.format.reads(Json.obj("A" -> JsBoolean(true))) shouldBe a[JsError]
+      Foo.format.reads(JsNull)                             shouldBe a[JsError]
+      Foo.format.reads(Json.obj("A" -> JsBoolean(true)))   shouldBe a[JsError]
       Foo.format.reads(Json.obj("value" -> JsString("A"))) shouldBe a[JsError]
-      Foo.format.reads(JsNumber(1))     shouldBe a[JsError]
-      Foo.format.reads(JsBoolean(true)) shouldBe a[JsError]
+      Foo.format.reads(JsNumber(1))                        shouldBe a[JsError]
+      Foo.format.reads(JsBoolean(true))                    shouldBe a[JsError]
     }
 
     "bind an enum from path parameter" in {
@@ -100,6 +100,34 @@ class EnumerationFormatSpec extends AnyWordSpec with Matchers {
 
       an[Exception] shouldBe thrownBy(Foo.queryBinder.unbind("foo", Foo.C))
     }
+
+    "try parse a string to enum" in {
+      Foo.tryParse("A")            shouldBe Foo.A
+      Foo.tryParse("B")            shouldBe Foo.B
+      Foo.tryParse("ABC")          shouldBe Foo.ABC
+      an[IllegalArgumentException] shouldBe thrownBy {
+        Foo.tryParse("C")
+      }
+      an[IllegalArgumentException] shouldBe thrownBy {
+        Foo.tryParse("Foo")
+      }
+    }
+
+    "check if has a key" in {
+      Foo.hasKey("A")   shouldBe true
+      Foo.hasKey("B")   shouldBe true
+      Foo.hasKey("ABC") shouldBe true
+      Foo.hasKey("C")   shouldBe false
+      Foo.hasKey("a")   shouldBe true
+      Foo.hasKey("b")   shouldBe true
+      Foo.hasKey("abc") shouldBe true
+      Foo.hasKey("Abc") shouldBe true
+      Foo.hasKey("AbC") shouldBe true
+      Foo.hasKey("c")   shouldBe false
+      Foo.hasKey("foo") shouldBe false
+      Foo.hasKey("Foo") shouldBe false
+    }
+
   }
 
 }

@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package models.file_upload
+package models
 
-import play.api.libs.json.Format
+import play.api.libs.json._
 
-import scala.util.Random
+object SimpleDecimalFormat {
 
-case class Nonce(value: Int) {
-  override def equals(o: Any): Boolean =
-    o match {
-      case nonce: Nonce => nonce.value == value
-      case _ => false
-    }
-}
+  def apply[A](from: BigDecimal => A, to: A => BigDecimal): Format[A] =
+    Format(
+      Reads {
+        case JsNumber(value) => JsSuccess(from(value))
+        case json            => JsError(s"Expected json number but got ${json.getClass.getSimpleName}")
+      },
+      Writes.apply(entity => JsNumber(to(entity)))
+    )
 
-object Nonce {
-  final def random: Nonce = Nonce(Random.nextInt())
-  implicit final val formats: Format[Nonce] = SimpleDecimalFormat[Nonce](s => Nonce(s.toIntExact), n => BigDecimal(n.value))
 }

@@ -22,7 +22,7 @@ import models.IdentifierRequest
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
-import play.api.mvc.{ActionFilter, Result}
+import play.api.mvc.{ActionRefiner, Result}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import views.html.email.undeliverable_email
@@ -31,19 +31,36 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class EmailAction @Inject()(connector: DataStoreConnector,
-                            undeliverableEmail: undeliverable_email,
-                            appConfig: AppConfig)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi) extends ActionFilter[IdentifierRequest] with I18nSupport {
-  def filter[A](request: IdentifierRequest[A]): Future[Option[Result]] = {
+class EmailAction @Inject() (
+  connector: DataStoreConnector,
+  undeliverableEmail: undeliverable_email,
+  appConfig: AppConfig
+)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
+    extends ActionRefiner[IdentifierRequest, IdentifierRequest]
+    with I18nSupport {
+
+  override def refine[A](
+    request: IdentifierRequest[A]
+  ): Future[Either[Result, IdentifierRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    connector.getEmail(request.eori).map {
-      case Left(value) =>
-        value match {
-          case UndeliverableEmail(_) => Some(Ok(undeliverableEmail(appConfig.emailFrontendUrl)(request, request.messages , appConfig)))
-          case UnverifiedEmail => Some(Redirect(controllers.routes.EmailController.showUnverified()))
-        }
-      case Right(_) => None
-    }.recover { case _ => None } //This will allow users to access the service if ETMP return an error via SUB09
+    connector
+      .getEmail(request.eori)
+      .map {
+        case Left(value) =>
+          value match {
+            case UndeliverableEmail(_) =>
+              Left(Ok(undeliverableEmail(appConfig.emailFrontendUrl)(request, request.messages, appConfig)))
+
+            case UnverifiedEmail =>
+              Left(Redirect(controllers.routes.EmailController.showUnverified()))
+          }
+
+        case Right(email) =>
+          Right(request.withVerifiedEmail(email.value))
+      }
+      .recover { case _ =>
+        // This will allow users to access the service if ETMP return an error via SUB09
+        Right(request)
+      }
   }
 }
-

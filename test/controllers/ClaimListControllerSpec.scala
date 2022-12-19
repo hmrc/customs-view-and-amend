@@ -16,12 +16,11 @@
 
 package controllers
 
-import connector.ClaimsConnector
 import models._
+import org.mockito.Mockito
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import repositories.ClaimsCache
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -31,9 +30,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showInProgressClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showInProgressClaimList(Some(1)).url)
         val result  = route(app, request).value
@@ -44,9 +40,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showPendingClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showPendingClaimList(None).url)
         val result  = route(app, request).value
@@ -57,9 +50,6 @@ class ClaimListControllerSpec extends SpecBase {
 
   "showClosedClaimList" should {
     "return OK" in new Setup {
-      when(mockClaimsConnector.getClaims(any)(any))
-        .thenReturn(Future.successful(allClaims))
-
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showClosedClaimList(None).url)
         val result  = route(app, request).value
@@ -68,9 +58,7 @@ class ClaimListControllerSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val mockClaimsCache: ClaimsCache         = mock[ClaimsCache]
-    val mockClaimsConnector: ClaimsConnector = mock[ClaimsConnector]
+  trait Setup extends SetupBase {
 
     val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
       ClosedClaim(
@@ -103,12 +91,12 @@ class ClaimListControllerSpec extends SpecBase {
       closedClaims = closedClaims
     )
 
-    val app: Application = application
-      .overrides(
-        inject.bind[ClaimsCache].toInstance(mockClaimsCache),
-        inject.bind[ClaimsConnector].toInstance(mockClaimsConnector)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
+
+    Mockito
+      .lenient()
+      .when(mockClaimsConnector.getAllClaims(any))
+      .thenReturn(Future.successful(allClaims))
   }
 
 }

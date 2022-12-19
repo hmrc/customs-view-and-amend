@@ -36,7 +36,7 @@
 
     @paragraph(Html(messages(s"$key.desc")))
 
-    @formWithCSRF(routes.ClaimSearch.onSubmit(), 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.ClaimSearchController.onSubmit, 'novalidate -> "novalidate") {
 
         <div class="govuk-form-group">
             <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="text"/>

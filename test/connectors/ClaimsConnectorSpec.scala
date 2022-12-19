@@ -22,7 +22,6 @@ import models.responses.{AllClaimsResponse, C285, Claims, NDRCCaseDetails, Proce
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
-import repositories.ClaimsCache
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 import utils.SpecBase
 
@@ -31,18 +30,13 @@ import scala.concurrent.Future
 
 class ClaimsConnectorSpec extends SpecBase {
 
-  "getClaims" should {
-    "return AllClaims and call the financials api if no cached data present" in new Setup {
+  "getAllClaims" should {
+    "return AllClaims and call the financials api" in new Setup {
       when[Future[AllClaimsResponse]](mockHttp.GET(any, any, any)(any, any, any))
         .thenReturn(Future.successful(allClaimsResponse))
 
-      when(mockClaimCache.get(any))
-        .thenReturn(Future.successful(None))
-      when(mockClaimCache.set(any, any))
-        .thenReturn(Future.successful(true))
-
       running(app) {
-        val result = await(connector.getClaims("someEori"))
+        val result = await(connector.getAllClaims)
         result.closedClaims     shouldBe Seq(
           ClosedClaim(
             "21LLLLLLLLLL12343",
@@ -59,40 +53,6 @@ class ClaimsConnectorSpec extends SpecBase {
         )
         result.pendingClaims    shouldBe Seq(
           PendingClaim("21LLLLLLLLLL12344", "SEC-2108", SCTY, Some("broomer007"), startDate, startDate.plusDays(30))
-        )
-      }
-    }
-
-    "return AllClaims and not call the financials api if cached data present" in new Setup {
-      when(mockClaimCache.get(any))
-        .thenReturn(
-          Future.successful(
-            Some(
-              Seq(
-                ClosedClaim(
-                  "MRN",
-                  "SCTY-2345",
-                  NDRC,
-                  None,
-                  LocalDate.of(9999, 1, 1),
-                  LocalDate.of(9999, 2, 1),
-                  "Closed"
-                ),
-                InProgressClaim("MRN", "NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)),
-                PendingClaim("MRN", "NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
-              )
-            )
-          )
-        )
-
-      running(app) {
-        val result = await(connector.getClaims("someEori"))
-        result.closedClaims     shouldBe Seq(
-          ClosedClaim("MRN", "SCTY-2345", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 2, 1), "Closed")
-        )
-        result.inProgressClaims shouldBe Seq(InProgressClaim("MRN", "NDRC-1234", SCTY, None, LocalDate.of(9999, 1, 1)))
-        result.pendingClaims    shouldBe Seq(
-          PendingClaim("MRN", "NDRC-6789", NDRC, None, LocalDate.of(9999, 1, 1), LocalDate.of(9999, 1, 1))
         )
       }
     }
@@ -182,10 +142,9 @@ class ClaimsConnectorSpec extends SpecBase {
     }
   }
 
-  trait Setup {
-    val mockHttp: HttpClient        = mock[HttpClient]
-    val mockClaimCache: ClaimsCache = mock[ClaimsCache]
-    implicit val hc: HeaderCarrier  = HeaderCarrier()
+  trait Setup extends SetupBase {
+    val mockHttp: HttpClient       = mock[HttpClient]
+    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
       "NDRC",
@@ -254,8 +213,7 @@ class ClaimsConnectorSpec extends SpecBase {
 
     val app: Application = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp),
-        inject.bind[ClaimsCache].toInstance(mockClaimCache)
+        inject.bind[HttpClient].toInstance(mockHttp)
       )
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",

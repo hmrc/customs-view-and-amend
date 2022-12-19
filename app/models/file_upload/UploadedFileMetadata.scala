@@ -18,6 +18,7 @@ package models.file_upload
 
 import play.api.libs.json.{Json, OFormat}
 
+import models.Nonce
 case class UploadedFileMetadata(nonce: Nonce, uploadedFiles: Seq[UploadedFile], cargo: Option[UploadCargo])
 
 object UploadedFileMetadata {

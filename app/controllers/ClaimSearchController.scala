@@ -16,49 +16,48 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import repositories.SearchCache
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.claims_overview
+import views.html.search_claims
 
-import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import javax.inject.{Inject, Singleton}
 
-class ClaimsOverview @Inject() (
+@Singleton
+class ClaimSearchController @Inject() (
+  connector: ClaimsConnector,
   mcc: MessagesControllerComponents,
-  searchCache: SearchCache,
+  searchClaim: search_claims,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
-  claimsConnector: ClaimsConnector,
-  claimsOverview: claims_overview
-)(implicit executionContext: ExecutionContext, appConfig: AppConfig)
+  allClaimsAction: AllClaimsAction
+)(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  def show: Action[AnyContent] = (authenticate andThen verifyEmail).async { implicit request =>
-    searchCache
-      .removeSearch(request.eori)
-      .flatMap { _ =>
-        claimsConnector
-          .getClaims(request.eori)
-          .map(allClaims =>
-            Ok(
-              claimsOverview(
-                0,
-                allClaims,
-                SearchFormHelper.form,
-                routes.ClaimSearch.onSubmit(),
-                request.companyName.orNull,
-                request.eori
-              )
-            )
-          )
-      }
-  }
+  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
 
+  final val onPageLoad: Action[AnyContent] =
+    actions { case (request, _) =>
+      implicit val r = request
+      Ok(searchClaim())
+    }
+
+  final val onSubmit: Action[AnyContent] =
+    actions { case (request, allClaims) =>
+      implicit val r = request
+      SearchFormHelper.form
+        .bindFromRequest()
+        .fold(
+          _ => BadRequest(searchClaim()),
+          query => {
+            val claims = allClaims.searchForClaim(query)
+            Ok(searchClaim(claims, Some(query)))
+          }
+        )
+    }
 }

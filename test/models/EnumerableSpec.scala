@@ -44,16 +44,19 @@ class EnumerableSpec extends WordSpec with MustMatchers with EitherValues with O
       implicitly[Reads[Foo]]
     }
 
-    Foo.values.foreach {
-      value =>
-        s"bind correctly for: $value" in {
-          Json.fromJson[Foo](JsString(value.toString)).asEither.right.value mustEqual value
-        }
+    Foo.values.foreach { value =>
+      s"bind correctly for: $value" in {
+        Json.fromJson[Foo](JsString(value.toString)).get mustEqual value
+      }
     }
 
     "fail to bind for invalid values" in {
-      Json.fromJson[Foo](JsString("invalid")).asEither.left.value must contain(JsPath -> Seq(JsonValidationError("error.invalid")))
-      Json.fromJson[Foo](JsNumber(2)).asEither.left.value must contain(JsPath -> Seq(JsonValidationError("error.invalid")))
+      Json.fromJson[Foo](JsString("invalid")).asEither.left.value must contain(
+        JsPath -> Seq(JsonValidationError("error.invalid"))
+      )
+      Json.fromJson[Foo](JsNumber(2)).asEither.left.value         must contain(
+        JsPath -> Seq(JsonValidationError("error.invalid"))
+      )
     }
   }
 
@@ -63,11 +66,10 @@ class EnumerableSpec extends WordSpec with MustMatchers with EitherValues with O
       implicitly[Writes[Foo]]
     }
 
-    Foo.values.foreach {
-      value =>
-        s"write $value" in {
-          Json.toJson(value) mustEqual JsString(value.toString)
-        }
+    Foo.values.foreach { value =>
+      s"write $value" in {
+        Json.toJson(value) mustEqual JsString(value.toString)
+      }
     }
   }
 

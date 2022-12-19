@@ -17,21 +17,23 @@
 package controllers
 
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import play.api.{Application, inject}
-import uk.gov.hmrc.auth.core.AuthConnector
 import utils.SpecBase
 
 class LogoutControllerSpec extends SpecBase {
 
   "LogoutController logout" should {
     "redirect to feedback survey page" in new Setup {
-      val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.LogoutController.logout.url).withHeaders("X-Session-Id" -> "someSession")
+      val request: FakeRequest[AnyContentAsEmpty.type] =
+        fakeRequest(GET, routes.LogoutController.logout.url).withHeaders("X-Session-Id" -> "someSession")
       running(app) {
         val result = route(app, request).value
-        redirectLocation(result).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=https%3A%2F%2Fwww.development.tax.service.gov.uk%2Ffeedback%2FCDS-FIN"
+        redirectLocation(
+          result
+        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=https%3A%2F%2Fwww.development.tax.service.gov.uk%2Ffeedback%2FCDS-FIN"
       }
     }
   }
@@ -39,17 +41,16 @@ class LogoutControllerSpec extends SpecBase {
   "LogoutController logout no survey" should {
     "redirect to sign-out with the continue as the financials homepage" in new Setup {
       running(app) {
-        val request = fakeRequest(GET, routes.LogoutController.logoutNoSurvey.url).withHeaders("X-Session-Id" -> "someSession")
-        val result = route(app, request).value
+        val request =
+          fakeRequest(GET, routes.LogoutController.logoutNoSurvey.url).withHeaders("X-Session-Id" -> "someSession")
+        val result  = route(app, request).value
         redirectLocation(result).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state"
       }
     }
   }
 
-  trait Setup {
-    val mockAuthConnector: AuthConnector = mock[AuthConnector]
-    val app: Application = application.overrides(
-      inject.bind[AuthConnector].toInstance(mockAuthConnector)
-    ).build()
+  trait Setup extends SetupBase {
+    val app: Application = application
+      .build()
   }
 }
