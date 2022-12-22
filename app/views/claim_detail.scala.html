@@ -150,8 +150,5 @@
             fileSelectionUrl
         )
         @paragraph(Html(messages("claim.detail.p1.valid-formats")))
-        @claimDetail.claimType.map { claimType =>
-            @newTabLink("claim.detail.upload", routes.FileSelectionController.onPageLoad(claimDetail.caseNumber).url)
-        }
     }
 }
