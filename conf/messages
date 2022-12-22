@@ -21,7 +21,7 @@ service.banner.search = Find a claim
 #===================================================
 search.title=Search for a claim
 search.error=Please enter a valid input
-search.desc=Search by case reference number or movement reference number (MRN)
+search.desc=Search by claim reference number
 search.button=Search
 
 
@@ -50,11 +50,11 @@ view-upload.closed.link=View closed claims
 view-upload.no-claims.p1 = You have no claims to view.
 view-upload.no-claims.p2 = It can take up to 24 hours for new claims to appear.
 
-claim.detail.title = Case reference {0}
+claim.detail.title = Claim reference {0}
 claim.detail.p1 = Claim details:
-claim.detail.p1.case.inProgress = Claim details: This claim is open and being reviewed by HMRC.
-claim.detail.p1.case.closed = Claim details:  This claim has been closed
-claim.detail.p1.case.pending = Claim details: This claim requires additional information or documentation.
+claim.detail.p1.claim.inProgress = Claim details: This claim is open and being reviewed by HMRC.
+claim.detail.p1.claim.closed = Claim details:  This claim has been closed
+claim.detail.p1.claim.pending = Claim details: This claim requires additional information or documentation.
 claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
 claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
@@ -138,7 +138,7 @@ claim.list.table.heading = All claims
 claim.list.scty = Security deposit or guarantee
 claim.list.ndrc = Overpayment or rejected goods
 
-claim.list.table.heading.case = Case reference
+claim.list.table.heading.claim = Claim reference
 claim.list.table.heading.start = Claim start date
 claim.list.table.heading.mrn = MRN
 claim.list.table.heading.type = Type of claim
@@ -155,13 +155,13 @@ claim.list.table.progress = Sorted by closest claim start date.
 #===================================================
 
 claim.search.title=Find a claim
-claim.search.inset=Search by case reference number or movement reference number (MRN)
+claim.search.inset=Search by claim reference number
 
 claim.search.result.title=Your search returned
 claim.search.result.fail.title=There are no matching results for {0}.
 claim.search.result.fail.hint=Try searching again by:
-claim.search.result.fail.bullet=double-checking your case reference or MRN
-claim.search.result.case=Case reference
+claim.search.result.fail.bullet=double-checking your claim reference or MRN
+claim.search.result.claim=Claim reference
 claim.search.result.mrn=MRN
 claim.search.result.type=Claim type
 claim.search.result.status=Claim status
@@ -170,12 +170,12 @@ claim.search.result.pending=Pending
 claim.search.result.in-progress=In Progress
 
 #===================================================
-#  CASE STATUS
+#  CLAIM STATUS
 #===================================================
 
-case.pending = Pending
-case.inProgress = In progress
-case.closed = Closed
+claim.pending = Pending
+claim.inProgress = In progress
+claim.closed = Closed
 
 # Date Format
 # ------------------------------------------------------------------------
