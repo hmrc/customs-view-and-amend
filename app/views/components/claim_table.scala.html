@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
-
+@import views.html.components.claimListRows
 @this(claimListRows: claimListRows, h2: components.h2)
+
 
 @(claims: Seq[Claim], claimType: ClaimStatus)(implicit messages: Messages)
 
 <table class="govuk-table">
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
-			<th>@messages("claim.list.table.heading.case")</th>
+			<th>@messages("claim.list.table.heading.claim")</th>
 			<th>@messages("claim.list.table.heading.mrn")</th>
       <th>@messages("claim.list.table.heading.type")</th>
 			@{ claimType match {

@@ -27,7 +27,7 @@
 @(claims: Seq[Claim] = Seq.empty, query: Option[String] = None)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim.search"}
 
-@layout(pageTitle = Some(messages("claim.search.title")), fullWidth = true) {
+@layout(pageTitle = Some(messages(s"$key.title")), fullWidth = true) {
 
     @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false)
 

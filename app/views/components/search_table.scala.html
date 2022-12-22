@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *@
+@import views.html.components.claimListRows
 
 @this(claimListRows: claimListRows, h2: components.h2)
 
@@ -23,7 +24,7 @@
 <table class="govuk-table">
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
-			<th>@messages(s"$key.case")</th>
+			<th>@messages(s"$key.claim")</th>
 			<th>@messages(s"$key.mrn")</th>
             <th>@messages(s"$key.type")</th>
             <th>@messages(s"$key.status")</th>
