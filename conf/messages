@@ -98,7 +98,7 @@ claim.detail.reasonForSecurity.TA3=Temporary Admissions (3 months Expiration)
 claim.detail.reasonForSecurity.TA2=Temporary Admissions (2 months Expiration)
 
 claim.upload.confirmation.h1 = Claim amendment sent
-claim.upload.confirmation.case = Case reference
+claim.upload.confirmation.case = Claim reference
 claim.upload.confirmation.h2 = What happens next?
 claim.upload.confirmation.p1 = Your claim amendment will be reviewed by HMRC and we will aim to email or write a letter to you to tell you the outcome within 30 working days. We will contact you to either:
 claim.upload.confirmation.li.1 = confirm your claim and bank transfer
