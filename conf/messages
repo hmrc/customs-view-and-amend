@@ -65,12 +65,12 @@ claim.detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
 claim.detail.link.file-upload=File upload
 
 claim.detail.type = Claim type
-claim.detail.type.multiple.C285 = Overpayments (C285) </br> Multiple declarations
-claim.detail.type.single.C285 = Overpayments (C285) </br> Single declaration
-claim.detail.type.C285 = Overpayments (C285)
-claim.detail.type.multiple.CE1179 = Rejected imports (C&E1179) </br> Multiple declarations
-claim.detail.type.single.CE1179 = Rejected imports (C&E1179) </br> Single declaration
-claim.detail.type.CE1179 = Rejected imports (C&E1179)
+claim.detail.type.multiple.C285 = Overpayment (C285) </br> Multiple declarations
+claim.detail.type.single.C285 = Overpayment (C285) </br> Single declaration
+claim.detail.type.C285 = Overpayment (C285)
+claim.detail.type.multiple.CE1179 = Rejected goods (C&E1179) </br> Multiple declarations
+claim.detail.type.single.CE1179 = Rejected goods (C&E1179) </br> Single declaration
+claim.detail.type.CE1179 = Rejected goods (C&E1179)
 claim.detail.type.security = Security deposit or guarantee
 
 claim.detail.status = Claim status
