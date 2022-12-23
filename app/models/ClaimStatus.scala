@@ -25,7 +25,7 @@ sealed trait ClaimStatus {
 case object InProgress extends ClaimStatus {
   val messageKey = "claim.inProgress"
 }
-// Add github ssh
+
 case object Pending extends ClaimStatus {
   val messageKey = "claim.pending"
 }
