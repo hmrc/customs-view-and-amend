@@ -25,16 +25,12 @@
 
 @(claimNumber: String, verifiedEmail: Option[String])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim.list.progress.title")), navigationBannerEnabled = false) {
+@layout(pageTitle = Some(messages("claim.list.progress.title")), navigationBannerEnabled = false, fullWidth = false) {
     @confirmation(claimNumber)
-    
-    @verifiedEmail.map{ email =>
-        @p(messages("claim.upload.confirmation.email", email))
-        @p("claim.upload.confirmation.email.description")
-    }
 
     @h2("claim.upload.confirmation.h2")
     @p("claim.upload.confirmation.p1")
     @ul("claim.upload.confirmation.li.1", "claim.upload.confirmation.li.2", "claim.upload.confirmation.li.3")
-    @p("claim.upload.confirmation.close")
+
+    @link("claim.upload.confirmation.return-home", controllers.routes.ClaimsOverviewController.show.url, pWrapped = false)
 }

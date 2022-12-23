@@ -31,7 +31,7 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
   lazy val claimServiceUrl: String          = config.get[String]("urls.claimService")
   lazy val signOutUrl: String               = config.get[String]("urls.signOut")
   lazy val feedbackService                  = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
-    config.getOptional[String]("feedback.source").getOrElse("/CDS-FIN")
+    config.getOptional[String]("feedback.source").getOrElse("/CDSRC")
   lazy val contactFrontendServiceId: String = config.get[String]("contact-frontend.serviceId")
 
   lazy val helpMakeGovUkBetterUrl: String = config.get[String]("urls.helpMakeGovUkBetterUrl")

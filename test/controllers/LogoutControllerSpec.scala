@@ -33,7 +33,7 @@ class LogoutControllerSpec extends SpecBase {
         val result = route(app, request).value
         redirectLocation(
           result
-        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=https%3A%2F%2Fwww.development.tax.service.gov.uk%2Ffeedback%2FCDS-FIN"
+        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=https%3A%2F%2Fwww.development.tax.service.gov.uk%2Ffeedback%2FCDSRC"
       }
     }
   }
