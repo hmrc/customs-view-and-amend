@@ -33,9 +33,9 @@ object UploadDocumentsWrapper {
     documentType: FileSelection,
     previouslyUploaded: Seq[UploadedFile] = Seq.empty
   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
-    val continueUrl = controllers.routes.FileUploadCYAController.onPageLoad
-    val backLinkUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber).url
-    val callBack    = controllers.routes.FileUploadController.receiveUpscanCallback
+    val continueUrl       = controllers.routes.FileUploadCYAController.onPageLoad
+    val chooseFileTypeUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber).url
+    val callBackUrl       = controllers.routes.FileUploadController.receiveUpscanCallback
 
     UploadDocumentsWrapper(
       config = UploadDocumentsConfig(
@@ -44,9 +44,8 @@ object UploadDocumentsWrapper {
         maximumNumberOfFiles = Some(10),
         maximumFileSizeBytes = Some(1024 * 1024 * 9),
         continueUrl = s"${appConfig.selfUrl}$continueUrl",
-        backlinkUrl = s"${appConfig.selfUrl}$backLinkUrl",
-        callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBack",
-        continueAfterYesAnswerUrl = Some(s"${appConfig.selfUrl}$backLinkUrl"),
+        callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBackUrl",
+        continueAfterYesAnswerUrl = Some(s"${appConfig.selfUrl}$chooseFileTypeUrl"),
         cargo = UploadCargo(caseNumber),
         newFileDescription = documentType,
         allowedContentTypes = Some("image/jpeg,image/png,application/pdf"),

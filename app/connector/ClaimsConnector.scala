@@ -63,6 +63,12 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
         claims.collect { case e: ClosedClaim => e }
       )
     }
+    // $COVERAGE-OFF$
+    .recoverWith { case e =>
+      logger.error(s"Error while getting claims using CDFPay TPI01 request: $e")
+      Future.failed(e)
+    }
+  // $COVERAGE-ON$
 
   final def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
