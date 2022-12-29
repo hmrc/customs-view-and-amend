@@ -22,7 +22,6 @@ import play.api.libs.json.{Json, OFormat}
 case class UploadDocumentsConfig(
   nonce: Nonce,
   continueUrl: String,
-  backlinkUrl: String,
   callbackUrl: String,
   continueAfterYesAnswerUrl: Option[String] = None,
   continueWhenFullUrl: Option[String] = None,
