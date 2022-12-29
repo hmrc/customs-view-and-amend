@@ -57,10 +57,10 @@
 
     @if(allClaims.nonEmpty) {
         @card(
-            if(allClaims.pendingClaims.size > 1 || allClaims.pendingClaims.isEmpty){
-            messages(s"$key.more-information.title", allClaims.pendingClaims.size)
+            if(allClaims.pendingClaims.size == 1) {
+                messages(s"$key.more-information.singular.title")
             } else {
-            messages(s"$key.more-information.title", allClaims.pendingClaims.size)
+                messages(s"$key.more-information.plural.title", allClaims.pendingClaims.size)
             },
             messages(s"$key.more-information.desc"),
             allClaims.pendingClaims.nonEmpty,
@@ -70,10 +70,10 @@
         )
 
         @card(
-            if(allClaims.inProgressClaims.size > 1 || allClaims.inProgressClaims.isEmpty){
-                messages(s"$key.in-progress.title", allClaims.inProgressClaims.size)
+            if(allClaims.inProgressClaims.size == 1) {
+                messages(s"$key.in-progress.singular.title")
             } else {
-                messages(s"$key.in-progress.title", allClaims.inProgressClaims.size)
+                messages(s"$key.in-progress.plural.title", allClaims.inProgressClaims.size)
             },
             messages(s"$key.in-progress.desc"),
             allClaims.inProgressClaims.nonEmpty,
@@ -82,10 +82,10 @@
         )
 
         @card(
-            if(allClaims.closedClaims.size > 1 || allClaims.closedClaims.isEmpty){
-                messages(s"$key.closed.title", allClaims.closedClaims.size)
+            if(allClaims.closedClaims.size == 1) {
+                messages(s"$key.closed.singular.title")
             } else {
-                messages(s"$key.closed.title", allClaims.closedClaims.size)
+                messages(s"$key.closed.plural.title", allClaims.closedClaims.size)
             },
             messages(s"$key.closed.desc"),
             allClaims.closedClaims.nonEmpty,
