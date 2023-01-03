@@ -59,8 +59,6 @@ claim.detail.p1.claim.inProgress = Claim details: This claim is open and being r
 claim.detail.p1.claim.closed = Claim details:  This claim has been closed
 claim.detail.p1.claim.pending = Claim details: This claim requires additional information or documentation.
 claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
-claim.detail.first-mrn=First <abbr title="Movement reference number">MRN</abbr>
-claim.detail.other-mrn=Other <abbr title="Movement reference numbers">MRNs</abbr> included in this claim
 claim.detail.entry = Entry Number
 claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
 claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
