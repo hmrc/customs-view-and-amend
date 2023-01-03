@@ -101,7 +101,7 @@
     @hmrcLayout(
         userResearchBannerUrl = if(userResearchBanner) Some(appConfig.helpMakeGovUkBetterUrl) else None,
         pageTitle = fullPageTitle,
-        serviceUrl = Some(appConfig.claimServiceUrl),
+        serviceUrl = Some(appConfig.guidancePage),
         signOutUrl = Some(routes.LogoutController.logout.url),
         nonce = CSPNonce.get,
         mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
