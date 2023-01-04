@@ -53,7 +53,8 @@ case class NDRCCase(
       NDRCDetail.closedDate.map(DateTimeUtil.toDateTime),
       NDRCAmounts.totalClaimAmount,
       NDRCDetail.claimantName,
-      NDRCDetail.claimantEmailAddress
+      NDRCDetail.claimantEmailAddress,
+      mrnDetails = NDRCDetail.MRNDetails
     )
   }
 }
