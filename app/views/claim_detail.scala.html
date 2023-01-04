@@ -17,7 +17,7 @@
 @import config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukSummaryList
-@import models.responses.`C&E1179`
+@import models.responses.{`C&E1179`,ProcedureDetail}
 @import models.CaseType.Bulk
 @import models.CaseType.Individual
 
@@ -37,6 +37,26 @@
 
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
+@firstMrnRow = @{Some(SummaryListRow(
+Key(content = HtmlContent(messages(if(claimDetail.mrnDetails.isEmpty) "claim.detail.mrn" else "claim.detail.first-mrn")), classes = "govuk-!-width-one-half"),
+Value(content = HtmlContent(claimDetail.declarationId)),
+actions = None
+))}
+
+@multipleMrn = @{claimDetail.mrnDetails.map(mrns => {
+    val mrnList = mrns.foldLeft(new StringBuilder) { (acc: StringBuilder, elem: ProcedureDetail) =>
+        acc ++= elem.MRNNumber
+        acc ++= "<br/>"
+    }
+s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
+    SummaryListRow(
+        Key(content = HtmlContent(messages("claim.detail.other-mrn")), classes = "govuk-!-width-one-half"),
+        Value(content = HtmlContent(mrnList.toString)),
+        actions = None
+    )
+})}
+
+
 @layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber))) {
 
     @h1(messages("claim.detail.title", claimDetail.caseNumber))
@@ -45,11 +65,8 @@
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
         rows = Seq(
-            Some(SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.mrn")), classes = "govuk-!-width-one-half"),
-                Value(content = HtmlContent(claimDetail.declarationId)),
-                actions = None
-            )),
+            firstMrnRow,
+            multipleMrn,
             claimDetail.lrn.map { lrn =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.lrn"))),
