@@ -33,7 +33,7 @@ object UploadDocumentsWrapper {
     documentType: FileSelection,
     previouslyUploaded: Seq[UploadedFile] = Seq.empty
   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
-    val continueUrl       = controllers.routes.FileUploadCYAController.onPageLoad
+    val continueUrl       = controllers.routes.FileUploadCYAController.onSubmit
     val chooseFileTypeUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber).url
     val callBackUrl       = controllers.routes.FileUploadController.receiveUpscanCallback
 

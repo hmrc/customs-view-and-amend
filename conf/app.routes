@@ -15,7 +15,7 @@ GET         /choose-file-type/:claim                              controllers.Fi
 POST        /choose-file-type                                     controllers.FileSelectionController.onSubmit
 
 GET         /upload-check-your-answers                            controllers.FileUploadCYAController.onPageLoad
-POST        /upload-confirmation                                  controllers.FileUploadCYAController.onSubmit
+GET         /upload-confirmation                                  controllers.FileUploadCYAController.onSubmit
 GET         /upload-confirmation                                  controllers.FileUploadCYAController.onConfirmationReload
 
 

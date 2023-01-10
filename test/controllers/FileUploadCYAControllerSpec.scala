@@ -76,7 +76,7 @@ class FileUploadCYAControllerSpec extends SpecBase {
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
-        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
         val result  = route(app, request).value
 
         status(result) shouldBe OK
@@ -85,7 +85,7 @@ class FileUploadCYAControllerSpec extends SpecBase {
 
     "redirect back to claims overview if file upload journey to found" in new Setup {
       running(app) {
-        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
         val result  = route(app, request).value
         status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
@@ -104,7 +104,7 @@ class FileUploadCYAControllerSpec extends SpecBase {
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
-        val request = fakeRequest(POST, routes.FileUploadCYAController.onSubmit.url)
+        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
         val result  = route(app, request).value
 
         an[Exception] shouldBe thrownBy {
