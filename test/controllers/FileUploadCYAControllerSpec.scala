@@ -114,18 +114,6 @@ class FileUploadCYAControllerSpec extends SpecBase {
     }
   }
 
-  "onConfirmationReload" should {
-    "redirect back to claims overview" in new Setup {
-      running(app) {
-        val request = fakeRequest(GET, routes.FileUploadCYAController.onConfirmationReload.url)
-        val result  = route(app, request).value
-
-        status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
-      }
-    }
-  }
-
   trait Setup extends SetupBase {
 
     val mockFileSubmissionConnector  = mock[FileSubmissionConnector]

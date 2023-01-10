@@ -16,7 +16,6 @@ POST        /choose-file-type                                     controllers.Fi
 
 GET         /upload-check-your-answers                            controllers.FileUploadCYAController.onPageLoad
 GET         /upload-confirmation                                  controllers.FileUploadCYAController.onSubmit
-GET         /upload-confirmation                                  controllers.FileUploadCYAController.onConfirmationReload
 
 
 +nocsrf
