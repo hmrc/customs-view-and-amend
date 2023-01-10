@@ -88,9 +88,4 @@ class FileUploadCYAController @Inject() (
               throw new Exception("File upload submission has failed.")
       }
     }
-
-  val onConfirmationReload: Action[AnyContent] =
-    authenticate { _ =>
-      Redirect(routes.ClaimsOverviewController.show)
-    }
 }
