@@ -27,10 +27,10 @@ class LogoutController @Inject() (appConfig: AppConfig, mcc: MessagesControllerC
     extends FrontendController(mcc) {
 
   final val logout: Action[AnyContent] = Action {
-    Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.feedbackService)))
+    Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.claimServiceUrl.concat("sign-out"))))
   }
 
   final val logoutNoSurvey: Action[AnyContent] = Action {
-    Redirect(appConfig.signOutUrl)
+    Redirect(appConfig.signOutUrl, Map("continue" -> Seq(appConfig.claimServiceUrl.concat("sign-out"))))
   }
 }
