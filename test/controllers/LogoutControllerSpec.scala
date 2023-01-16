@@ -26,25 +26,25 @@ import utils.SpecBase
 class LogoutControllerSpec extends SpecBase {
 
   "LogoutController logout" should {
-    "redirect to feedback survey page" in new Setup {
+    "redirect to sign out page" in new Setup {
       val request: FakeRequest[AnyContentAsEmpty.type] =
         fakeRequest(GET, routes.LogoutController.logout.url).withHeaders("X-Session-Id" -> "someSession")
       running(app) {
         val result = route(app, request).value
         redirectLocation(
           result
-        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=https%3A%2F%2Fwww.development.tax.service.gov.uk%2Ffeedback%2FCDSRC"
+        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
       }
     }
   }
 
   "LogoutController logout no survey" should {
-    "redirect to sign-out with the continue as the financials homepage" in new Setup {
+    "redirect to sign-out" in new Setup {
       running(app) {
         val request =
           fakeRequest(GET, routes.LogoutController.logoutNoSurvey.url).withHeaders("X-Session-Id" -> "someSession")
         val result  = route(app, request).value
-        redirectLocation(result).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state"
+        redirectLocation(result).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
       }
     }
   }
