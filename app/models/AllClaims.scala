@@ -29,8 +29,7 @@ case class AllClaims(
   /** Searches for a claim based on the user's query */
   def searchForClaim(query: String): Seq[Claim] = {
     val predicate: Claim => Boolean = claim =>
-      claim.caseNumber.toUpperCase == query.toUpperCase ||
-        claim.declarationId.toUpperCase == query.toUpperCase
+      query.equalsIgnoreCase(claim.caseNumber)
 
     pendingClaims.filter(predicate) ++
       inProgressClaims.filter(predicate) ++
