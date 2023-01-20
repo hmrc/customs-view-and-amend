@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction, ModifySessionAction}
+import actions.{CallbackAction, EmailAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.UploadDocumentsConnector
 import models.FileUploadJourney
@@ -33,6 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FileUploadController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
+  authenticateCallback: CallbackAction,
   verifyEmail: EmailAction,
   modifySessionAction: ModifySessionAction,
   uploadDocumentsConnector: UploadDocumentsConnector,
@@ -75,7 +76,7 @@ class FileUploadController @Inject() (
     }
 
   final val receiveUpscanCallback: Action[UploadedFileMetadata] =
-    (authenticate andThen modifySessionAction)
+    (authenticateCallback andThen modifySessionAction)
       .async(parse.json[UploadedFileMetadata]) { case (request, session) =>
         implicit val r                         = request
         val notification: UploadedFileMetadata = request.body
