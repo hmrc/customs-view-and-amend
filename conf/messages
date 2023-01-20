@@ -165,8 +165,7 @@ claim.search.inset=Search by claim reference number
 
 claim.search.result.title=Your search returned
 claim.search.result.fail.title=There are no matching results for {0}.
-claim.search.result.fail.hint=Try searching again by:
-claim.search.result.fail.bullet=double-checking your claim reference or MRN
+claim.search.result.fail.hint=Check your claim reference number and search again
 claim.search.result.claim=Claim reference
 claim.search.result.mrn=MRN
 claim.search.result.type=Claim type
