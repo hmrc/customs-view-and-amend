@@ -16,25 +16,17 @@
 
 package controllers
 
-import connector.UploadDocumentsConnector
+import models.{AllClaims, FileSelection, InProgressClaim, NDRC, PendingClaim, SessionData}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
 import play.api.i18n.Messages
 import play.api.test.Helpers._
-import play.api.{Application, inject}
+import repositories.SessionCache
+import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.SpecBase
 
-import repositories.SessionCache
-import models.SessionData
-import uk.gov.hmrc.http.HeaderCarrier
-import models.InProgressClaim
-import models.NDRC
 import java.time.LocalDate
-import models.AllClaims
-import uk.gov.hmrc.http.SessionId
 import java.util.UUID
-import models.PendingClaim
-import scala.concurrent.Future
-import models.FileSelection
 
 class FileSelectionControllerSpec extends SpecBase {
   implicit val messages: Messages = stubMessages()
@@ -52,13 +44,10 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "return OK on a successful returning request with same case number" in new Setup {
       running(app) {
-        await(
-          sessionCache.store(
-            SessionData(Some(allClaimsWithPending))
-              .withInitialFileUploadData("claim-123")
-              .withDocumentType(FileSelection.CalculationWorksheet)
-          )
-        ) shouldBe Right(())
+        val session = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withDocumentType(FileSelection.CalculationWorksheet)
+        await(sessionCache.store(session)) shouldBe Right(())
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
@@ -81,6 +70,19 @@ class FileSelectionControllerSpec extends SpecBase {
       }
     }
 
+    "return OK with fresh journey if previous already submitted" in new Setup {
+      running(app) {
+        val session = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withSubmitted
+        await(sessionCache.store(session)) shouldBe Right(())
+        val request =
+          fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
+        val result  = route(app, request).value
+        status(result) mustBe OK
+      }
+    }
+
     "redirect back to the claim details if the claim is not found" in new Setup {
       running(app) {
         val request =
@@ -93,7 +95,8 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "redirect back to the claim details if not pending claim" in new Setup {
       running(app) {
-        await(sessionCache.store(SessionData(Some(allClaimsWithInProgress)))) shouldBe Right(())
+        val session = SessionData(Some(allClaimsWithInProgress))
+        await(sessionCache.store(session)) shouldBe Right(())
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
@@ -105,9 +108,6 @@ class FileSelectionControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "return OK on a successful request" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(Some("/url")))
-
       val sessionData = SessionData(Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
 
@@ -120,7 +120,7 @@ class FileSelectionControllerSpec extends SpecBase {
           )
         val result  = route(app, request).value
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/url"
+        redirectLocation(result).value mustBe routes.FileUploadController.chooseFiles.url
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
@@ -128,9 +128,6 @@ class FileSelectionControllerSpec extends SpecBase {
     }
 
     "return OK on a successful request if file upload url not returned" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(None))
-
       val sessionData = SessionData(Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
 
@@ -143,7 +140,7 @@ class FileSelectionControllerSpec extends SpecBase {
           )
         val result  = route(app, request).value
         status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/choose-files"
+        redirectLocation(result).value mustBe routes.FileUploadController.chooseFiles.url
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
@@ -180,16 +177,28 @@ class FileSelectionControllerSpec extends SpecBase {
         redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status")
       }
     }
+
+    "redirect to the confirmation page if already submitted" in new Setup {
+      running(app) {
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withSubmitted
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request =
+          fakeRequest(POST, routes.FileSelectionController.onSubmit.url)
+            .withFormUrlEncodedBody("value" -> "proof-of-authority")
+
+        val result = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.FileSubmissionController.showConfirmation.url)
+      }
+    }
   }
 
   trait Setup extends SetupBase {
-    val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
 
-    val app: Application = applicationWithMongoCache
-      .overrides(
-        inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
-      )
-      .build()
+    val app: Application = applicationWithMongoCache.build()
 
     def sessionCache = app.injector.instanceOf[SessionCache]
 

@@ -20,7 +20,8 @@ import actions.{EmailAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.UploadDocumentsConnector
 import forms.FileSelectionForm
-import models.{FileSelection, SessionData}
+import forms.FormUtils._
+import models.{FileSelection, FileUploadJourney, SessionData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
 import play.api.mvc._
@@ -29,10 +30,7 @@ import views.html.errors.not_found
 import views.html.file_selection
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
-import scala.concurrent.Future
-import models.FileUploadJourney
-import forms.FormUtils._
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class FileSelectionController @Inject() (
@@ -78,29 +76,27 @@ class FileSelectionController @Inject() (
         case None =>
           Future.successful(Redirect(routes.ClaimsOverviewController.show))
 
-        case Some(FileUploadJourney(claim, _, previouslyUploaded, nonce)) =>
-          val form: Form[FileSelection] = FileSelectionForm.form
-          form
-            .bindFromRequest()
-            .fold(
-              formWithErrors =>
-                Future.successful(
-                  BadRequest(
-                    fileSelection(formWithErrors, claim.serviceType, claim.caseNumber, FileSelection.options(form))
-                  )
-                ),
-              documentType =>
-                for {
-                  _                 <- session.update(_.withDocumentType(documentType))
-                  chooseFilesUrlOpt <-
-                    uploadDocumentsConnector
-                      .startFileUpload(nonce, claim.caseNumber, claim.serviceType, documentType, previouslyUploaded)
-                } yield Redirect(
-                  s"${appConfig.fileUploadPublicUrl}${chooseFilesUrlOpt.getOrElse("/choose-files")}"
-                )
-            )
-
+        case Some(FileUploadJourney(claim, _, previouslyUploaded, nonce, submitted)) =>
+          if (submitted)
+            Future.successful(Redirect(routes.FileSubmissionController.showConfirmation))
+          else {
+            val form: Form[FileSelection] = FileSelectionForm.form
+            form
+              .bindFromRequest()
+              .fold(
+                formWithErrors =>
+                  Future.successful(
+                    BadRequest(
+                      fileSelection(formWithErrors, claim.serviceType, claim.caseNumber, FileSelection.options(form))
+                    )
+                  ),
+                documentType =>
+                  session.update(_.withDocumentType(documentType)).map { _ =>
+                    Redirect(routes.FileUploadController.chooseFiles)
+                  }
+              )
+          }
       }
-
     }
+
 }

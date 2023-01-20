@@ -17,16 +17,17 @@
 package models
 
 import cats.Eq
-import play.api.libs.json.Json
-import play.api.libs.json.Format
-import models.file_upload.UploadedFile
 import models.Nonce
+import models.file_upload.UploadedFile
+import play.api.libs.json.{Format, Json}
 
 final case class SessionData(claims: Option[AllClaims] = None, fileUploadJourney: Option[FileUploadJourney] = None) {
 
   def withInitialFileUploadData(caseNumber: String): SessionData =
     fileUploadJourney match {
-      case Some(value) if value.claim.caseNumber == caseNumber =>
+      case Some(value)
+          if value.claim.caseNumber == caseNumber &&
+            !value.submitted =>
         this
 
       case _ =>
@@ -50,8 +51,11 @@ final case class SessionData(claims: Option[AllClaims] = None, fileUploadJourney
         .map(_.copy(previouslyUploaded = uploadedFiles))
     )
 
-  def clearFileUploadJourney: SessionData =
-    copy(fileUploadJourney = None)
+  def withSubmitted: SessionData =
+    copy(fileUploadJourney =
+      fileUploadJourney
+        .map(_.copy(submitted = true))
+    )
 
 }
 
@@ -64,7 +68,8 @@ final case class FileUploadJourney(
   claim: PendingClaim,
   documentType: Option[FileSelection] = None,
   previouslyUploaded: Seq[UploadedFile] = Seq.empty,
-  nonce: Nonce = Nonce.random
+  nonce: Nonce = Nonce.random,
+  submitted: Boolean = false
 )
 
 object FileUploadJourney {

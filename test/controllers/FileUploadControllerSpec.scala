@@ -19,7 +19,7 @@ package controllers
 import models.file_upload.{UploadCargo, UploadedFileMetadata}
 import models.{Nonce, _}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.Application
+import play.api.{Application, inject}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import repositories.SessionCache
@@ -28,8 +28,102 @@ import utils.SpecBase
 
 import java.time.LocalDate
 import java.util.UUID
+import connector.UploadDocumentsConnector
+import scala.concurrent.Future
+import models.file_upload.UploadedFile
 
 class FileUploadControllerSpec extends SpecBase {
+
+  "chooseFiles" should {
+    "initialize file upload service and redirect to the returned url" in new Setup {
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
+        .thenReturn(Future.successful(Some("/url")))
+
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+        .withDocumentType(FileSelection.AirwayBill)
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe "http://localhost:10110/url"
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+
+    "initialize file upload service and redirect to the default url if missing" in new Setup {
+      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
+        .thenReturn(Future.successful(None))
+
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+        .withDocumentType(FileSelection.AirwayBill)
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe "http://localhost:10110/choose-files"
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+
+    "redirect to the confirmation page if already submitted" in new Setup {
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+        .withDocumentType(FileSelection.AirwayBill)
+        .withSubmitted
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe routes.FileSubmissionController.showConfirmation.url
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+
+    "redirect to the file type selection page if nothing has been selected before" in new Setup {
+      val sessionData = SessionData(Some(allClaimsWithPending))
+        .withInitialFileUploadData("claim-123")
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe routes.FileSelectionController.onPageLoad("claim-123").url
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+
+    "redirect to the claims overview if file upload not initialized before" in new Setup {
+      val sessionData = SessionData(Some(allClaimsWithPending))
+
+      await(sessionCache.store(sessionData)) shouldBe Right(())
+
+      running(app) {
+        val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result).value mustBe routes.ClaimsOverviewController.show.url
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+  }
 
   "receiveUpscanCallback" should {
     "return NO_CONTENT when valid callback" in new Setup {
@@ -41,11 +135,38 @@ class FileUploadControllerSpec extends SpecBase {
         val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
           .withJsonBody(
             Json.toJson(
+              UploadedFileMetadata(
+                sessionData.fileUploadJourney.get.nonce,
+                uploadedFiles,
+                Some(UploadCargo("NDRC-1000"))
+              )
+            )
+          )
+        val result  = route(app, request).value
+        status(result) mustBe NO_CONTENT
+
+        await(sessionCache.get()) shouldBe
+          Right(Some(sessionData.withUploadedFiles(uploadedFiles)))
+      }
+    }
+
+    "return NO_CONTENT when already submitted" in new Setup {
+      running(app) {
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withSubmitted
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
+          .withJsonBody(
+            Json.toJson(
               UploadedFileMetadata(sessionData.fileUploadJourney.get.nonce, Seq.empty, Some(UploadCargo("NDRC-1000")))
             )
           )
         val result  = route(app, request).value
         status(result) mustBe NO_CONTENT
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
     }
 
@@ -98,7 +219,14 @@ class FileUploadControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app: Application = applicationWithMongoCache.build()
+    val mockUploadDocumentsConnector: UploadDocumentsConnector =
+      mock[UploadDocumentsConnector]
+
+    val app: Application = applicationWithMongoCache
+      .overrides(
+        inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
+      )
+      .build()
 
     def sessionCache = app.injector.instanceOf[SessionCache]
 
@@ -122,5 +250,21 @@ class FileUploadControllerSpec extends SpecBase {
       inProgressClaims = Seq.empty,
       closedClaims = Seq.empty
     )
+
+    val uploadedFiles: Seq[UploadedFile] =
+      Seq(
+        UploadedFile(
+          upscanReference = "upscanReference",
+          downloadUrl = "downloadUrl",
+          uploadTimestamp = "uploadTimestamp",
+          checksum = "checksum",
+          fileName = "fileName",
+          fileMimeType = "fileMimeType",
+          fileSize = 1,
+          cargo = None,
+          description = FileSelection.AdditionalSupportingDocuments,
+          previewUrl = Some("previewUrl")
+        )
+      )
   }
 }
