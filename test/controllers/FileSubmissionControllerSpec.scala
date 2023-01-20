@@ -16,12 +16,14 @@
 
 package controllers
 
-import play.api.inject.bind
 import config.AppConfig
+import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models.FileSelection.AdditionalSupportingDocuments
 import models.file_upload.UploadedFile
 import models.{AllClaims, NDRC, PendingClaim, SessionData}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
+import play.api.inject.bind
 import play.api.test.Helpers._
 import repositories.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
@@ -29,42 +31,13 @@ import utils.SpecBase
 
 import java.time.LocalDate
 import java.util.UUID
-import connector.FileSubmissionConnector
-import connector.UploadDocumentsConnector
 import scala.concurrent.Future
+import models.FileSelection
 
-class FileUploadCYAControllerSpec extends SpecBase {
+class FileSubmissionControllerSpec extends SpecBase {
 
-  "onPageLoad" should {
-    "return OK on a successful request" in new Setup {
-      running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
-          .withInitialFileUploadData("claim-123")
-          .withUploadedFiles(uploadedFiles)
-        await(sessionCache.store(sessionData)) shouldBe Right(())
-
-        val identifierRequest = fakeRequest(GET, routes.FileUploadCYAController.onPageLoad.url)
-        val result            = route(app, identifierRequest).value
-
-        status(result)                                                            shouldBe OK
-        contentAsString(result).contains("file name QWERTY")                      shouldBe true
-        contentAsString(result).contains("Other documents supporting your claim") shouldBe true
-      }
-    }
-
-    "redirect back to claims overview if file upload journey to found" in new Setup {
-      running(app) {
-        val request =
-          fakeRequest(GET, routes.FileUploadCYAController.onPageLoad.url)
-        val result  = route(app, request).value
-        status(result)           shouldBe SEE_OTHER
-        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
-      }
-    }
-  }
-
-  "onSubmit" should {
-    "return OK" in new Setup {
+  "submitFiles" should {
+    "submit file to CDFpay, clear upload service state and redirect to the confirmation page" in new Setup {
       when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
         .thenReturn(Future.successful(true))
       when(mockUploadDocumentsConnector.wipeData(any))
@@ -76,16 +49,37 @@ class FileUploadCYAControllerSpec extends SpecBase {
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
-        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
+        val request = fakeRequest(GET, routes.FileSubmissionController.submitFiles.url)
         val result  = route(app, request).value
 
-        status(result) shouldBe OK
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSubmissionController.showConfirmation.url
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData.withSubmitted))
       }
     }
 
-    "redirect back to claims overview if file upload journey to found" in new Setup {
+    "redirect straight to the confirmation page if already submitted" in new Setup {
       running(app) {
-        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
+        val sessionData = SessionData(Some(allClaimsWithPending))
+          .withInitialFileUploadData("claim-123")
+          .withUploadedFiles(uploadedFiles)
+          .withSubmitted
+        await(sessionCache.store(sessionData)) shouldBe Right(())
+
+        val request = fakeRequest(GET, routes.FileSubmissionController.submitFiles.url)
+        val result  = route(app, request).value
+
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSubmissionController.showConfirmation.url
+
+        await(sessionCache.get()) shouldBe Right(Some(sessionData))
+      }
+    }
+
+    "redirect back to claims overview if file upload journey not found" in new Setup {
+      running(app) {
+        val request = fakeRequest(GET, routes.FileSubmissionController.submitFiles.url)
         val result  = route(app, request).value
         status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
@@ -104,11 +98,55 @@ class FileUploadCYAControllerSpec extends SpecBase {
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
-        val request = fakeRequest(GET, routes.FileUploadCYAController.onSubmit.url)
+        val request = fakeRequest(GET, routes.FileSubmissionController.submitFiles.url)
         val result  = route(app, request).value
 
         an[Exception] shouldBe thrownBy {
           await(result)
+        }
+      }
+    }
+
+    "showConfirmation" should {
+      "return OK with confirmation page" in new Setup {
+        running(app) {
+          val session = SessionData(Some(allClaimsWithPending))
+            .withInitialFileUploadData("claim-123")
+            .withSubmitted
+          await(sessionCache.store(session)) shouldBe Right(())
+          val request =
+            fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
+          val result  = route(app, request).value
+          status(result) mustBe OK
+          await(sessionCache.get()) shouldBe Right(Some(session))
+        }
+      }
+
+      "redirect back to the claims overview page if file submission not available" in new Setup {
+        running(app) {
+          val session = SessionData(Some(allClaimsWithPending))
+          await(sessionCache.store(session)) shouldBe Right(())
+          val request =
+            fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
+          val result  = route(app, request).value
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.ClaimsOverviewController.show.url)
+          await(sessionCache.get()) shouldBe Right(Some(session))
+        }
+      }
+
+      "redirect back to the choose files page if files not yet submitted" in new Setup {
+        running(app) {
+          val session = SessionData(Some(allClaimsWithPending))
+            .withInitialFileUploadData("claim-123")
+            .withDocumentType(FileSelection.AdditionalSupportingDocuments)
+          await(sessionCache.store(session)) shouldBe Right(())
+          val request =
+            fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
+          val result  = route(app, request).value
+          status(result) mustBe SEE_OTHER
+          redirectLocation(result) mustBe Some(routes.FileUploadController.chooseFiles.url)
+          await(sessionCache.get()) shouldBe Right(Some(session))
         }
       }
     }

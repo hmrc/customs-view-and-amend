@@ -33,7 +33,8 @@ object UploadDocumentsWrapper {
     documentType: FileSelection,
     previouslyUploaded: Seq[UploadedFile] = Seq.empty
   )(implicit appConfig: AppConfig, messages: Messages): UploadDocumentsWrapper = {
-    val continueUrl       = controllers.routes.FileUploadCYAController.onSubmit
+    val claimsDatailsUrl  = controllers.routes.ClaimDetailController.claimDetail(caseNumber)
+    val continueUrl       = controllers.routes.FileSubmissionController.submitFiles
     val chooseFileTypeUrl = controllers.routes.FileSelectionController.onPageLoad(caseNumber).url
     val callBackUrl       = controllers.routes.FileUploadController.receiveUpscanCallback
 
@@ -46,6 +47,7 @@ object UploadDocumentsWrapper {
         continueUrl = s"${appConfig.selfUrl}$continueUrl",
         callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBackUrl",
         continueAfterYesAnswerUrl = Some(s"${appConfig.selfUrl}$chooseFileTypeUrl"),
+        sendoffUrl = Some(s"${appConfig.selfUrl}$claimsDatailsUrl"),
         cargo = UploadCargo(caseNumber),
         newFileDescription = documentType,
         allowedContentTypes = Some("image/jpeg,image/png,application/pdf"),
@@ -80,4 +82,5 @@ object UploadDocumentsWrapper {
 
   implicit val format: OFormat[UploadDocumentsWrapper] =
     Json.format[UploadDocumentsWrapper]
+
 }

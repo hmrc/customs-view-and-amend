@@ -9,20 +9,18 @@ GET         /claims-closed                                        controllers.Cl
 GET         /claim/:claim                                         controllers.ClaimDetailController.claimDetail(claim: String)
 GET         /verify-your-email                                    controllers.EmailController.showUnverified()
 
-
+GET         /find-a-claim                                         controllers.ClaimSearchController.onPageLoad
+POST        /find-a-claim                                         controllers.ClaimSearchController.onSubmit
 
 GET         /choose-file-type/:claim                              controllers.FileSelectionController.onPageLoad(claim: String)
 POST        /choose-file-type                                     controllers.FileSelectionController.onSubmit
 
-GET         /upload-check-your-answers                            controllers.FileUploadCYAController.onPageLoad
-GET         /amendment-submitted                                  controllers.FileUploadCYAController.onSubmit
-
-
+GET         /choose-files                                         controllers.FileUploadController.chooseFiles
 +nocsrf
 POST        /upscan-notification                                  controllers.FileUploadController.receiveUpscanCallback
 
-GET         /find-a-claim                                         controllers.ClaimSearchController.onPageLoad
-POST        /find-a-claim                                         controllers.ClaimSearchController.onSubmit
+GET         /submit-amendment                                     controllers.FileSubmissionController.submitFiles
+GET         /amendment-submitted                                  controllers.FileSubmissionController.showConfirmation
 
 GET         /logout-survey                                        controllers.LogoutController.logout
 GET         /logout                                               controllers.LogoutController.logoutNoSurvey

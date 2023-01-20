@@ -23,44 +23,29 @@ import models.{EntryNumber, FileUploadJourney}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import viewmodels.FileUploadCheckYourAnswersHelper
 import views.html.errors.not_found
-import views.html.{upload_check_your_answers, upload_confirmation}
+import views.html.upload_confirmation
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class FileUploadCYAController @Inject() (
+class FileSubmissionController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
   modifySessionAction: ModifySessionAction,
   fileSubmissionConnector: FileSubmissionConnector,
   uploadDocumentsConnector: UploadDocumentsConnector,
-  uploadDocumentsCheckYourAnswers: upload_check_your_answers,
   notFound: not_found,
   upload_confirmation: upload_confirmation
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  val actions = authenticate andThen verifyEmail andThen modifySessionAction
+  private val actions = authenticate andThen verifyEmail andThen modifySessionAction
 
-  val onPageLoad: Action[AnyContent] =
-    actions { case (request, session) =>
-      implicit val r = request
-      session.current.fileUploadJourney match {
-        case None =>
-          Redirect(routes.ClaimsOverviewController.show)
-
-        case Some(FileUploadJourney(claim, _, uploadedFiles, nonce)) =>
-          val helper = new FileUploadCheckYourAnswersHelper(uploadedFiles)
-          Ok(uploadDocumentsCheckYourAnswers(claim.caseNumber, claim.serviceType, helper))
-      }
-    }
-
-  val onSubmit: Action[AnyContent] =
+  final val submitFiles: Action[AnyContent] =
     actions.async { case (request, session) =>
       implicit val r = request
 
@@ -68,24 +53,48 @@ class FileUploadCYAController @Inject() (
         case None =>
           Future.successful(Redirect(routes.ClaimsOverviewController.show))
 
-        case Some(FileUploadJourney(claim, _, uploadedFiles, nonce)) =>
-          for {
-            successfullyUploaded <- fileSubmissionConnector
-                                      .submitFileToCDFPay(
-                                        claim.declarationId,
-                                        EntryNumber.isEntryNumber(claim.declarationId),
-                                        request.eori,
-                                        claim.serviceType,
-                                        claim.caseNumber,
-                                        uploadedFiles
-                                      )
-            _                    <- uploadDocumentsConnector.wipeData
-            _                    <- session.update(_.clearFileUploadJourney)
-          } yield
-            if (successfullyUploaded)
+        case Some(FileUploadJourney(claim, _, uploadedFiles, nonce, submitted)) =>
+          if (submitted)
+            Future.successful(
+              Redirect(routes.FileSubmissionController.showConfirmation)
+            )
+          else {
+            for {
+              successfullyUploaded <- fileSubmissionConnector
+                                        .submitFileToCDFPay(
+                                          claim.declarationId,
+                                          EntryNumber.isEntryNumber(claim.declarationId),
+                                          request.eori,
+                                          claim.serviceType,
+                                          claim.caseNumber,
+                                          uploadedFiles
+                                        )
+              _                    <- uploadDocumentsConnector.wipeData
+              _                    <- session.update(_.withSubmitted)
+            } yield
+              if (successfullyUploaded)
+                Redirect(routes.FileSubmissionController.showConfirmation)
+              else
+                throw new Exception("File upload submission has failed.")
+          }
+      }
+    }
+
+  final val showConfirmation: Action[AnyContent] =
+    actions.async { case (request, session) =>
+      implicit val r = request
+
+      session.current.fileUploadJourney match {
+        case None =>
+          Future.successful(Redirect(routes.ClaimsOverviewController.show))
+
+        case Some(FileUploadJourney(claim, _, _, _, submitted)) =>
+          Future.successful(
+            if (submitted)
               Ok(upload_confirmation(claim.caseNumber, request.verifiedEmail))
             else
-              throw new Exception("File upload submission has failed.")
+              Redirect(routes.FileUploadController.chooseFiles.url)
+          )
       }
     }
 }

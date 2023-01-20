@@ -26,6 +26,7 @@ case class UploadDocumentsConfig(
   continueAfterYesAnswerUrl: Option[String] = None,
   continueWhenFullUrl: Option[String] = None,
   continueWhenEmptyUrl: Option[String] = None,
+  sendoffUrl: Option[String] = None,
   minimumNumberOfFiles: Option[Int] = None,
   maximumNumberOfFiles: Option[Int] = None,
   initialNumberOfEmptyRows: Option[Int] = None,
