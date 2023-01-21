@@ -19,27 +19,29 @@ package models.file_upload
 import play.api.libs.json.{Json, OFormat}
 
 case class UploadDocumentsContent(
-                                   serviceName: Option[String] = None,
-                                   title: Option[String] = None,
-                                   descriptionHtml: Option[String] = None,
-                                   serviceUrl: Option[String] = None,
-                                   accessibilityStatementUrl: Option[String] = None,
-                                   phaseBanner: Option[String] = None,
-                                   phaseBannerUrl: Option[String] = None,
-                                   userResearchBannerUrl: Option[String] = None,
-                                   signOutUrl: Option[String] = None,
-                                   timedOutUrl: Option[String] = None,
-                                   keepAliveUrl: Option[String] = None,
-                                   timeoutSeconds: Option[Int] = None,
-                                   countdownSeconds: Option[Int] = None,
-                                   showLanguageSelection: Option[Boolean] = None,
-                                   pageTitleClasses: Option[String] = None,
-                                   allowedFilesTypesHint: Option[String] = None,
-                                   contactFrontendServiceId: Option[String] = None,
-                                   yesNoQuestionText: Option[String] = None,
-                                   yesNoQuestionRequiredError: Option[String] = None,
-                                   fileUploadedProgressBarLabel: Option[String] = None
-                                 )
+  serviceName: Option[String] = None,
+  title: Option[String] = None,
+  descriptionHtml: Option[String] = None,
+  serviceUrl: Option[String] = None,
+  accessibilityStatementUrl: Option[String] = None,
+  phaseBanner: Option[String] = None,
+  phaseBannerUrl: Option[String] = None,
+  userResearchBannerUrl: Option[String] = None,
+  signOutUrl: Option[String] = None,
+  timedOutUrl: Option[String] = None,
+  keepAliveUrl: Option[String] = None,
+  timeoutSeconds: Option[Int] = None,
+  countdownSeconds: Option[Int] = None,
+  showLanguageSelection: Option[Boolean] = None,
+  pageTitleClasses: Option[String] = None,
+  allowedFilesTypesHint: Option[String] = None,
+  contactFrontendServiceId: Option[String] = None,
+  yesNoQuestionText: Option[String] = None,
+  yesNoQuestionRequiredError: Option[String] = None,
+  fileUploadedProgressBarLabel: Option[String] = None,
+  chooseFirstFileLabel: Option[String] = None,
+  chooseNextFileLabel: Option[String] = None
+)
 
 object UploadDocumentsContent {
   implicit val format: OFormat[UploadDocumentsContent] = Json.format[UploadDocumentsContent]

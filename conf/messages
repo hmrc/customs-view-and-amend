@@ -301,12 +301,13 @@ file.selection.error.required = Select which type of document you are uploading
 # ----------------------------------------------------------
 
 
-file.upload.yes-no-question-text = Add a different type of supporting evidence to your claim?
+file.upload.yes-no-question-text = h2.Add a different type of supporting evidence to your claim?
 file.upload.yes-no-question-required-error = Select yes to add a different type of supporting document to your claim
 file.upload.allowed-file-types-hint = The selected file must be a JPG, PNG or PDF
 file.upload.progress-bar-label = Uploaded
 file.upload.description = <p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>
 file.upload.title = Upload {0}
+file.upload.another-upload-label = Upload another {0}
 
 file.upload.cya.title = Check your documents before sending
 file.upload.cya.h2 = Uploaded documents

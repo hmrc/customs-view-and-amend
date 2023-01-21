@@ -66,7 +66,9 @@ object UploadDocumentsWrapper {
             yesNoQuestionText = Some(messages("file.upload.yes-no-question-text")),
             yesNoQuestionRequiredError = Some(messages("file.upload.yes-no-question-required-error")),
             allowedFilesTypesHint = Some(messages("file.upload.allowed-file-types-hint")),
-            fileUploadedProgressBarLabel = Some(messages("file.upload.progress-bar-label"))
+            fileUploadedProgressBarLabel = Some(messages("file.upload.progress-bar-label")),
+            chooseFirstFileLabel = Some(""),
+            chooseNextFileLabel = Some(messages("file.upload.another-upload-label", documentType.message.toLowerCase))
           )
         ),
         features = Some(
