@@ -26,12 +26,12 @@ sealed trait Claim extends DateFormatters with ServiceTypeFormatters {
   val caseNumber: String
   val declarationId: String
   val serviceType: ServiceType
-  val claimStartDate: LocalDate
+  val claimStartDate: Option[LocalDate]
   val lrn: Option[String]
   val claimStatus: ClaimStatus
-  def url: String                                                 = controllers.routes.ClaimDetailController.claimDetail(caseNumber).url
-  def formattedStartDate()(implicit messages: Messages): String   = dateAsDayMonthAndYear(claimStartDate)
-  def formattedServiceType()(implicit messages: Messages): String = serviceTypeAsMessage(serviceType)
+  def url: String                                                       = controllers.routes.ClaimDetailController.claimDetail(caseNumber).url
+  def formattedStartDate()(implicit messages: Messages): Option[String] = claimStartDate.map(dateAsDayMonthAndYear)
+  def formattedServiceType()(implicit messages: Messages): String       = serviceTypeAsMessage(serviceType)
 }
 
 object Claim {
@@ -42,7 +42,7 @@ case class InProgressClaim(
   caseNumber: String,
   serviceType: ServiceType,
   lrn: Option[String],
-  claimStartDate: LocalDate
+  claimStartDate: Option[LocalDate]
 ) extends Claim {
   override val claimStatus: ClaimStatus = InProgress
 }
@@ -56,8 +56,8 @@ case class PendingClaim(
   caseNumber: String,
   serviceType: ServiceType,
   lrn: Option[String],
-  claimStartDate: LocalDate,
-  respondByDate: LocalDate
+  claimStartDate: Option[LocalDate],
+  respondByDate: Option[LocalDate]
 ) extends Claim {
   // TODO: Removed the respond by date until secure messaging timestamp available
   // def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)
@@ -73,7 +73,7 @@ case class ClosedClaim(
   caseNumber: String,
   serviceType: ServiceType,
   lrn: Option[String],
-  claimStartDate: LocalDate,
+  claimStartDate: Option[LocalDate],
   removalDate: LocalDate,
   caseSubStatus: String
 ) extends Claim {

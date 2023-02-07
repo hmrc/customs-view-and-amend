@@ -66,7 +66,7 @@ class ClaimListControllerSpec extends SpecBase {
         s"NDRC-${1000 + value}",
         NDRC,
         None,
-        LocalDate.of(2021, 2, 1).plusDays(value),
+        Some(LocalDate.of(2021, 2, 1).plusDays(value)),
         LocalDate.of(2022, 1, 1).plusDays(value),
         "Closed"
       )
@@ -77,12 +77,12 @@ class ClaimListControllerSpec extends SpecBase {
         s"NDRC-${2000 + value}",
         NDRC,
         None,
-        LocalDate.of(2021, 2, 1).plusDays(value),
-        LocalDate.of(2022, 1, 1).plusDays(value)
+        Some(LocalDate.of(2021, 2, 1).plusDays(value)),
+        Some(LocalDate.of(2022, 1, 1).plusDays(value))
       )
     }
     val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
-      InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value))
+      InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, Some(LocalDate.of(2021, 2, 1).plusDays(value)))
     }
 
     val allClaims: AllClaims = AllClaims(

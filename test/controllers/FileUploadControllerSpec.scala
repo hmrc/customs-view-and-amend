@@ -243,8 +243,8 @@ class FileUploadControllerSpec extends SpecBase {
           "claim-123",
           NDRC,
           None,
-          LocalDate.of(2021, 2, 1),
-          LocalDate.of(2022, 1, 1)
+          Some(LocalDate.of(2021, 2, 1)),
+          Some(LocalDate.of(2021, 2, 1))
         )
       ),
       inProgressClaims = Seq.empty,

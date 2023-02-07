@@ -46,11 +46,13 @@ class ClaimsOverviewControllerSpec extends SpecBase {
   trait Setup extends SetupBase {
 
     val allClaims: AllClaims = AllClaims(
-      pendingClaims =
-        Seq(PendingClaim("MRN", "NDRC-0001", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1))),
-      inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, LocalDate.of(2019, 1, 1))),
-      closedClaims =
-        Seq(ClosedClaim("MRN", "NDRC-0003", NDRC, None, LocalDate.of(2019, 1, 1), LocalDate.of(2019, 2, 1), "Closed"))
+      pendingClaims = Seq(
+        PendingClaim("MRN", "NDRC-0001", NDRC, None, Some(LocalDate.of(2019, 1, 1)), Some(LocalDate.of(2019, 2, 1)))
+      ),
+      inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, Some(LocalDate.of(2019, 1, 1)))),
+      closedClaims = Seq(
+        ClosedClaim("MRN", "NDRC-0003", NDRC, None, Some(LocalDate.of(2019, 1, 1)), LocalDate.of(2019, 2, 1), "Closed")
+      )
     )
 
     val app: Application = applicationWithMongoCache.build()

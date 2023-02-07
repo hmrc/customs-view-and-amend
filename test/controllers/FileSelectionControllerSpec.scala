@@ -212,13 +212,13 @@ class FileSelectionControllerSpec extends SpecBase {
           "claim-123",
           NDRC,
           None,
-          LocalDate.of(2021, 2, 1),
-          LocalDate.of(2022, 1, 1)
+          Some(LocalDate.of(2021, 2, 1)),
+          Some(LocalDate.of(2021, 2, 1))
         )
       )
 
     val inProgressClaims: Seq[InProgressClaim] =
-      Seq(InProgressClaim("MRN", "claim-123", NDRC, None, LocalDate.of(2021, 2, 1)))
+      Seq(InProgressClaim("MRN", "claim-123", NDRC, None, Some(LocalDate.of(2021, 2, 1))))
 
     val allClaimsWithInProgress: AllClaims = AllClaims(
       pendingClaims = Seq.empty,

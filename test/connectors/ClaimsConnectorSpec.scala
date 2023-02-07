@@ -52,7 +52,14 @@ class ClaimsConnectorSpec extends SpecBase {
           InProgressClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate)
         )
         result.pendingClaims    shouldBe Seq(
-          PendingClaim("21LLLLLLLLLL12344", "SEC-2108", SCTY, Some("broomer007"), startDate, startDate.plusDays(30))
+          PendingClaim(
+            "21LLLLLLLLLL12344",
+            "SEC-2108",
+            SCTY,
+            Some("broomer007"),
+            startDate,
+            startDate.map(_.plusDays(30))
+          )
         )
       }
     }
@@ -70,7 +77,7 @@ class ClaimsConnectorSpec extends SpecBase {
         result.mrn                     shouldBe Seq(ProcedureDetail("MRN", mainDeclarationReference = true))
         result.claimStatus             shouldBe Closed
         result.caseNumber              shouldBe "CaseNumber"
-        result.claimStartDate.toString shouldBe "2022-10-12"
+        result.claimStartDate.toString shouldBe "Some(2022-10-12)"
         result.claimantsEmail.value    shouldBe "email@email.com"
         result.claimantsName.value     shouldBe "name"
       }
@@ -93,7 +100,7 @@ class ClaimsConnectorSpec extends SpecBase {
         result.caseNumber           shouldBe "caseNumber"
         result.claimantsEmail.value shouldBe "email@email.com"
         result.claimantsName.value  shouldBe "name"
-        result.declarationId        shouldBe "declarationId"
+        result.declarationId        shouldBe Some("declarationId")
       }
     }
 
@@ -153,7 +160,7 @@ class ClaimsConnectorSpec extends SpecBase {
       None
     )
 
-    val startDate: LocalDate = LocalDate.of(2021, 3, 21)
+    val startDate = Some(LocalDate.of(2021, 3, 21))
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(
@@ -162,13 +169,13 @@ class ClaimsConnectorSpec extends SpecBase {
             SCTYCaseDetails(
               "SEC-2108",
               "21LLLLLLLLLL12344",
-              "20210321",
+              Some("20210321"),
               Some("20211220"),
               "ACS",
               "Pending",
               None,
               "GB744638982000",
-              "GB744638982000",
+              Some("GB744638982000"),
               Some("GB744638982000"),
               Some("12000.56"),
               Some("3412.01"),
@@ -177,13 +184,13 @@ class ClaimsConnectorSpec extends SpecBase {
             SCTYCaseDetails(
               "SEC-2107",
               "21LLLLLLLLLL12343",
-              "20210321",
+              Some("20210321"),
               Some("20211220"),
               "ACS",
               "Closed",
               Some("Closed"),
               "GB744638982000",
-              "GB744638982000",
+              Some("GB744638982000"),
               Some("GB744638982000"),
               Some("12000.56"),
               Some("3412.01"),
