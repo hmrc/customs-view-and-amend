@@ -43,7 +43,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         SCTY,
         Some("broomer007"),
         startDate,
-        startDate.plusDays(30)
+        startDate.map(_.plusDays(30))
       )
     }
 
@@ -84,7 +84,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         NDRC,
         Some("KWMREF1"),
         startDate,
-        startDate.plusDays(30)
+        startDate.map(_.plusDays(30))
       )
     }
 
@@ -113,7 +113,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         Map("en" -> Map("month.12" -> "Foo"))
       ).preferred(Seq(Lang("en")))
 
-      claimDetail.formattedStartDate()(messages) shouldBe "14 Foo 2022"
+      claimDetail.formattedStartDate()(messages) shouldBe Some("14 Foo 2022")
     }
 
     "format closedDate" in {
@@ -125,7 +125,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     }
 
     "check isEntryNumber" in {
-      EntryNumber.isEntryNumber(claimDetail.declarationId) shouldBe false
+      EntryNumber.isEntryNumber(claimDetail.declarationId.get) shouldBe false
     }
 
     "check multipleDeclarations" in {
@@ -166,20 +166,20 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
 
   trait Setup {
 
-    val startDate: LocalDate = LocalDate.of(2021, 3, 20)
-    val endDate: LocalDate   = LocalDate.of(2021, 5, 20)
+    val startDate          = Some(LocalDate.of(2021, 3, 20))
+    val endDate: LocalDate = LocalDate.of(2021, 5, 20)
 
     def createSctyDetailsClaim(status: String): SCTYCaseDetails =
       SCTYCaseDetails(
         CDFPayCaseNumber = "SEC-2109",
         declarationID = "21LLLLLLLLLL12345",
-        claimStartDate = "20210320",
+        claimStartDate = Some("20210320"),
         closedDate = Some("20210520"),
         reasonForSecurity = "ACS",
         caseStatus = status,
         caseSubStatus = Option(status),
         declarantEORI = "GB744638982000",
-        importerEORI = "GB744638982000",
+        importerEORI = Some("GB744638982000"),
         claimantEORI = Some("GB744638982000"),
         totalCustomsClaimAmount = Some("12000.56"),
         totalVATClaimAmount = Some("3412.01"),
@@ -208,7 +208,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
   val claimDetail: ClaimDetail = ClaimDetail(
     caseNumber = "NDRC-2109",
     serviceType = NDRC,
-    declarationId = "21LLLLLLLLLLLLLLL9",
+    declarationId = Some("21LLLLLLLLLLLLLLL9"),
     mrn = Seq(ProcedureDetail("21LLLLLLLLLLLLLLL9", true)),
     entryNumbers = Seq.empty,
     lrn = None,
@@ -216,7 +216,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     claimStatus = Pending,
     caseSubStatus = None,
     claimType = Some(`C&E1179`),
-    claimStartDate = LocalDate.of(2022, 12, 14),
+    claimStartDate = Some(LocalDate.of(2022, 12, 14)),
     claimClosedDate = Some(LocalDate.of(2021, 7, 23)),
     totalClaimAmount = None,
     claimantsName = None,
@@ -232,7 +232,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
       s"SCTY-${1000 + value}",
       SCTY,
       None,
-      LocalDate.of(2021, 2, 1).plusDays(value),
+      Some(LocalDate.of(2021, 2, 1).plusDays(value)),
       LocalDate.of(2022, 1, 1).plusDays(value),
       "Closed"
     )
@@ -243,12 +243,12 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
       s"NDRC-${2000 + value}",
       NDRC,
       None,
-      LocalDate.of(2021, 2, 1).plusDays(value),
-      LocalDate.of(2022, 1, 1).plusDays(value)
+      Some(LocalDate.of(2021, 2, 1).plusDays(value)),
+      Some(LocalDate.of(2022, 1, 1).plusDays(value))
     )
   }
   val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
-    InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, LocalDate.of(2021, 2, 1).plusDays(value))
+    InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, Some(LocalDate.of(2021, 2, 1).plusDays(value)))
   }
 
   val allClaims: AllClaims = AllClaims(

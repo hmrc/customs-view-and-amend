@@ -139,7 +139,7 @@ class ClaimDetailControllerSpec extends SpecBase {
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
       NDRC,
-      "DeclarationId",
+      Some("DeclarationId"),
       Seq(ProcedureDetail("DeclarationId", true)),
       Seq.empty,
       Some("SomeLrn"),
@@ -148,7 +148,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       None,
       Some(C285),
       Some(Bulk),
-      LocalDate.now,
+      Some(LocalDate.now),
       None,
       Some("1200"),
       Some("Sarah Philips"),
@@ -158,7 +158,7 @@ class ClaimDetailControllerSpec extends SpecBase {
     val allClaims: AllClaims = AllClaims(
       pendingClaims = Seq.empty,
       inProgressClaims = Seq(
-        InProgressClaim("MRN", "someClaim", NDRC, None, LocalDate.of(2021, 2, 1))
+        InProgressClaim("MRN", "someClaim", NDRC, None, Some(LocalDate.of(2021, 2, 1)))
       ),
       closedClaims = Seq.empty
     )

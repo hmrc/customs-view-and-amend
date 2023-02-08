@@ -40,16 +40,24 @@ case class NDRCCaseDetails(
   def toClaim: Claim = {
     val startDate = toDateTime(claimStartDate)
     caseStatus match {
-      case "In Progress" => InProgressClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate)
+      case "In Progress" =>
+        InProgressClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, Some(startDate))
       case "Pending"     =>
-        PendingClaim(declarationID, CDFPayCaseNumber, NDRC, declarantReferenceNumber, startDate, startDate.plusDays(30))
+        PendingClaim(
+          declarationID,
+          CDFPayCaseNumber,
+          NDRC,
+          declarantReferenceNumber,
+          Some(startDate),
+          Some(startDate.plusDays(30))
+        )
       case "Closed"      =>
         ClosedClaim(
           declarationID,
           CDFPayCaseNumber,
           NDRC,
           declarantReferenceNumber,
-          startDate,
+          Some(startDate),
           toDateTime(closedDate.getOrElse("")),
           caseSubStatus.getOrElse("")
         )

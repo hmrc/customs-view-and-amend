@@ -37,9 +37,9 @@
 
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
-@firstMrnRow = @{Some(SummaryListRow(
+@firstMrnRow = @{claimDetail.declarationId.map(declarationId =>SummaryListRow(
 Key(content = HtmlContent(messages(if(claimDetail.mrnDetails.isEmpty) "claim.detail.mrn" else "claim.detail.first-mrn")), classes = "govuk-!-width-one-half"),
-Value(content = HtmlContent(claimDetail.declarationId)),
+Value(content = HtmlContent(declarationId)),
 actions = None
 ))}
 
@@ -125,9 +125,9 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
                     actions = None
                 ))
             ),
-            Some(SummaryListRow(
+            claimDetail.formattedStartDate().map(startDate => SummaryListRow(
                 Key(content = HtmlContent(messages("claim.detail.start.date"))),
-                Value(content = HtmlContent(claimDetail.formattedStartDate())),
+                Value(content = HtmlContent(startDate)),
                 actions = None
             )),
             claimDetail.formattedClosedDate().map(closedDate => SummaryListRow(

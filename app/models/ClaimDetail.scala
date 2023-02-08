@@ -26,7 +26,7 @@ import java.time.LocalDate
 case class ClaimDetail(
   caseNumber: String,
   serviceType: ServiceType,
-  declarationId: String,
+  declarationId: Option[String],
   mrn: Seq[ProcedureDetail],
   entryNumbers: Seq[EntryDetail],
   lrn: Option[String],
@@ -35,7 +35,7 @@ case class ClaimDetail(
   caseSubStatus: Option[String],
   claimType: Option[ClaimType],
   caseType: Option[CaseType],
-  claimStartDate: LocalDate,
+  claimStartDate: Option[LocalDate],
   claimClosedDate: Option[LocalDate],
   totalClaimAmount: Option[String],
   claimantsName: Option[String],
@@ -45,8 +45,8 @@ case class ClaimDetail(
   mrnDetails: Option[Seq[ProcedureDetail]] = None
 ) extends DateFormatters {
 
-  def formattedStartDate()(implicit messages: Messages): String =
-    dateAsDayMonthAndYear(claimStartDate)
+  def formattedStartDate()(implicit messages: Messages): Option[String] =
+    claimStartDate.map(dateAsDayMonthAndYear)
 
   def formattedClosedDate()(implicit messages: Messages): Option[String] =
     claimClosedDate.map(dateAsDayMonthAndYear)
