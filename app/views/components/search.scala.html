@@ -18,9 +18,7 @@
 @import forms.SearchFormHelper
 
 @this(
-        paragraph: components.paragraph,
         subHeading: components.sub_heading,
-        input: components.input_text,
         button: components.button,
         formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 )
@@ -34,9 +32,9 @@
         @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
     }
 
-    @paragraph(Html(messages(s"$key.desc")))
-
     @formWithCSRF(routes.ClaimSearchController.onSubmit, 'novalidate -> "novalidate") {
+
+        <label for="@key" class="govuk-label">@messages(s"search.label")</label>
 
         <div class="govuk-form-group">
             <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="text"/>

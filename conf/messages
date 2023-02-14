@@ -22,6 +22,7 @@ service.banner.search = Find a claim
 search.title=Search for a claim
 search.error=Please enter a valid input
 search.desc=Search by claim reference number
+search.label=Search by claim reference number
 search.button=Search
 
 
