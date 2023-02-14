@@ -25,18 +25,23 @@ class SearchFormHelperSpec extends SpecBase {
 
     val testForm = SearchFormHelper.form
 
-    "allow valid input" in {
+    "fill with valid input" in {
       val result: Form[String] = testForm.fillAndValidate("Foo")
       result.get shouldBe "Foo"
     }
 
-    "not bind an required option" in {
+    "report error when an empty input" in {
       val result = testForm.fillAndValidate("")
       result.error("search") must contain(FormError("search", "error.required"))
     }
 
-    "String to form " in {
+    "bind valid input" in {
       val result = testForm.bind(Map("search" -> "Foo"))
+      result.value mustBe Some("Foo")
+    }
+
+    "filter html injection" in {
+      val result = testForm.bind(Map("search" -> "<img src='https://owasp.org/assets/images/logo.png'>Foo</img>"))
       result.value mustBe Some("Foo")
     }
   }

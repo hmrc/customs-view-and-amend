@@ -18,17 +18,24 @@ package forms
 
 import play.api.data.Form
 import play.api.data.Forms.{mapping, nonEmptyText}
+import org.jsoup.safety.Safelist
+import org.jsoup.Jsoup
 
 object SearchFormHelper {
+
   val form: Form[String] =
     Form(
       mapping(
         "search" ->
           nonEmptyText
+            .transform(cleanInput, identity[String])
             .verifying(
               "error",
               str => str.nonEmpty
             )
       )(identity)(Some(_))
     )
+
+  def cleanInput(s: String): String =
+    Jsoup.clean(s, Safelist.none())
 }
