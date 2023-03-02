@@ -108,7 +108,10 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
             claimDetail.reasonForSecurity.map { rfs =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
-                    Value(content = HtmlContent(messages(s"claim.detail.reasonForSecurity.$rfs"))),
+                    if(messages.isDefinedAt(s"claim.detail.reasonForSecurity.$rfs"))
+                        Value(content = HtmlContent(messages(s"claim.detail.reasonForSecurity.$rfs")))
+                    else 
+                        Value(content = Text(rfs)),
                     actions = None
                 )
             },
