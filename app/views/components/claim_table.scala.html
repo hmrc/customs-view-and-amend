@@ -41,7 +41,7 @@
         @{
             claim match {
                 case e@ClosedClaim(declarationId, caseNumber, _, _, claimStartDate, removalDate, subStatus) =>
-                    claimListRows(e.url, caseNumber, declarationId, Some(e.formattedServiceType()), Some(e.formattedRemovalDate()), Some(subStatus))
+                    claimListRows(e.url, caseNumber, declarationId, Some(e.formattedServiceType()), e.formattedRemovalDate(), Some(subStatus))
                 case e@PendingClaim(declarationId, caseNumber, _, _, claimStartDate, respondByDate) =>
                     claimListRows(e.url, caseNumber, declarationId, Some(e.formattedServiceType()), e.formattedStartDate(), None)
                 case e@InProgressClaim(declarationId, caseNumber, _, _, claimStartDate) =>

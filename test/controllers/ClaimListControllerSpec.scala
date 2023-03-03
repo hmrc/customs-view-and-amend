@@ -67,7 +67,7 @@ class ClaimListControllerSpec extends SpecBase {
         NDRC,
         None,
         Some(LocalDate.of(2021, 2, 1).plusDays(value)),
-        LocalDate.of(2022, 1, 1).plusDays(value),
+        if (value == 7) None else Some(LocalDate.of(2022, 1, 1).plusDays(value)),
         "Closed"
       )
     }

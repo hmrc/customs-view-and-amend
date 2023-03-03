@@ -58,7 +58,7 @@ case class NDRCCaseDetails(
           NDRC,
           declarantReferenceNumber,
           Some(startDate),
-          toDateTime(closedDate.getOrElse("")),
+          closedDate.map(toDateTime),
           caseSubStatus.getOrElse("")
         )
       case e             => throw new RuntimeException(s"Unknown Case Status: $e")

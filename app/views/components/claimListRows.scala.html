@@ -20,6 +20,10 @@
 
 <td class="govuk-table__cell">@link(linkMessage, linkUrl, pWrapped = false, linkClass = "govuk-link govuk-body")</td>
 <td class="govuk-table__cell">@col2</td>
-@col3.map(value => <td class="govuk-table__cell">{value}</td>)
-@col4.map(value => <td class="govuk-table__cell">{value}</td>)
+
+@hasFourthRow = @{col4.isDefined}
+@hasFifthRow = @{col5.isDefined}
+
+@col3.map(value => <td class="govuk-table__cell">{value}</td>).orElse(if(hasFourthRow || hasFifthRow) Some(<td class="govuk-table__cell"></td>) else None)
+@col4.map(value => <td class="govuk-table__cell">{value}</td>).orElse(if(hasFifthRow) Some(<td class="govuk-table__cell"></td>) else None)
 @col5.map(value => <td class="govuk-table__cell">{value}</td>)
