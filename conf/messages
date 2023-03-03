@@ -102,6 +102,8 @@ claim.detail.reasonForSecurity.T24=Temporary Admissions (2 years Expiration)
 claim.detail.reasonForSecurity.TA6=Temporary Admissions (6 months Expiration)
 claim.detail.reasonForSecurity.TA3=Temporary Admissions (3 months Expiration)
 claim.detail.reasonForSecurity.TA2=Temporary Admissions (2 months Expiration)
+claim.detail.reasonForSecurity.CEP=UKAP Entry Price
+claim.detail.reasonForSecurity.CSD=UKAP Safeguard Duties
 claim.detail.reasonForSecurity.PDD=Provisional anti-dumping/countervailing duty
 claim.detail.reasonForSecurity.CRQ=Quota
 
