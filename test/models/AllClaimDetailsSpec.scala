@@ -54,7 +54,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         SCTY,
         Some("broomer007"),
         startDate,
-        endDate,
+        Some(endDate),
         "Closed"
       )
     }
@@ -95,7 +95,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         NDRC,
         Some("KWMREF1"),
         startDate,
-        endDate,
+        Some(endDate),
         "Closed"
       )
     }
@@ -233,7 +233,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
       SCTY,
       None,
       Some(LocalDate.of(2021, 2, 1).plusDays(value)),
-      LocalDate.of(2022, 1, 1).plusDays(value),
+      if (value == 7) None else Some(LocalDate.of(2022, 1, 1).plusDays(value)),
       "Closed"
     )
   }

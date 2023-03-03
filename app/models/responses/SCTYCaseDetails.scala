@@ -62,7 +62,7 @@ case class SCTYCaseDetails(
           SCTY,
           declarantReferenceNumber,
           startDate,
-          toDateTime(closedDate.getOrElse("")),
+          closedDate.map(toDateTime),
           caseSubStatus.getOrElse("")
         )
       case e        => throw new RuntimeException(s"Unknown Case Status: $e")

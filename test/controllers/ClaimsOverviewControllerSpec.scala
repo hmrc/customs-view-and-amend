@@ -51,7 +51,15 @@ class ClaimsOverviewControllerSpec extends SpecBase {
       ),
       inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, Some(LocalDate.of(2019, 1, 1)))),
       closedClaims = Seq(
-        ClosedClaim("MRN", "NDRC-0003", NDRC, None, Some(LocalDate.of(2019, 1, 1)), LocalDate.of(2019, 2, 1), "Closed")
+        ClosedClaim(
+          "MRN",
+          "NDRC-0003",
+          NDRC,
+          None,
+          Some(LocalDate.of(2019, 1, 1)),
+          Some(LocalDate.of(2019, 2, 1)),
+          "Closed"
+        )
       )
     )
 

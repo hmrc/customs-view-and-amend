@@ -44,7 +44,7 @@ class ClaimsConnectorSpec extends SpecBase {
             SCTY,
             Some("broomer007"),
             startDate,
-            LocalDate.of(2021, 12, 20),
+            Some(LocalDate.of(2021, 12, 20)),
             "Closed"
           )
         )

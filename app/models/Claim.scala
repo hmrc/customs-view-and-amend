@@ -74,11 +74,14 @@ case class ClosedClaim(
   serviceType: ServiceType,
   lrn: Option[String],
   claimStartDate: Option[LocalDate],
-  removalDate: LocalDate,
+  removalDate: Option[LocalDate],
   caseSubStatus: String
 ) extends Claim {
-  override val claimStatus: ClaimStatus                           = Closed
-  def formattedRemovalDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(removalDate)
+
+  override val claimStatus: ClaimStatus = Closed
+
+  def formattedRemovalDate()(implicit messages: Messages): Option[String] =
+    removalDate.map(dateAsDayMonthAndYear)
 
 }
 
