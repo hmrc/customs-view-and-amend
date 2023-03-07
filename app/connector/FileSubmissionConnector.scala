@@ -38,7 +38,8 @@ trait FileSubmissionConnector {
     eori: String,
     serviceType: ServiceType,
     caseNumber: String,
-    files: Seq[UploadedFile]
+    files: Seq[UploadedFile],
+    reasonForSecurity: Option[String]
   )(implicit hc: HeaderCarrier): Future[Boolean]
 
 }
@@ -58,7 +59,8 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, appConfig: 
     eori: String,
     serviceType: ServiceType,
     caseNumber: String,
-    files: Seq[UploadedFile]
+    files: Seq[UploadedFile],
+    reasonForSecurity: Option[String]
   )(implicit hc: HeaderCarrier): Future[Boolean] = {
     val request = Dec64UploadRequest(
       UUID.randomUUID().toString,
@@ -67,7 +69,8 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, appConfig: 
       declarationId,
       entryNumber,
       serviceType.dec64ServiceType,
-      files.map(_.toDec64UploadedFile)
+      files.map(_.toDec64UploadedFile),
+      reasonForSecurity
     )
     httpClient
       .POST[Dec64UploadRequest, HttpResponse](fileUploadUrl, request)

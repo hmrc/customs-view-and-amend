@@ -67,7 +67,8 @@ class FileSubmissionController @Inject() (
                                           request.eori,
                                           claim.serviceType,
                                           claim.caseNumber,
-                                          uploadedFiles
+                                          uploadedFiles,
+                                          claim.reasonForSecurity
                                         )
               _                    <- uploadDocumentsConnector.wipeData
               _                    <- session.update(_.withSubmitted)

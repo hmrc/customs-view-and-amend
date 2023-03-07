@@ -38,7 +38,7 @@ class FileSubmissionControllerSpec extends SpecBase {
 
   "submitFiles" should {
     "submit file to CDFpay, clear upload service state and redirect to the confirmation page" in new Setup {
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
+      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
         .thenReturn(Future.successful(true))
       when(mockUploadDocumentsConnector.wipeData(any))
         .thenReturn(Future.successful(true))
@@ -87,7 +87,7 @@ class FileSubmissionControllerSpec extends SpecBase {
     }
 
     "throw an exception if file upload not successful" in new Setup {
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any)(any))
+      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
         .thenReturn(Future.successful(false))
       when(mockUploadDocumentsConnector.wipeData(any))
         .thenReturn(Future.successful(true))

@@ -43,7 +43,8 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         SCTY,
         Some("broomer007"),
         startDate,
-        startDate.map(_.plusDays(30))
+        startDate.map(_.plusDays(30)),
+        Some("ACS")
       )
     }
 

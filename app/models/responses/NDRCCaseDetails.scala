@@ -49,7 +49,8 @@ case class NDRCCaseDetails(
           NDRC,
           declarantReferenceNumber,
           Some(startDate),
-          Some(startDate.plusDays(30))
+          Some(startDate.plusDays(30)),
+          None
         )
       case "Closed"      =>
         ClosedClaim(

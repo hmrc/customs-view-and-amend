@@ -19,13 +19,16 @@ package models
 import models.file_upload.Dec64UploadedFile
 import play.api.libs.json.{Json, OWrites}
 
-case class Dec64UploadRequest(id: String,
-                              eori: String,
-                              caseNumber: String,
-                              declarationId: String,
-                              entryNumber: Boolean,
-                              applicationName: String,
-                              uploadedFiles: Seq[Dec64UploadedFile])
+case class Dec64UploadRequest(
+  id: String,
+  eori: String,
+  caseNumber: String,
+  declarationId: String,
+  entryNumber: Boolean,
+  applicationName: String,
+  uploadedFiles: Seq[Dec64UploadedFile],
+  reasonForSecurity: Option[String] = None
+)
 
 object Dec64UploadRequest {
   implicit val writes: OWrites[Dec64UploadRequest] = Json.writes[Dec64UploadRequest]
