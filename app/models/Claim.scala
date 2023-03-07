@@ -57,7 +57,8 @@ case class PendingClaim(
   serviceType: ServiceType,
   lrn: Option[String],
   claimStartDate: Option[LocalDate],
-  respondByDate: Option[LocalDate]
+  respondByDate: Option[LocalDate],
+  reasonForSecurity: Option[String] = None
 ) extends Claim {
   // TODO: Removed the respond by date until secure messaging timestamp available
   // def formattedRespondByDate()(implicit messages: Messages): String = dateAsDayMonthAndYear(respondByDate)

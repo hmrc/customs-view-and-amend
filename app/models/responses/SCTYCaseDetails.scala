@@ -52,7 +52,8 @@ case class SCTYCaseDetails(
           SCTY,
           declarantReferenceNumber,
           startDate,
-          startDate.map(_.plusDays(30))
+          startDate.map(_.plusDays(30)),
+          Some(reasonForSecurity)
         )
 
       case "Closed" =>

@@ -58,7 +58,8 @@ class FileSubmissionConnectorSpec extends SpecBase {
                 AdditionalSupportingDocuments,
                 None
               )
-            )
+            ),
+            None
           )
         )
         result shouldBe true
@@ -70,7 +71,8 @@ class FileSubmissionConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       running(app) {
-        val result = await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty))
+        val result =
+          await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty, None))
         result shouldBe false
       }
     }
@@ -80,7 +82,8 @@ class FileSubmissionConnectorSpec extends SpecBase {
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
-        val result = await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty))
+        val result =
+          await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty, None))
         result shouldBe false
       }
     }
