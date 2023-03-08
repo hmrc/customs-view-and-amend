@@ -17,7 +17,7 @@
 package actions
 
 import connector.ClaimsConnector
-import models.{AllClaims, AuthorisedRequestWithSessionData, SessionData}
+import models.{AllClaims, AuthorisedRequestWithSessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
@@ -41,34 +41,34 @@ class AllClaimsAction @Inject(
 
   override def transform[A](
     request: AuthorisedRequestWithSessionData[A]
-  ): Future[AllClaimsAction.RequestWithClaims[A]] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+  ): Future[AllClaimsAction.RequestWithClaims[A]] =
     request.sessionData.claims match {
       case None =>
-        getAndStoreAllClaims
-          .map(allClaims => (request.withAllClaims(allClaims), allClaims))
+        getAndStoreAllClaims(request)
 
       case Some(allClaims) =>
         Future.successful((request, allClaims))
     }
-  }
 
-  private def getAndStoreAllClaims(implicit hc: HeaderCarrier): Future[AllClaims] =
+  private def getAndStoreAllClaims[A](
+    request: AuthorisedRequestWithSessionData[A]
+  ): Future[AllClaimsAction.RequestWithClaims[A]] = {
+    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     claimsConnector.getAllClaims
       .flatMap { allClaims =>
-        val sessionData = SessionData(claims = Some(allClaims))
         sessionCache
-          .store(sessionData)
+          .store(request.sessionData.withAllClaims(allClaims))
           .flatMap(
             _.fold(
               error => Future.failed(AllClaimsAction.ClaimsNotFoundException(error.exception)),
-              _ => Future.successful(allClaims)
+              _ => Future.successful((request.withAllClaims(allClaims), allClaims))
             )
           )
       }
       .recoverWith { case NonFatal(e) =>
         Future.failed(AllClaimsAction.ClaimsNotFoundException(e))
       }
+  }
 }
 
 object AllClaimsAction {
