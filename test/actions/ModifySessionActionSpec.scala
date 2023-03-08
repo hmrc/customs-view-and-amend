@@ -16,7 +16,7 @@
 
 package actions
 
-import models.{AllClaims, AuthorisedRequest, SessionData, Error}
+import models.{AllClaims, AuthorisedRequestWithSessionData, Error, SessionData}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -118,7 +118,14 @@ class ModifySessionActionSpec extends SpecBase {
   trait Setup extends SetupBase {
     val app                  = application.build()
     val modifySessionAction  = app.injector.instanceOf[ModifySessionAction]
-    val authenticatedRequest = AuthorisedRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
+    val authenticatedRequest =
+      AuthorisedRequestWithSessionData(
+        FakeRequest("GET", "/"),
+        "someEori",
+        SessionData()
+          .withVerifiedEmail("foo@bar.com")
+          .withCompanyName("companyName")
+      )
 
     implicit val hc: HeaderCarrier    = HeaderCarrier()
     implicit val ec: ExecutionContext = modifySessionAction.executionContext

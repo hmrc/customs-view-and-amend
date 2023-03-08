@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{AllClaimsAction, EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
@@ -30,14 +30,14 @@ import javax.inject.{Inject, Singleton}
 class ClaimsOverviewController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
   claimsOverview: claims_overview
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen currentSession andThen allClaimsAction
 
   final val show: Action[AnyContent] =
     actions { case (request, allClaims) =>

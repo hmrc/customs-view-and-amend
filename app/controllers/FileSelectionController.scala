@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction, ModifySessionAction}
+import actions.{CurrentSessionAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.UploadDocumentsConnector
 import forms.FileSelectionForm
@@ -39,13 +39,13 @@ class FileSelectionController @Inject() (
   fileSelection: file_selection,
   notFound: not_found,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   modifySessionAction: ModifySessionAction
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen modifySessionAction
+  private val actions = authenticate andThen currentSession andThen modifySessionAction
 
   final def onPageLoad(caseNumber: String): Action[AnyContent] =
     actions.async { case (request, session) =>

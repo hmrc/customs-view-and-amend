@@ -22,6 +22,7 @@ import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.libs.json.{JsResult, JsString}
 import utils.SpecBase
 
+@annotation.nowarn
 class SimpleDecimalFormatSpec extends SpecBase {
 
   "SimpleDecimalFormat" should {
@@ -34,6 +35,7 @@ class SimpleDecimalFormatSpec extends SpecBase {
   }
 
   "Nonce" should {
+
     "equals should return correct values" in {
       val nonce = Nonce(111)
       nonce == Nonce(123) shouldBe false

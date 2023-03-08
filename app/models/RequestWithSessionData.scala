@@ -16,8 +16,12 @@
 
 package models
 
-import play.api.mvc.Request
-
-trait RequestWithSessionData[A] extends Request[A] {
+trait RequestWithSessionData[A] extends RequestWithEori[A] {
   def sessionData: SessionData
+
+  def verifiedEmail: Option[String] =
+    sessionData.verifiedEmail
+
+  def companyName: Option[String] =
+    sessionData.companyName
 }

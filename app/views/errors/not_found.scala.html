@@ -18,7 +18,7 @@
 
 @this(layout: Layout, h1: components.h1, p: components.p, link: components.link)
 
-@()(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
+@()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("cf.error.not-found.heading"))) {
     @h1("cf.error.not-found.heading")

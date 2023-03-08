@@ -20,7 +20,7 @@
 
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
 
-@(model: PendingClaimListViewModel)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
+@(model: PendingClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim.list.pending"}
 @layout(pageTitle = Some(messages(s"${key}.title"))) {
     @headerArea(key, showInset = true)

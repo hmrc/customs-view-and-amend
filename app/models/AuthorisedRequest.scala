@@ -26,9 +26,6 @@ final case class AuthorisedRequest[A](
 ) extends WrappedRequest[A](request)
     with RequestWithEori[A] {
 
-  def withVerifiedEmail(email: String): AuthorisedRequest[A] =
-    copy(verifiedEmail = Some(email))
-
   def withSessionData(sessionData: SessionData): AuthorisedRequestWithSessionData[A] =
     AuthorisedRequestWithSessionData(request, eori, sessionData)
 }
