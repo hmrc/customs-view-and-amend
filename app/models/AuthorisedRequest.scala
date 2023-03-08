@@ -20,9 +20,7 @@ import play.api.mvc.{Request, WrappedRequest}
 
 final case class AuthorisedRequest[A](
   request: Request[A],
-  eori: String,
-  companyName: Option[String],
-  verifiedEmail: Option[String] = None
+  eori: String
 ) extends WrappedRequest[A](request)
     with RequestWithEori[A] {
 

@@ -165,6 +165,6 @@ class CurrentSessionActionSpec extends SpecBase {
   trait Setup extends SetupBase {
     val app                  = application.build()
     val currentSessionAction = app.injector.instanceOf[CurrentSessionAction]
-    val authorisedRequest    = AuthorisedRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
+    val authorisedRequest    = AuthorisedRequest(FakeRequest("GET", "/"), "someEori")
   }
 }

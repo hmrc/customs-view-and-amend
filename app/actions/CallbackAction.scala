@@ -18,7 +18,6 @@ package actions
 
 import com.google.inject.ImplementedBy
 import config.AppConfig
-import connector.DataStoreConnector
 import models.AuthorisedRequest
 import play.api.mvc.Results._
 import play.api.mvc._
@@ -38,7 +37,6 @@ trait CallbackAction
 @Singleton
 class AuthorisedCallbackAction @Inject() (
   override val authConnector: AuthConnector,
-  dataStoreConnector: DataStoreConnector,
   config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
@@ -54,10 +52,9 @@ class AuthorisedCallbackAction @Inject() (
         .getEnrolment("HMRC-CUS-ORG")
         .flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
-          dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
-            block(AuthorisedRequest(request, eori.value, maybeCompanyName))
-          }
-        case None       =>
+          block(AuthorisedRequest(request, eori.value))
+
+        case None =>
           Future.successful(Forbidden)
       }
     } recover { case _ =>

@@ -18,7 +18,6 @@ package actions
 
 import com.google.inject.ImplementedBy
 import config.AppConfig
-import connector.DataStoreConnector
 import controllers.routes
 import models.AuthorisedRequest
 import play.api.mvc.Results._
@@ -39,7 +38,6 @@ trait IdentifierAction
 @Singleton
 class AuthenticatedIdentifierAction @Inject() (
   override val authConnector: AuthConnector,
-  dataStoreConnector: DataStoreConnector,
   config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
@@ -53,10 +51,10 @@ class AuthenticatedIdentifierAction @Inject() (
     authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
       allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
-          dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
-            block(AuthorisedRequest(request, eori.value, maybeCompanyName))
-          }
-        case None       => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+          block(AuthorisedRequest(request, eori.value))
+
+        case None =>
+          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
       }
     } recover {
       case _: NoActiveSession        =>
