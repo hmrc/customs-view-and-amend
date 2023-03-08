@@ -46,9 +46,6 @@ class IdentifierActionSpec extends SpecBase {
       "call block" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
-        when(mockDataStoreConnector.getCompanyName(any)(any))
-          .thenReturn(Future.successful(None))
-
         when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
           .thenReturn(
             Future.successful(
@@ -61,7 +58,7 @@ class IdentifierActionSpec extends SpecBase {
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
         val authAction =
-          new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+          new AuthenticatedIdentifierAction(mockAuthConnector, config, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -87,7 +84,7 @@ class IdentifierActionSpec extends SpecBase {
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
         val authAction =
-          new AuthenticatedIdentifierAction(mockAuthConnector, mockDataStoreConnector, config, bodyParsers)
+          new AuthenticatedIdentifierAction(mockAuthConnector, config, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -108,7 +105,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new MissingBearerToken),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -132,7 +128,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new BearerTokenExpired),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -156,7 +151,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new InsufficientEnrolments),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -180,7 +174,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new InsufficientConfidenceLevel),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -204,7 +197,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new UnsupportedAuthProvider),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -228,7 +220,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new UnsupportedAffinityGroup),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )
@@ -252,7 +243,6 @@ class IdentifierActionSpec extends SpecBase {
 
         val authAction = new AuthenticatedIdentifierAction(
           new FakeFailingAuthConnector(new UnsupportedCredentialRole),
-          mockDataStoreConnector,
           config,
           bodyParsers
         )

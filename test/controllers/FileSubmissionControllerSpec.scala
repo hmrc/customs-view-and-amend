@@ -44,7 +44,7 @@ class FileSubmissionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
 
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -61,7 +61,7 @@ class FileSubmissionControllerSpec extends SpecBase {
 
     "redirect straight to the confirmation page if already submitted" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withUploadedFiles(uploadedFiles)
           .withSubmitted
@@ -93,7 +93,7 @@ class FileSubmissionControllerSpec extends SpecBase {
         .thenReturn(Future.successful(true))
 
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withUploadedFiles(uploadedFiles)
         await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -110,7 +110,7 @@ class FileSubmissionControllerSpec extends SpecBase {
     "showConfirmation" should {
       "return OK with confirmation page" in new Setup {
         running(app) {
-          val session = SessionData(Some(allClaimsWithPending))
+          val session = SessionData(claims = Some(allClaimsWithPending))
             .withInitialFileUploadData("claim-123")
             .withSubmitted
           await(sessionCache.store(session)) shouldBe Right(())
@@ -124,7 +124,7 @@ class FileSubmissionControllerSpec extends SpecBase {
 
       "redirect back to the claims overview page if file submission not available" in new Setup {
         running(app) {
-          val session = SessionData(Some(allClaimsWithPending))
+          val session = SessionData(claims = Some(allClaimsWithPending))
           await(sessionCache.store(session)) shouldBe Right(())
           val request =
             fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
@@ -137,7 +137,7 @@ class FileSubmissionControllerSpec extends SpecBase {
 
       "redirect back to the choose files page if files not yet submitted" in new Setup {
         running(app) {
-          val session = SessionData(Some(allClaimsWithPending))
+          val session = SessionData(claims = Some(allClaimsWithPending))
             .withInitialFileUploadData("claim-123")
             .withDocumentType(FileSelection.AdditionalSupportingDocuments)
           await(sessionCache.store(session)) shouldBe Right(())

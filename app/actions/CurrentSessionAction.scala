@@ -16,25 +16,37 @@
 
 package actions
 
-import models.{IdentifierRequest, SessionData}
+import config.AppConfig
+import connector.DataStoreConnector
+import models.email.{UndeliverableEmail, UnverifiedEmail}
+import models.{AuthorisedRequest, AuthorisedRequestWithSessionData, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.ActionTransformer
+import play.api.mvc.Results._
+import play.api.mvc.{ActionRefiner, Result}
 import repositories.SessionCache
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
+import views.html.email.undeliverable_email
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CurrentSessionAction @Inject(
-) (sessionCache: SessionCache)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
-    extends ActionTransformer[IdentifierRequest, CurrentSessionAction.RequestWithSessionData]
+) (
+  sessionCache: SessionCache,
+  connector: DataStoreConnector,
+  undeliverableEmail: undeliverable_email,
+  appConfig: AppConfig
+)(implicit
+  val executionContext: ExecutionContext,
+  val messagesApi: MessagesApi
+) extends ActionRefiner[AuthorisedRequest, AuthorisedRequestWithSessionData]
     with I18nSupport {
 
-  override def transform[A](
-    request: IdentifierRequest[A]
-  ): Future[CurrentSessionAction.RequestWithSessionData[A]] = {
+  override def refine[A](
+    request: AuthorisedRequest[A]
+  ): Future[Either[Result, AuthorisedRequestWithSessionData[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     sessionCache
       .get()
@@ -42,23 +54,69 @@ class CurrentSessionAction @Inject(
         _.fold(
           error => Future.failed(error.exception),
           {
-            case None              =>
-              val sessionData = SessionData()
-              sessionCache
-                .store(sessionData)
+            case None =>
+              retrieveVerifiedEmail(request, SessionData())
                 .flatMap(
                   _.fold(
-                    error => Future.failed(error.exception),
-                    _ => Future.successful((request, sessionData))
+                    x => Future.successful(Left(x)),
+                    retrieveCompanyName(request, _)
+                      .flatMap(sessionData =>
+                        sessionCache
+                          .store(sessionData)
+                          .flatMap(
+                            _.fold(
+                              error => Future.failed(error.exception),
+                              _ => Future.successful(Right(request.withSessionData(sessionData)))
+                            )
+                          )
+                      )
                   )
                 )
-            case Some(sessionData) => Future.successful((request, sessionData))
+
+            case Some(sessionData) => Future.successful(Right(request.withSessionData(sessionData)))
           }
         )
       )
   }
-}
 
-object CurrentSessionAction {
-  type RequestWithSessionData[A] = (IdentifierRequest[A], SessionData)
+  def retrieveVerifiedEmail[A](
+    request: AuthorisedRequest[A],
+    sessionData: SessionData
+  )(implicit hc: HeaderCarrier): Future[Either[Result, SessionData]] =
+    connector
+      .getEmail(request.eori)
+      .map {
+        case Left(value) =>
+          value match {
+            case UndeliverableEmail(_) =>
+              Left(Ok(undeliverableEmail(appConfig.emailFrontendUrl)(request, request.messages, appConfig)))
+
+            case UnverifiedEmail =>
+              Left(Redirect(controllers.routes.EmailController.showUnverified()))
+          }
+
+        case Right(email) =>
+          Right(sessionData.withVerifiedEmail(email.value))
+      }
+      .recover { case _ =>
+        // This will allow users to access the service if ETMP return an error via SUB09
+        Right(sessionData)
+      }
+
+  def retrieveCompanyName[A](
+    request: AuthorisedRequest[A],
+    sessionData: SessionData
+  )(implicit hc: HeaderCarrier): Future[SessionData] =
+    connector
+      .getCompanyName(request.eori)
+      .map {
+        case Some(companyName) =>
+          sessionData.withCompanyName(companyName)
+        case None              =>
+          sessionData
+      }
+      .recover { case _ =>
+        // This will allow users to access the service if ETMP return an error via SUB09
+        sessionData
+      }
 }

@@ -39,7 +39,7 @@ class FileUploadControllerSpec extends SpecBase {
       when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
         .thenReturn(Future.successful(Some("/url")))
 
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
         .withDocumentType(FileSelection.AirwayBill)
 
@@ -59,7 +59,7 @@ class FileUploadControllerSpec extends SpecBase {
       when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
         .thenReturn(Future.successful(None))
 
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
         .withDocumentType(FileSelection.AirwayBill)
 
@@ -76,7 +76,7 @@ class FileUploadControllerSpec extends SpecBase {
     }
 
     "redirect to the confirmation page if already submitted" in new Setup {
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
         .withDocumentType(FileSelection.AirwayBill)
         .withSubmitted
@@ -94,7 +94,7 @@ class FileUploadControllerSpec extends SpecBase {
     }
 
     "redirect to the file type selection page if nothing has been selected before" in new Setup {
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
 
       await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -110,7 +110,7 @@ class FileUploadControllerSpec extends SpecBase {
     }
 
     "redirect to the claims overview if file upload not initialized before" in new Setup {
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
 
       await(sessionCache.store(sessionData)) shouldBe Right(())
 
@@ -128,7 +128,7 @@ class FileUploadControllerSpec extends SpecBase {
   "receiveUpscanCallback" should {
     "return NO_CONTENT when valid callback" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
@@ -152,7 +152,7 @@ class FileUploadControllerSpec extends SpecBase {
 
     "return NO_CONTENT when already submitted" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withSubmitted
         await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -185,7 +185,7 @@ class FileUploadControllerSpec extends SpecBase {
 
     "return UNAUTHORIZED when file upload journey not found in session" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
         val request = fakeRequest(POST, routes.FileUploadController.receiveUpscanCallback.url)
@@ -201,7 +201,7 @@ class FileUploadControllerSpec extends SpecBase {
 
     "return UNAUTHORIZED when different nonce then in session" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
         await(sessionCache.store(sessionData)) shouldBe Right(())
 

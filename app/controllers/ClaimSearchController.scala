@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{AllClaimsAction, EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
 import forms.SearchFormHelper
@@ -33,13 +33,13 @@ class ClaimSearchController @Inject() (
   mcc: MessagesControllerComponents,
   searchClaim: search_claims,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen currentSession andThen allClaimsAction
 
   final val onPageLoad: Action[AnyContent] =
     actions { case (request, _) =>

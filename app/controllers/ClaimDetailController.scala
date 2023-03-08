@@ -16,9 +16,9 @@
 
 package controllers
 
-import actions.{AllClaimsAction, EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
-import connector.{ClaimsConnector, DataStoreConnector}
+import connector.ClaimsConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -32,9 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class ClaimDetailController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
-  dataStoreConnector: DataStoreConnector,
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
   notFound: not_found
@@ -42,7 +41,7 @@ class ClaimDetailController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen currentSession andThen allClaimsAction
 
   final def claimDetail(caseNumber: String): Action[AnyContent] =
     actions.async { case (request, allClaims) =>

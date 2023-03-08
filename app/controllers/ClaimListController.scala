@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{AllClaimsAction, EmailAction, IdentifierAction}
+import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
 import play.api.i18n.I18nSupport
@@ -32,7 +32,7 @@ import javax.inject.{Inject, Singleton}
 class ClaimListController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
   claimsConnector: ClaimsConnector,
   claimsClosed: claims_closed,
@@ -42,7 +42,7 @@ class ClaimListController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen allClaimsAction
+  private val actions = authenticate andThen currentSession andThen allClaimsAction
 
   private val caseStatusHints: DropdownHints =
     DropdownHints.range(elementIndex = 0, maxHints = 6)

@@ -29,7 +29,7 @@
   form: Form[String] = SearchFormHelper.form,
   showCompanyNameAndEori: Boolean = true,
   showInset: Boolean = false,
-  showSearchTitle: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
+  showSearchTitle: Boolean = true)(implicit request: RequestWithSessionData[_], messages: Messages)
 
 @if(showCompanyNameAndEori) {
   @heading(Html(messages(s"${key}.title")), caption = request.companyName.fold(request.eori)(companyName => messages("common.company-name-and-eori", companyName, request.eori)))

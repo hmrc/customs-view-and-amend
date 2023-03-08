@@ -33,7 +33,7 @@
     paragraph: components.paragraph
 )
 
-@(claimDetail: ClaimDetail, verifiedEmail: Option[String], fileSelectionUrl: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimDetail: ClaimDetail, verifiedEmail: Option[String], fileSelectionUrl: String)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 

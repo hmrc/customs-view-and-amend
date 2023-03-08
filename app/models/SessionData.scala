@@ -21,7 +21,21 @@ import models.Nonce
 import models.file_upload.UploadedFile
 import play.api.libs.json.{Format, Json}
 
-final case class SessionData(claims: Option[AllClaims] = None, fileUploadJourney: Option[FileUploadJourney] = None) {
+final case class SessionData(
+  verifiedEmail: Option[String] = None,
+  companyName: Option[String] = None,
+  claims: Option[AllClaims] = None,
+  fileUploadJourney: Option[FileUploadJourney] = None
+) {
+
+  def withVerifiedEmail(verifiedEmail: String): SessionData =
+    copy(verifiedEmail = Some(verifiedEmail))
+
+  def withCompanyName(companyName: String): SessionData =
+    copy(companyName = Some(companyName))
+
+  def withAllClaims(claims: AllClaims): SessionData =
+    copy(claims = Some(claims))
 
   def withInitialFileUploadData(caseNumber: String): SessionData =
     fileUploadJourney match {

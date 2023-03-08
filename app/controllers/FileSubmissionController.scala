@@ -16,7 +16,7 @@
 
 package controllers
 
-import actions.{EmailAction, IdentifierAction, ModifySessionAction}
+import actions.{CurrentSessionAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models.{EntryNumber, FileUploadJourney}
@@ -33,7 +33,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class FileSubmissionController @Inject() (
   mcc: MessagesControllerComponents,
   authenticate: IdentifierAction,
-  verifyEmail: EmailAction,
+  currentSession: CurrentSessionAction,
   modifySessionAction: ModifySessionAction,
   fileSubmissionConnector: FileSubmissionConnector,
   uploadDocumentsConnector: UploadDocumentsConnector,
@@ -43,7 +43,7 @@ class FileSubmissionController @Inject() (
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen verifyEmail andThen modifySessionAction
+  private val actions = authenticate andThen currentSession andThen modifySessionAction
 
   final val submitFiles: Action[AnyContent] =
     actions.async { case (request, session) =>

@@ -1,4 +1,4 @@
-@*
+/*
  * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,19 +12,18 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *@
+ */
 
-@import viewmodels.PendingClaimListViewModel
-@import config.AppConfig
-@import views.html.components.pager
+package models
 
-@this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
+import play.api.mvc.{Request, WrappedRequest}
 
-@(model: PendingClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
-@key = @{"claim.list.pending"}
-@layout(pageTitle = Some(messages(s"${key}.title"))) {
-    @headerArea(key, showInset = true)
-    @claimTable(model.visibleItems, Pending)
-    @pager(model)
+final case class AuthorisedRequest[A](
+  request: Request[A],
+  eori: String
+) extends WrappedRequest[A](request)
+    with RequestWithEori[A] {
 
+  def withSessionData(sessionData: SessionData): AuthorisedRequestWithSessionData[A] =
+    AuthorisedRequestWithSessionData(request, eori, sessionData)
 }

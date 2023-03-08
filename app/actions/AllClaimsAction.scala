@@ -16,7 +16,8 @@
 
 package actions
 
-import models.{IdentifierRequest, SessionData}
+import connector.ClaimsConnector
+import models.{AllClaims, AuthorisedRequestWithSessionData, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
@@ -25,10 +26,7 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import models.AllClaims
-import connector.ClaimsConnector
 import scala.util.control.NonFatal
-import uk.gov.hmrc.auth.core.SessionRecordNotFound
 
 @Singleton
 class AllClaimsAction @Inject(
@@ -38,44 +36,27 @@ class AllClaimsAction @Inject(
 )(implicit
   val executionContext: ExecutionContext,
   val messagesApi: MessagesApi
-) extends ActionTransformer[IdentifierRequest, AllClaimsAction.RequestWithClaims]
+) extends ActionTransformer[AuthorisedRequestWithSessionData, AllClaimsAction.RequestWithClaims]
     with I18nSupport {
 
   override def transform[A](
-    request: IdentifierRequest[A]
+    request: AuthorisedRequestWithSessionData[A]
   ): Future[AllClaimsAction.RequestWithClaims[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    sessionCache
-      .get()
-      .recoverWith { case NonFatal(e) =>
-        Future.failed(new SessionRecordNotFound)
-      }
-      .flatMap(
-        _.fold(
-          error => Future.failed(error.exception),
-          {
-            case None =>
-              getAndStoreAllClaims
-                .map(allClaims => (request, allClaims))
+    request.sessionData.claims match {
+      case None =>
+        getAndStoreAllClaims
+          .map(allClaims => (request.withAllClaims(allClaims), allClaims))
 
-            case Some(sessionData) =>
-              sessionData.claims match {
-                case None =>
-                  getAndStoreAllClaims
-                    .map(allClaims => (request, allClaims))
-
-                case Some(allClaims) =>
-                  Future.successful((request, allClaims))
-              }
-          }
-        )
-      )
+      case Some(allClaims) =>
+        Future.successful((request, allClaims))
+    }
   }
 
   private def getAndStoreAllClaims(implicit hc: HeaderCarrier): Future[AllClaims] =
     claimsConnector.getAllClaims
       .flatMap { allClaims =>
-        val sessionData = SessionData(Some(allClaims))
+        val sessionData = SessionData(claims = Some(allClaims))
         sessionCache
           .store(sessionData)
           .flatMap(
@@ -94,5 +75,5 @@ object AllClaimsAction {
 
   case class ClaimsNotFoundException(cause: Throwable) extends Exception(cause)
 
-  type RequestWithClaims[A] = (IdentifierRequest[A], AllClaims)
+  type RequestWithClaims[A] = (AuthorisedRequestWithSessionData[A], AllClaims)
 }
