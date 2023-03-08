@@ -60,7 +60,8 @@ class CurrentSessionAction @Inject(
                   _.fold(
                     x => Future.successful(Left(x)),
                     retrieveCompanyName(request, _)
-                      .flatMap(sessionData =>
+                      .flatMap { sessionData =>
+                        println(s"new: $sessionData")
                         sessionCache
                           .store(sessionData)
                           .flatMap(
@@ -69,17 +70,19 @@ class CurrentSessionAction @Inject(
                               _ => Future.successful(Right(request.withSessionData(sessionData)))
                             )
                           )
-                      )
+                      }
                   )
                 )
 
-            case Some(sessionData) => Future.successful(Right(request.withSessionData(sessionData)))
+            case Some(sessionData) =>
+              println(s"existing: $sessionData")
+              Future.successful(Right(request.withSessionData(sessionData)))
           }
         )
       )
   }
 
-  def retrieveVerifiedEmail[A](
+  private def retrieveVerifiedEmail[A](
     request: AuthorisedRequest[A],
     sessionData: SessionData
   )(implicit hc: HeaderCarrier): Future[Either[Result, SessionData]] =
@@ -103,20 +106,23 @@ class CurrentSessionAction @Inject(
         Right(sessionData)
       }
 
-  def retrieveCompanyName[A](
+  private def retrieveCompanyName[A](
     request: AuthorisedRequest[A],
     sessionData: SessionData
-  )(implicit hc: HeaderCarrier): Future[SessionData] =
+  )(implicit hc: HeaderCarrier): Future[SessionData] = {
+    println(sessionData)
     connector
       .getCompanyName(request.eori)
       .map {
         case Some(companyName) =>
           sessionData.withCompanyName(companyName)
-        case None              =>
+
+        case None =>
           sessionData
       }
       .recover { case _ =>
         // This will allow users to access the service if ETMP return an error via SUB09
         sessionData
       }
+  }
 }
