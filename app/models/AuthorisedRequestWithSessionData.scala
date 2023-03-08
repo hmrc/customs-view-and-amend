@@ -24,4 +24,8 @@ final case class AuthorisedRequestWithSessionData[A](
   sessionData: SessionData
 ) extends WrappedRequest[A](request)
     with RequestWithEori[A]
-    with RequestWithSessionData[A]
+    with RequestWithSessionData[A] {
+
+  def withAllClaims(allClaims: AllClaims): AuthorisedRequestWithSessionData[A] =
+    copy(sessionData = sessionData.withAllClaims(allClaims))
+}

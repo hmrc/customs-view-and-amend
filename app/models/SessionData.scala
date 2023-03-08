@@ -34,6 +34,9 @@ final case class SessionData(
   def withCompanyName(companyName: String): SessionData =
     copy(companyName = Some(companyName))
 
+  def withAllClaims(claims: AllClaims): SessionData =
+    copy(claims = Some(claims))
+
   def withInitialFileUploadData(caseNumber: String): SessionData =
     fileUploadJourney match {
       case Some(value)

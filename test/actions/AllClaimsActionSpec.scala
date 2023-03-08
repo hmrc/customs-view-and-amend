@@ -20,7 +20,6 @@ import models.{AllClaims, ClosedClaim, Error, AuthorisedRequestWithSessionData, 
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core.SessionRecordNotFound
 import utils.SpecBase
 
 import scala.concurrent.Future
@@ -30,103 +29,78 @@ class AllClaimsActionSpec extends SpecBase {
   "AllClaimsAction" should {
     "return existing claims alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(claims = Some(testClaims))))))
-        val response = await(allClaimsAction.transform(authenticatedRequest))
-        response mustBe ((authenticatedRequest, testClaims))
+        val response = await(allClaimsAction.transform(authorisedRequestWithClaims))
+        response mustBe ((authorisedRequestWithClaims, testClaims))
       }
     }
 
     "call for claims if missing in the session" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(None)))))
         when(mockClaimsConnector.getAllClaims(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.successful(Right(())))
-        val response = await(allClaimsAction.transform(authenticatedRequest))
-        response mustBe ((authenticatedRequest, testClaims))
-      }
-    }
-
-    "create a new session and call for claims if missing" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(None)))
-        when(mockClaimsConnector.getAllClaims(any))
-          .thenReturn(Future.successful(testClaims))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.successful(Right(())))
-        val response = await(allClaimsAction.transform(authenticatedRequest))
-        response mustBe ((authenticatedRequest, testClaims))
-      }
-    }
-
-    "throw session record not found if session error" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Left(Error(new Exception("do not panick")))))
-        an[Exception] shouldBe thrownBy {
-          await(allClaimsAction.transform(authenticatedRequest))
-        }
-      }
-    }
-
-    "throw session record not found if cache connection error when get" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any)).thenReturn(Future.failed(new Exception("do not panick")))
-        an[SessionRecordNotFound] shouldBe thrownBy {
-          await(allClaimsAction.transform(authenticatedRequest))
-        }
+        val response = await(allClaimsAction.transform(authorisedRequestWithoutClaims))
+        response mustBe ((authorisedRequestWithoutClaims.withAllClaims(testClaims), testClaims))
       }
     }
 
     "throw claims not found if claims connector error" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(None)))))
         when(mockClaimsConnector.getAllClaims(any))
           .thenReturn(Future.failed(new Exception("do not panick")))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
-          await(allClaimsAction.transform(authenticatedRequest))
+          await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
       }
     }
 
     "throw claims not found if cache error when storing" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(None)))))
         when(mockClaimsConnector.getAllClaims(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.failed(new Exception("do not panick")))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
-          await(allClaimsAction.transform(authenticatedRequest))
+          await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
       }
     }
 
     "throw claims not found if cache connection error when store" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(None)))))
         when(mockClaimsConnector.getAllClaims(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.successful(Left(Error(new Exception("do not panick")))))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
-          await(allClaimsAction.transform(authenticatedRequest))
+          await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
       }
     }
   }
 
   trait Setup extends SetupBase {
-    val app                  = application.build()
-    val allClaimsAction      = app.injector.instanceOf[AllClaimsAction]
-    val authenticatedRequest =
+    val app             = application.build()
+    val allClaimsAction = app.injector.instanceOf[AllClaimsAction]
+
+    val testClaims: AllClaims = AllClaims(
+      pendingClaims = Seq.empty[PendingClaim],
+      inProgressClaims = Seq.empty[InProgressClaim],
+      closedClaims = Seq.empty[ClosedClaim]
+    )
+
+    val authorisedRequestWithClaims =
+      AuthorisedRequestWithSessionData(
+        FakeRequest("GET", "/"),
+        "someEori",
+        SessionData()
+          .withVerifiedEmail("foo@bar.com")
+          .withCompanyName("companyName")
+          .withAllClaims(testClaims)
+      )
+
+    val authorisedRequestWithoutClaims =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
@@ -135,10 +109,5 @@ class AllClaimsActionSpec extends SpecBase {
           .withCompanyName("companyName")
       )
 
-    val testClaims: AllClaims = AllClaims(
-      pendingClaims = Seq.empty[PendingClaim],
-      inProgressClaims = Seq.empty[InProgressClaim],
-      closedClaims = Seq.empty[ClosedClaim]
-    )
   }
 }
