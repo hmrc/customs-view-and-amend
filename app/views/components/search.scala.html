@@ -23,7 +23,7 @@
         formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 )
 
-@(form: Form[String] = SearchFormHelper.form, showSearchTitle: Boolean = true)(implicit request: IdentifierRequest[_], messages: Messages)
+@(form: Form[String] = SearchFormHelper.form, showSearchTitle: Boolean = true)(implicit request: AuthorisedRequest[_], messages: Messages)
 
     @key = @{"search"}
 

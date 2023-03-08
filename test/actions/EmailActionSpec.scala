@@ -16,7 +16,7 @@
 
 package actions
 
-import models.IdentifierRequest
+import models.AuthorisedRequest
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.FakeRequest
@@ -67,6 +67,6 @@ class EmailActionSpec extends SpecBase {
   trait Setup extends SetupBase {
     val app                  = application.build()
     val emailAction          = app.injector.instanceOf[EmailAction]
-    val authenticatedRequest = IdentifierRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
+    val authenticatedRequest = AuthorisedRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
   }
 }

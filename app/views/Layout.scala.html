@@ -45,7 +45,7 @@
         welshToggle: Boolean = true,
         userResearchBanner: Boolean = true,
         navigationBannerEnabled: Boolean = true
-)(contentBlock: Html)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+)(contentBlock: Html)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css"/>
 

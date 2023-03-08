@@ -18,7 +18,7 @@ package controllers
 
 import actions.{AllClaimsAction, EmailAction, IdentifierAction}
 import config.AppConfig
-import connector.{ClaimsConnector, DataStoreConnector}
+import connector.ClaimsConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -34,7 +34,6 @@ class ClaimDetailController @Inject() (
   authenticate: IdentifierAction,
   verifyEmail: EmailAction,
   allClaimsAction: AllClaimsAction,
-  dataStoreConnector: DataStoreConnector,
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
   notFound: not_found

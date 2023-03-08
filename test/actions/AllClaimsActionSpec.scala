@@ -16,7 +16,7 @@
 
 package actions
 
-import models.{AllClaims, ClosedClaim, Error, IdentifierRequest, InProgressClaim, PendingClaim, SessionData}
+import models.{AllClaims, ClosedClaim, Error, AuthorisedRequest, InProgressClaim, PendingClaim, SessionData}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -126,7 +126,7 @@ class AllClaimsActionSpec extends SpecBase {
   trait Setup extends SetupBase {
     val app                  = application.build()
     val allClaimsAction      = app.injector.instanceOf[AllClaimsAction]
-    val authenticatedRequest = IdentifierRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
+    val authenticatedRequest = AuthorisedRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
 
     val testClaims: AllClaims = AllClaims(
       pendingClaims = Seq.empty[PendingClaim],

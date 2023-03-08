@@ -25,7 +25,7 @@
         button: button,
         layout: Layout
 )
-@(nextPage: String)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(nextPage: String)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("cf.undeliverable.email.title")), navigationBannerEnabled = false) {
 

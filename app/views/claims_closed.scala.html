@@ -26,7 +26,7 @@
       dropdownDetails: components.dropdown_details)
 
 @(model: ClosedClaimListViewModel,
-  caseStatusHints: DropdownHints)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+  caseStatusHints: DropdownHints)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"claim.list.closed"}
 @title = @{messages(s"$key.title")}

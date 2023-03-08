@@ -20,7 +20,7 @@ import com.google.inject.ImplementedBy
 import config.AppConfig
 import connector.DataStoreConnector
 import controllers.routes
-import models.IdentifierRequest
+import models.AuthorisedRequest
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
@@ -33,8 +33,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[AuthenticatedIdentifierAction])
 trait IdentifierAction
-    extends ActionBuilder[IdentifierRequest, AnyContent]
-    with ActionFunction[Request, IdentifierRequest]
+    extends ActionBuilder[AuthorisedRequest, AnyContent]
+    with ActionFunction[Request, AuthorisedRequest]
 
 @Singleton
 class AuthenticatedIdentifierAction @Inject() (
@@ -45,7 +45,7 @@ class AuthenticatedIdentifierAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends IdentifierAction
     with AuthorisedFunctions {
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
@@ -54,7 +54,7 @@ class AuthenticatedIdentifierAction @Inject() (
       allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
           dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
-            block(IdentifierRequest(request, eori.value, maybeCompanyName))
+            block(AuthorisedRequest(request, eori.value, maybeCompanyName))
           }
         case None       => Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
       }

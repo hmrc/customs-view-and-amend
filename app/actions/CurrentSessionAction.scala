@@ -16,7 +16,7 @@
 
 package actions
 
-import models.{IdentifierRequest, SessionData}
+import models.{AuthorisedRequest, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
@@ -29,11 +29,11 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CurrentSessionAction @Inject(
 ) (sessionCache: SessionCache)(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
-    extends ActionTransformer[IdentifierRequest, CurrentSessionAction.RequestWithSessionData]
+    extends ActionTransformer[AuthorisedRequest, CurrentSessionAction.RequestWithSessionData]
     with I18nSupport {
 
   override def transform[A](
-    request: IdentifierRequest[A]
+    request: AuthorisedRequest[A]
   ): Future[CurrentSessionAction.RequestWithSessionData[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     sessionCache
@@ -60,5 +60,5 @@ class CurrentSessionAction @Inject(
 }
 
 object CurrentSessionAction {
-  type RequestWithSessionData[A] = (IdentifierRequest[A], SessionData)
+  type RequestWithSessionData[A] = (AuthorisedRequest[A], SessionData)
 }

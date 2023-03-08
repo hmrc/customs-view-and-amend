@@ -19,7 +19,7 @@ package actions
 import com.google.inject.ImplementedBy
 import config.AppConfig
 import connector.DataStoreConnector
-import models.IdentifierRequest
+import models.AuthorisedRequest
 import play.api.mvc.Results._
 import play.api.mvc._
 import uk.gov.hmrc.auth.core._
@@ -32,8 +32,8 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[AuthorisedCallbackAction])
 trait CallbackAction
-    extends ActionBuilder[IdentifierRequest, AnyContent]
-    with ActionFunction[Request, IdentifierRequest]
+    extends ActionBuilder[AuthorisedRequest, AnyContent]
+    with ActionFunction[Request, AuthorisedRequest]
 
 @Singleton
 class AuthorisedCallbackAction @Inject() (
@@ -44,7 +44,7 @@ class AuthorisedCallbackAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends CallbackAction
     with AuthorisedFunctions {
-  override def invokeBlock[A](request: Request[A], block: IdentifierRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequest(request)
@@ -55,7 +55,7 @@ class AuthorisedCallbackAction @Inject() (
         .flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
           dataStoreConnector.getCompanyName(eori.value).flatMap { maybeCompanyName =>
-            block(IdentifierRequest(request, eori.value, maybeCompanyName))
+            block(AuthorisedRequest(request, eori.value, maybeCompanyName))
           }
         case None       =>
           Future.successful(Forbidden)

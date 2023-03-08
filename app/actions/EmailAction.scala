@@ -18,7 +18,7 @@ package actions
 
 import config.AppConfig
 import connector.DataStoreConnector
-import models.IdentifierRequest
+import models.AuthorisedRequest
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.Results._
@@ -29,19 +29,21 @@ import views.html.email.undeliverable_email
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import repositories.SessionCache
 
 @Singleton
 class EmailAction @Inject() (
   connector: DataStoreConnector,
   undeliverableEmail: undeliverable_email,
+  sessionCache: SessionCache,
   appConfig: AppConfig
 )(implicit val executionContext: ExecutionContext, val messagesApi: MessagesApi)
-    extends ActionRefiner[IdentifierRequest, IdentifierRequest]
+    extends ActionRefiner[AuthorisedRequest, AuthorisedRequest]
     with I18nSupport {
 
   override def refine[A](
-    request: IdentifierRequest[A]
-  ): Future[Either[Result, IdentifierRequest[A]]] = {
+    request: AuthorisedRequest[A]
+  ): Future[Either[Result, AuthorisedRequest[A]]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     connector
       .getEmail(request.eori)

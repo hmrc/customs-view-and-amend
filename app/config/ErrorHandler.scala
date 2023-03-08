@@ -16,7 +16,7 @@
 
 package config
 
-import models.IdentifierRequest
+import models.AuthorisedRequest
 
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
@@ -26,9 +26,11 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
 
 @Singleton
-class ErrorHandler @Inject()(errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)
+class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)
     extends FrontendErrorHandler {
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
-    errorTemplate(pageTitle, heading, message)(IdentifierRequest(request, "", None), implicitly, appConfig)
+  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
+    request: Request[_]
+  ): Html =
+    errorTemplate(pageTitle, heading, message)(AuthorisedRequest(request, "", None), implicitly, appConfig)
 }

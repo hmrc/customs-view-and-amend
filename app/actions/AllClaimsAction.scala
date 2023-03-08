@@ -16,7 +16,7 @@
 
 package actions
 
-import models.{IdentifierRequest, SessionData}
+import models.{AuthorisedRequest, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
@@ -38,11 +38,11 @@ class AllClaimsAction @Inject(
 )(implicit
   val executionContext: ExecutionContext,
   val messagesApi: MessagesApi
-) extends ActionTransformer[IdentifierRequest, AllClaimsAction.RequestWithClaims]
+) extends ActionTransformer[AuthorisedRequest, AllClaimsAction.RequestWithClaims]
     with I18nSupport {
 
   override def transform[A](
-    request: IdentifierRequest[A]
+    request: AuthorisedRequest[A]
   ): Future[AllClaimsAction.RequestWithClaims[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     sessionCache
@@ -94,5 +94,5 @@ object AllClaimsAction {
 
   case class ClaimsNotFoundException(cause: Throwable) extends Exception(cause)
 
-  type RequestWithClaims[A] = (IdentifierRequest[A], AllClaims)
+  type RequestWithClaims[A] = (AuthorisedRequest[A], AllClaims)
 }

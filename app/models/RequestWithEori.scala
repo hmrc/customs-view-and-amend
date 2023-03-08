@@ -20,7 +20,7 @@ import play.api.mvc.{Request, WrappedRequest}
 
 trait RequestWithEori[A] extends Request[A]
 
-final case class IdentifierRequest[A](
+final case class AuthorisedRequest[A](
   request: Request[A],
   eori: String,
   companyName: Option[String],
@@ -28,7 +28,7 @@ final case class IdentifierRequest[A](
 ) extends WrappedRequest[A](request)
     with RequestWithEori[A] {
 
-  def withVerifiedEmail(email: String): IdentifierRequest[A] =
+  def withVerifiedEmail(email: String): AuthorisedRequest[A] =
     copy(verifiedEmail = Some(email))
 
 }

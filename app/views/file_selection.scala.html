@@ -31,7 +31,7 @@
         errorSummary: components.error_summary
 )
 
-@(form: Form[_], serviceType: ServiceType, caseNumber: String, items: Seq[RadioItem])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(form: Form[_], serviceType: ServiceType, caseNumber: String, items: Seq[RadioItem])(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(
     fullWidth = false,

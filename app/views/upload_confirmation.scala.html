@@ -23,7 +23,7 @@
         p: components.p,
         ul: components.unordered_list)
 
-@(claimNumber: String, verifiedEmail: Option[String])(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+@(claimNumber: String, verifiedEmail: Option[String])(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("claim.list.progress.title")), navigationBannerEnabled = false, fullWidth = false) {
     @confirmation(claimNumber)

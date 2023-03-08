@@ -16,7 +16,7 @@
 
 package actions
 
-import models.{IdentifierRequest, SessionData, Error}
+import models.{AuthorisedRequest, SessionData, Error}
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
@@ -73,6 +73,6 @@ class CurrentSessionActionSpec extends SpecBase {
   trait Setup extends SetupBase {
     val app                  = application.build()
     val currentSessionAction = app.injector.instanceOf[CurrentSessionAction]
-    val authenticatedRequest = IdentifierRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
+    val authenticatedRequest = AuthorisedRequest(FakeRequest("GET", "/"), "someEori", Some("companyName"))
   }
 }

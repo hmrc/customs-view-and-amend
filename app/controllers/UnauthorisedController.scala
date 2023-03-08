@@ -17,7 +17,7 @@
 package controllers
 
 import config.AppConfig
-import models.IdentifierRequest
+import models.AuthorisedRequest
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -34,6 +34,6 @@ class UnauthorisedController @Inject() (
     with I18nSupport {
 
   final val onPageLoad: Action[AnyContent] = Action { implicit request =>
-    Ok(unauthorisedView()(IdentifierRequest(request, "", None), implicitly, implicitly))
+    Ok(unauthorisedView()(AuthorisedRequest(request, "", None), implicitly, implicitly))
   }
 }

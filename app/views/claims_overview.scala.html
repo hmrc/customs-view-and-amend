@@ -42,7 +42,7 @@
     postAction: Call,
     companyName: String,
     eori: String
-)(implicit request: IdentifierRequest[_], messages: Messages, appConfig: AppConfig)
+)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"view-upload"}
 
