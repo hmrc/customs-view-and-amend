@@ -34,7 +34,7 @@ class FileSelectionControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK on a successful first request" in new Setup {
       running(app) {
-        await(sessionCache.store(SessionData(Some(allClaimsWithPending)))) shouldBe Right(())
+        await(sessionCache.store(SessionData(claims = Some(allClaimsWithPending)))) shouldBe Right(())
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
@@ -44,7 +44,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "return OK on a successful returning request with same case number" in new Setup {
       running(app) {
-        val session = SessionData(Some(allClaimsWithPending))
+        val session = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withDocumentType(FileSelection.CalculationWorksheet)
         await(sessionCache.store(session)) shouldBe Right(())
@@ -59,7 +59,7 @@ class FileSelectionControllerSpec extends SpecBase {
       running(app) {
         await(
           sessionCache.store(
-            SessionData(Some(allClaimsWithPending))
+            SessionData(claims = Some(allClaimsWithPending))
               .withInitialFileUploadData("other-claim")
           )
         ) shouldBe Right(())
@@ -72,7 +72,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "return OK with fresh journey if previous already submitted" in new Setup {
       running(app) {
-        val session = SessionData(Some(allClaimsWithPending))
+        val session = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withSubmitted
         await(sessionCache.store(session)) shouldBe Right(())
@@ -95,7 +95,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "redirect back to the claim details if not pending claim" in new Setup {
       running(app) {
-        val session = SessionData(Some(allClaimsWithInProgress))
+        val session = SessionData(claims = Some(allClaimsWithInProgress))
         await(sessionCache.store(session)) shouldBe Right(())
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
@@ -108,7 +108,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
   "onSubmit" should {
     "return OK on a successful request" in new Setup {
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
 
       await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -128,7 +128,7 @@ class FileSelectionControllerSpec extends SpecBase {
     }
 
     "return OK on a successful request if file upload url not returned" in new Setup {
-      val sessionData = SessionData(Some(allClaimsWithPending))
+      val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
 
       await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -149,7 +149,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "return BAD_REQUEST if an invalid payload sent" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
 
         await(sessionCache.store(sessionData)) shouldBe Right(())
@@ -165,7 +165,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "redirect to the overview if file upload journey not initialized" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithInProgress))
+        val sessionData = SessionData(claims = Some(allClaimsWithInProgress))
         await(sessionCache.store(sessionData)) shouldBe Right(())
 
         val request =
@@ -180,7 +180,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     "redirect to the confirmation page if already submitted" in new Setup {
       running(app) {
-        val sessionData = SessionData(Some(allClaimsWithPending))
+        val sessionData = SessionData(claims = Some(allClaimsWithPending))
           .withInitialFileUploadData("claim-123")
           .withSubmitted
         await(sessionCache.store(sessionData)) shouldBe Right(())

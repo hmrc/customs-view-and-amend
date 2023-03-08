@@ -31,7 +31,7 @@ class AllClaimsActionSpec extends SpecBase {
     "return existing claims alongside the original request" in new Setup {
       running(app) {
         when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData(Some(testClaims))))))
+          .thenReturn(Future.successful(Right(Some(SessionData(claims = Some(testClaims))))))
         val response = await(allClaimsAction.transform(authenticatedRequest))
         response mustBe ((authenticatedRequest, testClaims))
       }

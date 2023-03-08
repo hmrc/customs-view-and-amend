@@ -75,7 +75,7 @@ class AllClaimsAction @Inject(
   private def getAndStoreAllClaims(implicit hc: HeaderCarrier): Future[AllClaims] =
     claimsConnector.getAllClaims
       .flatMap { allClaims =>
-        val sessionData = SessionData(Some(allClaims))
+        val sessionData = SessionData(claims = Some(allClaims))
         sessionCache
           .store(sessionData)
           .flatMap(

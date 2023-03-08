@@ -18,6 +18,6 @@ package models
 
 import play.api.mvc.Request
 
-trait RequestWithEori[A] extends Request[A] {
-  def eori: String
+trait RequestWithSessionData[A] extends Request[A] {
+  def sessionData: SessionData
 }

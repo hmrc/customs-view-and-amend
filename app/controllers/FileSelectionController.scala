@@ -53,7 +53,7 @@ class FileSelectionController @Inject() (
       session
         .update(_.withInitialFileUploadData(caseNumber))
         .map {
-          case Some(SessionData(Some(allClaims), Some(fileUploadJourney))) =>
+          case Some(SessionData(_, _, Some(allClaims), Some(fileUploadJourney))) =>
             val form: Form[FileSelection] = FileSelectionForm.form
             Ok(
               fileSelection(

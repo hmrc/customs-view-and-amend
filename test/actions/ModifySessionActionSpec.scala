@@ -39,7 +39,7 @@ class ModifySessionActionSpec extends SpecBase {
         request mustBe authenticatedRequest
 
         val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(SessionData(Some(testClaims)))
+        newSession mustBe Some(SessionData(claims = Some(testClaims)))
       }
     }
 
@@ -88,7 +88,7 @@ class ModifySessionActionSpec extends SpecBase {
         request mustBe authenticatedRequest
 
         val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(SessionData(Some(testClaims)))
+        newSession mustBe Some(SessionData(claims = Some(testClaims)))
       }
     }
 

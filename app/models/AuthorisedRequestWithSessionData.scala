@@ -16,8 +16,12 @@
 
 package models
 
-import play.api.mvc.Request
+import play.api.mvc.{Request, WrappedRequest}
 
-trait RequestWithEori[A] extends Request[A] {
-  def eori: String
-}
+final case class AuthorisedRequestWithSessionData[A](
+  request: Request[A],
+  eori: String,
+  sessionData: SessionData
+) extends WrappedRequest[A](request)
+    with RequestWithEori[A]
+    with RequestWithSessionData[A]
