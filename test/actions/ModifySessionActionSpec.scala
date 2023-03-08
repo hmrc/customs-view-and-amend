@@ -30,23 +30,19 @@ class ModifySessionActionSpec extends SpecBase {
   "ModifySessionAction" should {
     "return existing session modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData()))))
         when(mockSessionCache.update(any)(any, any))
-          .thenAnswer((f: SessionData => SessionData) => Future.successful(Right(f(SessionData()))))
+          .thenAnswer((f: SessionData => SessionData) => Future.successful(Right(f(existingSessionData))))
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
         request mustBe authenticatedRequest
 
         val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(SessionData(claims = Some(testClaims)))
+        newSession mustBe Some(existingSessionData.copy(claims = Some(testClaims)))
       }
     }
 
     "return existing session with failing modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData()))))
         when(mockSessionCache.update(any)(any, any))
           .thenAnswer((f: SessionData => SessionData) => Future.successful(Left(Error("do not panick"))))
 
@@ -61,8 +57,6 @@ class ModifySessionActionSpec extends SpecBase {
 
     "return existing session with blowing up modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(Some(SessionData()))))
         when(mockSessionCache.update(any)(any, any))
           .thenAnswer((f: SessionData => SessionData) => Future.failed(new Exception("do not panick")))
 
@@ -74,57 +68,21 @@ class ModifySessionActionSpec extends SpecBase {
         }
       }
     }
-
-    "return new session modifier alongside the original request" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(None)))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.successful(Right(())))
-        when(mockSessionCache.update(any)(any, any))
-          .thenAnswer((f: SessionData => SessionData) => Future.successful(Right(f(SessionData()))))
-
-        val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
-
-        val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(SessionData(claims = Some(testClaims)))
-      }
-    }
-
-    "rethrow session cache get error" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Left(Error(new Exception("do not panick")))))
-        an[Exception] shouldBe thrownBy {
-          await(modifySessionAction.transform(authenticatedRequest))
-        }
-      }
-    }
-
-    "rethrow session cache store error" in new Setup {
-      running(app) {
-        when(mockSessionCache.get()(any))
-          .thenReturn(Future.successful(Right(None)))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.successful(Left(Error("do not panick"))))
-        an[Exception] shouldBe thrownBy {
-          await(modifySessionAction.transform(authenticatedRequest))
-        }
-      }
-    }
   }
 
   trait Setup extends SetupBase {
-    val app                  = application.build()
-    val modifySessionAction  = app.injector.instanceOf[ModifySessionAction]
+    val app                 = application.build()
+    val modifySessionAction = app.injector.instanceOf[ModifySessionAction]
+
+    val existingSessionData = SessionData()
+      .withVerifiedEmail("foo@bar.com")
+      .withCompanyName("companyName")
+
     val authenticatedRequest =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
-        SessionData()
-          .withVerifiedEmail("foo@bar.com")
-          .withCompanyName("companyName")
+        existingSessionData
       )
 
     implicit val hc: HeaderCarrier    = HeaderCarrier()

@@ -24,6 +24,7 @@ import models.file_upload.UploadedFileMetadata
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.play.http.HeaderCarrierConverter
 import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
@@ -78,7 +79,6 @@ class FileUploadController @Inject() (
   final val receiveUpscanCallback: Action[UploadedFileMetadata] =
     (authenticateCallback andThen currentSession andThen modifySessionAction)
       .async(parse.json[UploadedFileMetadata]) { case (request, session) =>
-        implicit val r                         = request
         val notification: UploadedFileMetadata = request.body
         session.current.fileUploadJourney match {
           case None =>
@@ -90,7 +90,10 @@ class FileUploadController @Inject() (
             else {
               if (notification.nonce == nonce) {
                 session
-                  .update(_.withUploadedFiles(notification.uploadedFiles))
+                  .update(_.withUploadedFiles(notification.uploadedFiles))(
+                    HeaderCarrierConverter.fromRequest(request),
+                    executionContext
+                  )
                   .map {
                     case Some(_) => NoContent
                     case None    =>

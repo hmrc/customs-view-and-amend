@@ -21,7 +21,6 @@ import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -35,31 +34,8 @@ class ModifySessionAction @Inject(
 
   override def transform[A](
     request: AuthorisedRequestWithSessionData[A]
-  ): Future[ModifySessionAction.RequestWithSessionModifier[A]] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    sessionCache
-      .get()
-      .flatMap(
-        _.fold(
-          error => Future.failed(error.exception),
-          {
-            case None              =>
-              val sessionData = SessionData()
-              sessionCache
-                .store(sessionData)
-                .flatMap(
-                  _.fold(
-                    error => Future.failed(error.exception),
-                    _ =>
-                      Future.successful((request, new ModifySessionAction.SessionModifier(sessionCache, sessionData)))
-                  )
-                )
-            case Some(sessionData) =>
-              Future.successful((request, new ModifySessionAction.SessionModifier(sessionCache, sessionData)))
-          }
-        )
-      )
-  }
+  ): Future[ModifySessionAction.RequestWithSessionModifier[A]] =
+    Future.successful((request, new ModifySessionAction.SessionModifier(sessionCache, request.sessionData)))
 }
 
 object ModifySessionAction {
