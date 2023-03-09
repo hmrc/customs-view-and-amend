@@ -61,7 +61,6 @@ class CurrentSessionAction @Inject(
                     x => Future.successful(Left(x)),
                     retrieveCompanyName(request, _)
                       .flatMap { sessionData =>
-                        println(s"new: $sessionData")
                         sessionCache
                           .store(sessionData)
                           .flatMap(
@@ -75,7 +74,6 @@ class CurrentSessionAction @Inject(
                 )
 
             case Some(sessionData) =>
-              println(s"existing: $sessionData")
               Future.successful(Right(request.withSessionData(sessionData)))
           }
         )
@@ -109,8 +107,7 @@ class CurrentSessionAction @Inject(
   private def retrieveCompanyName[A](
     request: AuthorisedRequest[A],
     sessionData: SessionData
-  )(implicit hc: HeaderCarrier): Future[SessionData] = {
-    println(sessionData)
+  )(implicit hc: HeaderCarrier): Future[SessionData] =
     connector
       .getCompanyName(request.eori)
       .map {
@@ -124,5 +121,4 @@ class CurrentSessionAction @Inject(
         // This will allow users to access the service if ETMP return an error via SUB09
         sessionData
       }
-  }
 }
