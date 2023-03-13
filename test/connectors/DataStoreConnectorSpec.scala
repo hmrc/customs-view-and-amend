@@ -21,14 +21,13 @@ import models.company.{CompanyAddress, CompanyInformationResponse}
 import models.email._
 import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
+import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
 import play.api.{Application, inject}
 import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import utils.SpecBase
 
-import java.time.LocalDateTime
 import scala.concurrent.Future
 
 class DataStoreConnectorSpec extends SpecBase {
@@ -39,18 +38,20 @@ class DataStoreConnectorSpec extends SpecBase {
 
       val jsonResponse: String = """{"address":"someemail@mail.com"}""".stripMargin
 
-      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.successful(Json.parse(jsonResponse).as[EmailResponse]))
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(Json.parse(jsonResponse).as[EmailResponse]))
 
       running(app) {
         val response = connector.getEmail(eori)
-        val result = await(response)
+        val result   = await(response)
         result mustBe Right(Email("someemail@mail.com"))
       }
     }
 
     "return a UnverifiedEmail" in new Setup {
       val eori = "GB11111"
-      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.failed(UpstreamErrorResponse("NoData", 404, 404)))
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.failed(UpstreamErrorResponse("NoData", 404, 404)))
 
       running(app) {
         val response = connector.getEmail(eori)
@@ -63,11 +64,12 @@ class DataStoreConnectorSpec extends SpecBase {
 
       val emailResponse: EmailResponse = EmailResponse(None, None, None)
 
-      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.successful(emailResponse))
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(emailResponse))
 
       running(app) {
         val response = connector.getEmail(eori)
-        val result = await(response)
+        val result   = await(response)
         result mustBe Left(UnverifiedEmail)
       }
     }
@@ -75,19 +77,14 @@ class DataStoreConnectorSpec extends SpecBase {
     "return an UndeliverableEmail" in new Setup {
       val eori = "GB11111"
 
-      val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(UndeliverableInformation(
-        "test",
-        "test",
-        "test",
-        LocalDateTime.now(),
-        UndeliverableInformationEvent("someId", "someEvent", "some@email.com", "test", None, None, "EORI")
-      )))
+      val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(JsString("")))
 
-      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.successful(emailResponse))
+      when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(emailResponse))
 
       running(app) {
         val response = connector.getEmail(eori)
-        val result = await(response)
+        val result   = await(response)
         result mustBe Left(UndeliverableEmail("email@email.com"))
       }
     }
@@ -95,22 +92,23 @@ class DataStoreConnectorSpec extends SpecBase {
     "throw service unavailable" in new Setup {
       running(app) {
         val eori = "ETMP500ERROR"
-        when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any)).thenReturn(Future.failed(new ServiceUnavailableException("ServiceUnavailable")))
+        when[Future[EmailResponse]](mockHttp.GET(any, any, any)(any, any, any))
+          .thenReturn(Future.failed(new ServiceUnavailableException("ServiceUnavailable")))
         assertThrows[ServiceUnavailableException](await(connector.getEmail(eori)))
       }
     }
 
     "return company name" in new Setup {
-      val eori = "GB11111"
-      val companyName = "Company name"
-      val address: CompanyAddress = CompanyAddress("Street", "City", Some("Post Code"), "Country code")
+      val eori                                                   = "GB11111"
+      val companyName                                            = "Company name"
+      val address: CompanyAddress                                = CompanyAddress("Street", "City", Some("Post Code"), "Country code")
       val companyInformationResponse: CompanyInformationResponse = CompanyInformationResponse(companyName, address)
       when[Future[CompanyInformationResponse]](mockHttp.GET(any, any, any)(any, any, any))
         .thenReturn(Future.successful(companyInformationResponse))
 
       running(app) {
         val response = connector.getCompanyName(eori)
-        val result = await(response)
+        val result   = await(response)
         result must be(Some(companyName))
       }
     }
@@ -128,16 +126,19 @@ class DataStoreConnectorSpec extends SpecBase {
   }
 
   trait Setup {
-    val mockHttp: HttpClient = mock[HttpClient]
+    val mockHttp: HttpClient       = mock[HttpClient]
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val app: Application = GuiceApplicationBuilder().overrides(
-      inject.bind[HttpClient].toInstance(mockHttp)
-    ).configure(
-      "play.filters.csp.nonce.enabled" -> "false",
-      "auditing.enabled" -> "false",
-      "metrics.enabled" -> "false"
-    ).build()
+    val app: Application = GuiceApplicationBuilder()
+      .overrides(
+        inject.bind[HttpClient].toInstance(mockHttp)
+      )
+      .configure(
+        "play.filters.csp.nonce.enabled" -> "false",
+        "auditing.enabled"               -> "false",
+        "metrics.enabled"                -> "false"
+      )
+      .build()
 
     val connector: DataStoreConnector = app.injector.instanceOf[DataStoreConnector]
   }
