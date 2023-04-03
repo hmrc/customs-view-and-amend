@@ -56,7 +56,6 @@ class XiEoriConnectorSpec extends SpecBase {
 
       running(app) {
         val result: Option[XiEoriResponse] = await(connector.getXiEori)
-        result shouldBe
         result.get.eoriXI shouldBe Right("GB744638982000")
       }
     }
