@@ -17,23 +17,21 @@
 package connectors
 
 import connector.XiEoriConnector
-import models._
 import models.responses._
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import utils.SpecBase
 
-import java.time.LocalDate
 import scala.concurrent.Future
 
 class XiEoriConnectorSpec extends SpecBase {
 
-  "getSubscription" should {
-    "return a subscription and call the backend api" in new Setup {
-      when[Future[XiEoriResponse]](mockHttp.GET(any, any, any)(any, any, any))
-        .thenReturn(Future.successful(xiEoriResponse))
+  "getXiEori" should {
+    "return an eoriXI from backend if it exists" in new Setup {
+      when[Future[HttpResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(HttpResponse(OK, validResponse)))
 
       running(app) {
         val result = await(connector.getXiEori)
@@ -43,33 +41,34 @@ class XiEoriConnectorSpec extends SpecBase {
             "XI744638982000"
           )
         )
-        result.getOrElse(fail).eoriGB shouldBe "GB744638982000"
-        result.getOrElse(fail).eoriXI shouldBe "XI744638982000"
       }
     }
-  }
-
-  "getSubscription" should {
-    "return an XI eori and a GB eori" in new Setup {
-      when[Future[XiEoriResponse]](mockHttp.GET(any, any, any)(any, any, any))
-        .thenReturn(Future.successful(xiEoriResponse))
+    "return none if eoriXI doesn't exist" in new Setup {
+      when[Future[HttpResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       running(app) {
-        val result: Option[XiEoriResponse] = await(connector.getXiEori)
-        result.get.eoriXI shouldBe Right("GB744638982000")
+        val result = await(connector.getXiEori)
+        result shouldBe None
+      }
+    }
+    "throw a runtime exception if there is an internal error" in new Setup {
+      when[Future[HttpResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
+
+      running(app) {
+        a[RuntimeException] shouldBe thrownBy {
+          await(connector.getXiEori)
+        }
       }
     }
   }
+
   trait Setup extends SetupBase {
     val mockHttp: HttpClient       = mock[HttpClient]
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val xiEoriResponse: XiEoriResponse = XiEoriResponse(
-      "GB744638982000",
-      "XI744638982000"
-    )
-
-    val startDate = Some(LocalDate.of(2021, 3, 21))
+    val validResponse = """{"eoriGB":"GB744638982000","eoriXI":"XI744638982000"}"""
 
     val app: Application = GuiceApplicationBuilder()
       .overrides(
