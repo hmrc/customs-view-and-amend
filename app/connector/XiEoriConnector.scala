@@ -19,7 +19,7 @@ package connector
 import cats.implicits.catsSyntaxEq
 import com.google.inject.ImplementedBy
 import config.AppConfig
-import models.responses.XiEoriResponse
+import models.XiEori
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @ImplementedBy(classOf[XiEoriConnectorImpl])
 trait XiEoriConnector {
-  def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEoriResponse]]
+  def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]]
 }
 
 @Singleton
@@ -41,12 +41,12 @@ class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
   private val getXiEoriUrl = s"$baseUrl/eori/xi`"
 
 
-  final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEoriResponse]] =
+  final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]] =
     httpClient
       .GET[HttpResponse](getXiEoriUrl)
       .flatMap { response =>
         if (response.status === OK) {
-          Future(response.json.asOpt[XiEoriResponse])
+          Future(response.json.asOpt[XiEori])
         } else if (response.status === NO_CONTENT) {
           Future.successful(None)
         } else {

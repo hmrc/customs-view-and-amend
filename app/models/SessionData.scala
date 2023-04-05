@@ -24,6 +24,7 @@ import play.api.libs.json.{Format, Json}
 final case class SessionData(
   verifiedEmail: Option[String] = None,
   companyName: Option[String] = None,
+  xiEori: Option[XiEori] = None,
   claims: Option[AllClaims] = None,
   fileUploadJourney: Option[FileUploadJourney] = None
 ) {
@@ -34,8 +35,12 @@ final case class SessionData(
   def withCompanyName(companyName: String): SessionData =
     copy(companyName = Some(companyName))
 
+  def withXiEori(xiEori: XiEori): SessionData =
+    copy(xiEori = Some(xiEori))
+
   def withAllClaims(claims: AllClaims): SessionData =
     copy(claims = Some(claims))
+
 
   def withInitialFileUploadData(caseNumber: String): SessionData =
     fileUploadJourney match {

@@ -49,7 +49,10 @@ class AuthenticatedIdentifierAction @Inject() (
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
-      allEnrolments.getEnrolment("HMRC-CUS-ORG").flatMap(_.getIdentifier("EORINumber")) match {
+      allEnrolments
+        .getEnrolment("HMRC-CUS-ORG")
+        .flatMap(_.getIdentifier("EORINumber"))
+      match {
         case Some(eori) =>
           block(AuthorisedRequest(request, eori.value))
 

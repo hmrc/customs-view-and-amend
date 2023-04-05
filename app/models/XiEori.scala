@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package models.responses
+package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class XiEoriResponse(
+case class XiEori(
   eoriGB: String,
   eoriXI: String
 )
 
-object XiEoriResponse {
-  implicit val format: OFormat[XiEoriResponse] = Json.format[XiEoriResponse]
+object XiEori {
+  implicit val format: OFormat[XiEori] = Json.format[XiEori]
 }
