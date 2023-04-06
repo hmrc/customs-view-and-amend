@@ -19,7 +19,7 @@ package utils
 import akka.stream.testkit.NoMaterializer
 import com.codahale.metrics.MetricRegistry
 import com.kenshoo.play.metrics.Metrics
-import connector.{ClaimsConnector, DataStoreConnector}
+import connector.{ClaimsConnector, DataStoreConnector, XiEoriConnector}
 import models.CaseType.Individual
 import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
@@ -75,6 +75,7 @@ trait SpecBase
     val mockDataStoreConnector: DataStoreConnector = mock[DataStoreConnector]
     val mockSessionCache: SessionCache             = mock[SessionCache]
     val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
+    val mockXiEoriConnector: XiEoriConnector      = mock[XiEoriConnector]
 
     Mockito
       .lenient()
@@ -159,6 +160,7 @@ trait SpecBase
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[SessionCache].toInstance(mockSessionCache),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        bind[XiEoriConnector].toInstance(mockXiEoriConnector),
         bind[Metrics].toInstance(new FakeMetrics)
       )
       .configure(
@@ -173,6 +175,7 @@ trait SpecBase
         bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
+        bind[XiEoriConnector].toInstance(mockXiEoriConnector),
         bind[Metrics].toInstance(new FakeMetrics)
       )
       .configure(

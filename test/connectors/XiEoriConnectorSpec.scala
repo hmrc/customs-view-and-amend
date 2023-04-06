@@ -17,7 +17,7 @@
 package connectors
 
 import connector.XiEoriConnector
-import models.responses._
+import models.XiEori
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, inject}
@@ -36,7 +36,7 @@ class XiEoriConnectorSpec extends SpecBase {
       running(app) {
         val result = await(connector.getXiEori)
         result    shouldBe Some(
-          XiEoriResponse(
+          XiEori(
             "GB744638982000",
             "XI744638982000"
           )
