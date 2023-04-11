@@ -35,7 +35,7 @@ class XiEoriConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getXiEori)
-        result    shouldBe Some(
+        result shouldBe Some(
           XiEori(
             "GB744638982000",
             "XI744638982000"
@@ -57,7 +57,7 @@ class XiEoriConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
 
       running(app) {
-        a[RuntimeException] shouldBe thrownBy {
+        a[XiEoriConnector.Exception] shouldBe thrownBy {
           await(connector.getXiEori)
         }
       }

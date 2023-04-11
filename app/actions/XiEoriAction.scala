@@ -16,8 +16,8 @@
 
 package actions
 
-import connector.{ClaimsConnector, XiEoriConnector}
-import models.{AllClaims, AuthorisedRequestWithSessionData, XiEori}
+import connector.XiEoriConnector
+import models.AuthorisedRequestWithSessionData
 import play.api.i18n.{I18nSupport, MessagesApi}
 import play.api.mvc.ActionTransformer
 import repositories.SessionCache
@@ -26,7 +26,6 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.control.NonFatal
 
 @Singleton
 class XiEoriAction @Inject(
@@ -36,45 +35,36 @@ class XiEoriAction @Inject(
 )(implicit
   val executionContext: ExecutionContext,
   val messagesApi: MessagesApi
-) extends ActionTransformer[AuthorisedRequestWithSessionData, XiEoriAction.RequestXiEori]
+) extends ActionTransformer[AuthorisedRequestWithSessionData, AuthorisedRequestWithSessionData]
     with I18nSupport {
 
   override def transform[A](
     request: AuthorisedRequestWithSessionData[A]
-  ): Future[XiEoriAction.RequestXiEori[A]] =
+  ): Future[AuthorisedRequestWithSessionData[A]] =
     request.sessionData.xiEori match {
-      case None =>
+      case None         =>
         getAndStoreXiEori(request)
       case Some(xiEori) =>
-        Future.successful(request, xiEori)    }
+        Future.successful(request)
+    }
 
   private def getAndStoreXiEori[A](
-                                    request: AuthorisedRequestWithSessionData[A]
-                                  ): Future[(AuthorisedRequestWithSessionData[A], XiEori)] = {
+    request: AuthorisedRequestWithSessionData[A]
+  ): Future[AuthorisedRequestWithSessionData[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    xiEoriConnector
-      .getXiEori
+    xiEoriConnector.getXiEori
       .flatMap {
-        case Some(xiEori) => sessionCache
-          .store(request.
-            sessionData.
-            withXiEori(xiEori))
-          .flatMap(
-            _.fold(
-              error => Future.failed(XiEoriAction.XiEoriNotFoundException(error.exception)),
-              _ => Future.successful(request.withXiEori(xiEori), xiEori)
+        case Some(xiEori) =>
+          sessionCache
+            .store(request.sessionData.withXiEori(xiEori))
+            .flatMap(
+              _.fold(
+                error => Future.failed(error.exception),
+                _ => Future.successful(request.withXiEori(xiEori))
+              )
             )
-          )
-      }
-      .recoverWith { case NonFatal(e) =>
-        Future.failed(XiEoriAction.XiEoriNotFoundException(e))
+        case None         =>
+          Future.successful(request)
       }
   }
-}
-
-object XiEoriAction {
-
-  case class XiEoriNotFoundException(cause: Throwable) extends Exception(cause)
-
-  type RequestXiEori[A] = (AuthorisedRequestWithSessionData[A], XiEori)
 }
