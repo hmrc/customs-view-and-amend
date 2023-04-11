@@ -29,6 +29,6 @@ final case class AuthorisedRequestWithSessionData[A](
   def withAllClaims(allClaims: AllClaims): AuthorisedRequestWithSessionData[A] =
     copy(sessionData = sessionData.withAllClaims(allClaims))
 
-  def withXiEori(xiEori: XiEori): AuthorisedRequestWithSessionData[A] =
+  def withXiEori(xiEori: Option[XiEori]): AuthorisedRequestWithSessionData[A] =
     copy(sessionData = sessionData.withXiEori(xiEori))
 }

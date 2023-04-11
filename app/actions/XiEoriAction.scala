@@ -42,9 +42,9 @@ class XiEoriAction @Inject(
     request: AuthorisedRequestWithSessionData[A]
   ): Future[AuthorisedRequestWithSessionData[A]] =
     request.sessionData.xiEori match {
-      case None         =>
+      case Left(()) =>
         getAndStoreXiEori(request)
-      case Some(xiEori) =>
+      case Right(_) =>
         Future.successful(request)
     }
 
@@ -53,18 +53,15 @@ class XiEoriAction @Inject(
   ): Future[AuthorisedRequestWithSessionData[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
     xiEoriConnector.getXiEori
-      .flatMap {
-        case Some(xiEori) =>
-          sessionCache
-            .store(request.sessionData.withXiEori(xiEori))
-            .flatMap(
-              _.fold(
-                error => Future.failed(error.exception),
-                _ => Future.successful(request.withXiEori(xiEori))
-              )
+      .flatMap { case xiEori =>
+        sessionCache
+          .store(request.sessionData.withXiEori(xiEori))
+          .flatMap(
+            _.fold(
+              error => Future.failed(error.exception),
+              _ => Future.successful(request.withXiEori(xiEori))
             )
-        case None         =>
-          Future.successful(request)
+          )
       }
   }
 }
