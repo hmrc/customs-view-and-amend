@@ -36,7 +36,7 @@ class ClaimsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(allClaimsResponse))
 
       running(app) {
-        val result = await(connector.getAllClaims)
+        val result = await(connector.getAllClaims())
         result.closedClaims     shouldBe Seq(
           ClosedClaim(
             "21LLLLLLLLLL12343",

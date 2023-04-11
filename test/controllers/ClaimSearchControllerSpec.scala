@@ -35,7 +35,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         val request                = fakeRequest(GET, routes.ClaimSearchController.onPageLoad.url)
         val result: Future[Result] = route(app, request).value
         status(result) mustBe OK
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
   }
@@ -46,7 +46,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         val request                = fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("value" -> "")
         val result: Future[Result] = route(app, request).value
         status(result) mustBe BAD_REQUEST
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
 
@@ -57,7 +57,7 @@ class ClaimSearchControllerSpec extends SpecBase {
         val result: Future[Result] = route(app, request).value
 
         status(result) mustBe OK
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
   }
@@ -86,7 +86,7 @@ class ClaimSearchControllerSpec extends SpecBase {
 
     Mockito
       .lenient()
-      .when(mockClaimsConnector.getAllClaims(any))
+      .when(mockClaimsConnector.getAllClaims(any)(any))
       .thenReturn(Future.successful(allClaims))
   }
 
