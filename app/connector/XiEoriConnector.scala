@@ -22,11 +22,11 @@ import config.AppConfig
 import models.XiEori
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
+import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-
 
 @ImplementedBy(classOf[XiEoriConnectorImpl])
 trait XiEoriConnector {
@@ -34,12 +34,12 @@ trait XiEoriConnector {
 }
 
 @Singleton
-class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig) (implicit
-                                                                executionContext: ExecutionContext
-) extends XiEoriConnector with Logging {
-  private val baseUrl = appConfig.cdsReimbursementClaim
+class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig)(implicit
+  executionContext: ExecutionContext
+) extends XiEoriConnector
+    with Logging {
+  private val baseUrl      = appConfig.cdsReimbursementClaim
   private val getXiEoriUrl = s"$baseUrl/eori/xi`"
-
 
   final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]] =
     httpClient
@@ -50,7 +50,13 @@ class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
         } else if (response.status === NO_CONTENT) {
           Future.successful(None)
         } else {
-          Future.failed(new RuntimeException(s"call to get xi eori details ${response.status}"))
+          Future.failed(
+            new XiEoriConnector.Exception(s"call to get XI EORI details has failed: $response")
+          )
         }
       }
+}
+
+object XiEoriConnector {
+  class Exception(message: String) extends scala.Exception(message)
 }
