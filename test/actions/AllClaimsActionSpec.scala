@@ -36,7 +36,7 @@ class AllClaimsActionSpec extends SpecBase {
 
     "call for claims if missing in the session" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any))
+        when(mockClaimsConnector.getAllClaims(any)(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.successful(Right(())))
@@ -47,7 +47,7 @@ class AllClaimsActionSpec extends SpecBase {
 
     "throw claims not found if claims connector error" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any))
+        when(mockClaimsConnector.getAllClaims(any)(any))
           .thenReturn(Future.failed(new Exception("do not panick")))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
           await(allClaimsAction.transform(authorisedRequestWithoutClaims))
@@ -57,7 +57,7 @@ class AllClaimsActionSpec extends SpecBase {
 
     "throw claims not found if cache error when storing" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any))
+        when(mockClaimsConnector.getAllClaims(any)(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.failed(new Exception("do not panick")))
@@ -69,7 +69,7 @@ class AllClaimsActionSpec extends SpecBase {
 
     "throw claims not found if cache connection error when store" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any))
+        when(mockClaimsConnector.getAllClaims(any)(any))
           .thenReturn(Future.successful(testClaims))
         when(mockSessionCache.store(any)(any))
           .thenReturn(Future.successful(Left(Error(new Exception("do not panick")))))

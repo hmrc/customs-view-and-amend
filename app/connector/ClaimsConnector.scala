@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {
 
-  def getAllClaims(implicit hc: HeaderCarrier): Future[AllClaims]
+  def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims]
 
   def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
@@ -45,13 +45,14 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
     with Logging {
 
   private val baseUrl         = appConfig.cdsReimbursementClaim
-  private val getAllClaimsUrl = s"$baseUrl/claims"
+  private val getGbClaimsUrl = s"$baseUrl/claims"
+  private val getGbAndXiClaimsUrl = s"$baseUrl/claims?includeXiClaims=true"
 
   private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String) =
     s"$baseUrl/claims/$serviceType/$caseNumber"
 
-  final def getAllClaims(implicit hc: HeaderCarrier): Future[AllClaims] = httpClient
-    .GET[AllClaimsResponse](getAllClaimsUrl)
+  final def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims] = httpClient
+    .GET[AllClaimsResponse](if (includeXiClaims) getGbAndXiClaimsUrl else getGbClaimsUrl)
     .map { claimsResponse =>
       val claims =
         claimsResponse.claims.ndrcClaims.map(_.toClaim) ++

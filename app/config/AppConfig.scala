@@ -72,4 +72,6 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
       .getOptional[String]("cds-reimbursement-claim.context")
       .getOrElse("/cds-reimbursement-claim")
 
+  lazy val includeXiClaims: Boolean = config.get[Boolean]("features.include-xi-claims")
+
 }

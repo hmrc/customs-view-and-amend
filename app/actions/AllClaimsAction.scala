@@ -16,6 +16,7 @@
 
 package actions
 
+import config.AppConfig
 import connector.ClaimsConnector
 import models.{AllClaims, AuthorisedRequestWithSessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -32,7 +33,8 @@ import scala.util.control.NonFatal
 class AllClaimsAction @Inject(
 ) (
   sessionCache: SessionCache,
-  claimsConnector: ClaimsConnector
+  claimsConnector: ClaimsConnector,
+  appConfig: AppConfig
 )(implicit
   val executionContext: ExecutionContext,
   val messagesApi: MessagesApi
@@ -54,7 +56,7 @@ class AllClaimsAction @Inject(
     request: AuthorisedRequestWithSessionData[A]
   ): Future[AllClaimsAction.RequestWithClaims[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    claimsConnector.getAllClaims
+    claimsConnector.getAllClaims(appConfig.includeXiClaims)
       .flatMap { allClaims =>
         sessionCache
           .store(request.sessionData.withAllClaims(allClaims))

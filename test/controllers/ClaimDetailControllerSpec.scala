@@ -167,7 +167,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     Mockito
       .lenient()
-      .when(mockClaimsConnector.getAllClaims(any))
+      .when(mockClaimsConnector.getAllClaims(any)(any))
       .thenReturn(Future.successful(allClaims))
   }
 
