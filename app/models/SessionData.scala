@@ -19,12 +19,12 @@ package models
 import cats.Eq
 import models.Nonce
 import models.file_upload.UploadedFile
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsFalse, JsNull, JsSuccess, Json, Reads, Writes}
 
 final case class SessionData(
   verifiedEmail: Option[String] = None,
   companyName: Option[String] = None,
-  xiEori: Option[XiEori] = None,
+  xiEori: Either[Unit, Option[XiEori]] = Left(()),
   claims: Option[AllClaims] = None,
   fileUploadJourney: Option[FileUploadJourney] = None
 ) {
@@ -35,12 +35,11 @@ final case class SessionData(
   def withCompanyName(companyName: String): SessionData =
     copy(companyName = Some(companyName))
 
-  def withXiEori(xiEori: XiEori): SessionData =
-    copy(xiEori = Some(xiEori))
+  def withXiEori(xiEori: Option[XiEori]): SessionData =
+    copy(xiEori = Right(xiEori))
 
   def withAllClaims(claims: AllClaims): SessionData =
     copy(claims = Some(claims))
-
 
   def withInitialFileUploadData(caseNumber: String): SessionData =
     fileUploadJourney match {
@@ -79,6 +78,23 @@ final case class SessionData(
 }
 
 object SessionData {
+
+  implicit val formatXiEori: Format[Either[Unit, Option[XiEori]]] =
+    Format(
+      Reads {
+        case JsNull  => JsSuccess(Left(()))
+        case JsFalse => JsSuccess(Right(None))
+        case other   =>
+          implicitly[Reads[XiEori]].reads(other).map(x => Right(Some(x)))
+      },
+      Writes {
+        case Left(())            => JsNull
+        case Right(None)         => JsFalse
+        case Right(Some(xiEori)) =>
+          implicitly[Writes[XiEori]].writes(xiEori)
+      }
+    )
+
   implicit val format: Format[SessionData] = Json.format[SessionData]
   implicit val eq: Eq[SessionData]         = Eq.fromUniversalEquals[SessionData]
 }

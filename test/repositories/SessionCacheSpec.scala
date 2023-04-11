@@ -17,22 +17,23 @@
 package repositories
 
 import com.typesafe.config.ConfigFactory
-import models.SessionData
+import models.file_upload.UploadedFile
+import models.{AllClaims, ClosedClaim, FileSelection, InProgressClaim, NDRC, PendingClaim, SessionData, XiEori}
 import org.scalatest.concurrent.Eventually
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Configuration
-import play.api.libs.json.Writes
+import play.api.libs.json.{Reads, Writes}
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
 import uk.gov.hmrc.mongo.test.CleanMongoCollectionSupport
 
+import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
-import play.api.libs.json.Reads
 
 class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with Matchers with Eventually {
 
@@ -43,9 +44,85 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
 
   "SessionCache" must {
 
-    "be able to insert SessionData into mongo and read it back" in new TestEnvironment {
+    "be able to insert empty SessionData into mongo and read it back" in new TestEnvironment {
       val sessionData: SessionData = SessionData()
       val result                   = sessionCache.store(sessionData)
+
+      await(result) should be(Right(()))
+
+      eventually {
+        val getResult = sessionCache.get()
+        await(getResult) should be(Right(Some(sessionData)))
+      }
+    }
+
+    "be able to insert full SessionData into mongo and read it back" in new TestEnvironment {
+      val sessionData: SessionData = SessionData()
+        .withCompanyName("Foo Ltd.")
+        .withUploadedFiles(
+          Seq(
+            UploadedFile(
+              "ref",
+              "/uri",
+              "timestamp",
+              "sum",
+              "file",
+              "mime",
+              10,
+              None,
+              FileSelection.AdditionalSupportingDocuments,
+              None
+            )
+          )
+        )
+        .withDocumentType(FileSelection.CalculationWorksheet)
+        .withInitialFileUploadData("ABC123")
+        .withVerifiedEmail("foo@bar.com")
+        .withXiEori(None)
+        .withAllClaims(
+          AllClaims(
+            pendingClaims = Seq(
+              PendingClaim(
+                "MRN",
+                "NDRC-0001",
+                NDRC,
+                None,
+                Some(LocalDate.of(2019, 1, 1)),
+                Some(LocalDate.of(2019, 2, 1))
+              )
+            ),
+            inProgressClaims = Seq(InProgressClaim("MRN", "NDRC-0002", NDRC, None, Some(LocalDate.of(2019, 1, 1)))),
+            closedClaims = Seq(
+              ClosedClaim(
+                "MRN",
+                "NDRC-0003",
+                NDRC,
+                None,
+                Some(LocalDate.of(2019, 1, 1)),
+                Some(LocalDate.of(2019, 2, 1)),
+                "Closed"
+              )
+            )
+          )
+        )
+        .withSubmitted
+
+      val result = sessionCache.store(sessionData)
+
+      await(result) should be(Right(()))
+
+      eventually {
+        val getResult = sessionCache.get()
+        await(getResult) should be(Right(Some(sessionData)))
+      }
+    }
+
+    "be able to insert half-full SessionData into mongo and read it back" in new TestEnvironment {
+      val sessionData: SessionData = SessionData()
+        .withCompanyName("Foo Ltd.")
+        .withXiEori(Some(XiEori("abc", "def")))
+
+      val result = sessionCache.store(sessionData)
 
       await(result) should be(Right(()))
 
