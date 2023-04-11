@@ -64,6 +64,40 @@ class ClaimsConnectorSpec extends SpecBase {
         )
       }
     }
+
+    "return AllClaims and call the financials api (XI EORI)" in new Setup {
+      when[Future[AllClaimsResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.successful(allClaimsResponse))
+
+      running(app) {
+        val result = await(connector.getAllClaims(includeXiClaims = true))
+        result.closedClaims shouldBe Seq(
+          ClosedClaim(
+            "21LLLLLLLLLL12343",
+            "SEC-2107",
+            SCTY,
+            Some("broomer007"),
+            startDate,
+            Some(LocalDate.of(2021, 12, 20)),
+            "Closed"
+          )
+        )
+        result.inProgressClaims shouldBe Seq(
+          InProgressClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate)
+        )
+        result.pendingClaims shouldBe Seq(
+          PendingClaim(
+            "21LLLLLLLLLL12344",
+            "SEC-2108",
+            SCTY,
+            Some("broomer007"),
+            startDate,
+            startDate.map(_.plusDays(30)),
+            Some("ACS")
+          )
+        )
+      }
+    }
   }
 
   "getClaimInformation" should {
