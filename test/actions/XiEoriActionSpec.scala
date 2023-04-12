@@ -65,6 +65,14 @@ class XiEoriActionSpec extends SpecBase {
       }
     }
 
+    "do not call for XI EORI when feature not enabled" in new Setup {
+      override def includeXiClaims: Boolean = false
+      running(app) {
+        val response = await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
+        response mustBe authorisedRequestWithoutXiEori
+      }
+    }
+
     "throw exception if XI EORI connector error" in new Setup {
       running(app) {
         when(mockXiEoriConnector.getXiEori(any))
@@ -101,7 +109,13 @@ class XiEoriActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app          = application.build()
+
+    def includeXiClaims: Boolean = true
+
+    val app = application
+      .configure("features.include-xi-claims" -> s"$includeXiClaims")
+      .build()
+
     val xiEoriAction = app.injector.instanceOf[XiEoriAction]
 
     val xiEori: XiEori = XiEori(

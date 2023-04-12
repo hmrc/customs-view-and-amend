@@ -26,12 +26,14 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import config.AppConfig
 
 @Singleton
 class XiEoriAction @Inject(
 ) (
   sessionCache: SessionCache,
-  xiEoriConnector: XiEoriConnector
+  xiEoriConnector: XiEoriConnector,
+  appConfig: AppConfig
 )(implicit
   val executionContext: ExecutionContext,
   val messagesApi: MessagesApi
@@ -41,12 +43,15 @@ class XiEoriAction @Inject(
   override def transform[A](
     request: AuthorisedRequestWithSessionData[A]
   ): Future[AuthorisedRequestWithSessionData[A]] =
-    request.sessionData.xiEori match {
-      case Left(()) =>
-        getAndStoreXiEori(request)
-      case Right(_) =>
-        Future.successful(request)
-    }
+    if (appConfig.includeXiClaims) {
+      request.sessionData.xiEori match {
+        case Left(()) =>
+          getAndStoreXiEori(request)
+        case Right(_) =>
+          Future.successful(request)
+      }
+    } else
+      Future.successful(request)
 
   private def getAndStoreXiEori[A](
     request: AuthorisedRequestWithSessionData[A]
