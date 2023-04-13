@@ -3,6 +3,7 @@ back.link = Back
 site.change = Change
 
 common.company-name-and-eori={0} - {1}
+common.company-name-and-eori-and-xieori={0} - {1} ({2})
 
 cf.header.eori=EORI:
 cf.header.eori.dash= -
