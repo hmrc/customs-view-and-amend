@@ -19,31 +19,29 @@
 @import forms.SearchFormHelper
 
 @this(
-    heading: components.heading,
-    insetText: components.inset_text,
-    search: components.search,
-    paragraph: components.paragraph
-    )
+heading: components.heading,
+insetText: components.inset_text,
+search: components.search,
+paragraph: components.paragraph
+)
 
 @(key: String,
-  form: Form[String] = SearchFormHelper.form,
-  showCompanyNameAndEori: Boolean = true,
-  showInset: Boolean = false,
-  showSearchTitle: Boolean = true)(implicit request: RequestWithSessionData[_], messages: Messages)
+form: Form[String] = SearchFormHelper.form,
+showCompanyNameAndEori: Boolean = true,
+showInset: Boolean = false,
+showSearchTitle: Boolean = true)(implicit request: RequestWithSessionData[_], messages: Messages)
 
 @if(showCompanyNameAndEori) {
-  @request.sessionData.xiEori match {
-    case Right(Some(xiEori: XiEori)) => {@ heading(Html(messages(s"${key}.title")), caption = request.companyName.fold(xiEori.eoriGB)(companyName => messages("common.company-name-and-eori-and-xieori", companyName, xiEori.eoriGB, xiEori.eoriXI)))}
-
-    case _ => {@ heading(Html(messages(s"${key}.title")), caption = request.companyName.fold(request.eori)(companyName => messages("common.company-name-and-eori", companyName, request.eori)))}
-
-  }
+@request.sessionData.xiEori match {
+case Right(Some(xiEori: XiEori)) => {@heading(Html(messages(s"${key}.title")), caption = request.companyName.fold(xiEori.eoriGB)(companyName => messages("common.company-name-and-eori-and-xieori", companyName, xiEori.eoriGB, xiEori.eoriXI)))}
+case _ => {@heading(Html(messages(s"${key}.title")), caption = request.companyName.fold(request.eori)(companyName => messages("common.company-name-and-eori", companyName, request.eori)))}
+}
 } else {
-  @heading(Html(messages(s"${key}.title")))
+@heading(Html(messages(s"${key}.title")))
 }
 
 @if(showInset){
-    @insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
+@insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
 }
 
 @search(showSearchTitle = showSearchTitle)
