@@ -39,7 +39,7 @@ class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
 ) extends XiEoriConnector
     with Logging {
   private val baseUrl      = appConfig.cdsReimbursementClaim
-  private val getXiEoriUrl = s"$baseUrl/eori/xi`"
+  private val getXiEoriUrl = s"$baseUrl/eori/xi"
 
   final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]] =
     httpClient
