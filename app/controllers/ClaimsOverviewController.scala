@@ -44,10 +44,6 @@ class ClaimsOverviewController @Inject() (
   final val show: Action[AnyContent] =
     actions { case (request, allClaims) =>
       implicit val r: RequestWithSessionData[_] = request
-      r.sessionData.xiEori match {
-        case Right(bob) => ()
-        case Left(()) => ()
-      }
       Ok(
         claimsOverview(
           0,

@@ -37,6 +37,11 @@ class ClaimsOverviewControllerSpec extends SpecBase {
         .when(mockClaimsConnector.getAllClaims(any)(any))
         .thenReturn(Future.successful(allClaims))
 
+      Mockito
+          .lenient()
+        .when(mockXiEoriConnector.getXiEori(any))
+        .thenReturn(Future.successful(Some(XiEori("bob", "bob"))))
+
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverviewController.show.url)
       val result: Future[Result]                       = route(app, request).value
       status(result) mustBe OK
