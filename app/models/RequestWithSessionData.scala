@@ -24,4 +24,7 @@ trait RequestWithSessionData[A] extends RequestWithEori[A] {
 
   def companyName: Option[String] =
     sessionData.companyName
+
+  def xiEori: Option[XiEori] =
+    sessionData.xiEori.fold(_ => None, identity)
 }
