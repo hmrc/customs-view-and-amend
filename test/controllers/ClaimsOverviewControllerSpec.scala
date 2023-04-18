@@ -38,7 +38,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
         .thenReturn(Future.successful(allClaims))
 
       Mockito
-          .lenient()
+        .lenient()
         .when(mockXiEoriConnector.getXiEori(any))
         .thenReturn(Future.successful(Some(XiEori("bob", "bob"))))
 
