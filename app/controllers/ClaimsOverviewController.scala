@@ -16,9 +16,10 @@
 
 package controllers
 
-import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
+import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction, XiEoriAction}
 import config.AppConfig
 import forms.SearchFormHelper
+import models.RequestWithSessionData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -32,16 +33,17 @@ class ClaimsOverviewController @Inject() (
   authenticate: IdentifierAction,
   currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
+  xiEoriAction: XiEoriAction,
   claimsOverview: claims_overview
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
 
-  private val actions = authenticate andThen currentSession andThen allClaimsAction
+  private val actions = authenticate andThen currentSession andThen xiEoriAction andThen allClaimsAction
 
   final val show: Action[AnyContent] =
     actions { case (request, allClaims) =>
-      implicit val r = request
+      implicit val r: RequestWithSessionData[_] = request
       Ok(
         claimsOverview(
           0,
