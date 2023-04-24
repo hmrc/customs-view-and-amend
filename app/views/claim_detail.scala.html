@@ -74,23 +74,12 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
                     actions = None
                 )
             },
-            request.sessionData.xiEori match {
-                case Right(Some(xiEori: XiEori)) => {
-                    Seq(SummaryListRow(
-                        Key(content = HtmlContent(messages("claim.detail.claimant.eori"))),
-                        Value(content = HtmlContent(xiEori.eoriXI)),
-                        actions = None
-                    ))
-                }
-                case _ => {
-                    claimDetail.claimantsEori.map { eori =>
-                        SummaryListRow(
-                            Key(content = HtmlContent(messages("claim.detail.claimant.eori"))),
-                            Value(content = HtmlContent(eori)),
-                            actions = None
-                        )
-                    }
-                }
+            claimDetail.claimantsEori.map { eori =>
+                SummaryListRow(
+                    Key(content = HtmlContent(messages("claim.detail.claimant.eori"))),
+                    Value(content = HtmlContent(eori)),
+                    actions = None
+                )
             },
             {
                 val content = claimDetail.claimType match {
