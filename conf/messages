@@ -30,7 +30,7 @@ search.button=Search
 #===================================================
 #  VIEW UPLOAD - PAGE
 #===================================================
-view-upload.page-title=Your customs financial accounts
+view-upload.page-title=Claims summary
 view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
