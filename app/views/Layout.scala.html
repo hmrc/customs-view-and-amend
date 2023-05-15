@@ -42,7 +42,7 @@
         helpAndSupport: Boolean = true,
         fullWidth: Boolean = true,
         deskpro: Boolean = true,
-        welshToggle: Boolean = true,
+        welshToggle: Boolean = false,
         userResearchBanner: Boolean = true,
         navigationBannerEnabled: Boolean = true
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -66,7 +66,9 @@
         @if(navigationBannerEnabled) {
             @navigationPanel()
         }
-        @hmrcLanguageSelectHelper()
+        @if(welshToggle) {
+            @hmrcLanguageSelectHelper()
+        }
         @if(backLink.isDefined){
             @govukBackLink(BackLink(href = backLink.get, content = Text(messages("back.link")), attributes = Map("id" -> "back-link")))
         } else {
