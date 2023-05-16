@@ -74,6 +74,7 @@ object UploadDocumentsWrapper {
         features = Some(
           UploadDocumentsFeatures(
             showUploadMultiple = Some(appConfig.fileUploadMultiple),
+            showLanguageSelection = Some(false),
             showYesNoQuestionBeforeContinue = Some(true)
           )
         )
