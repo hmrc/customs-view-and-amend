@@ -42,7 +42,7 @@ object UploadDocumentsWrapper {
       config = UploadDocumentsConfig(
         nonce = nonce,
         initialNumberOfEmptyRows = Some(1),
-        maximumNumberOfFiles = Some(10),
+        maximumNumberOfFiles = Some(100),
         maximumFileSizeBytes = Some(1024 * 1024 * 9),
         continueUrl = s"${appConfig.selfUrl}$continueUrl",
         callbackUrl = s"${appConfig.fileUploadCallbackUrlPrefix}$callBackUrl",
@@ -74,6 +74,7 @@ object UploadDocumentsWrapper {
         features = Some(
           UploadDocumentsFeatures(
             showUploadMultiple = Some(appConfig.fileUploadMultiple),
+            showLanguageSelection = Some(false),
             showYesNoQuestionBeforeContinue = Some(true)
           )
         )
