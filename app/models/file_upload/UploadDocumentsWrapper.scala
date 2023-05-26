@@ -68,7 +68,11 @@ object UploadDocumentsWrapper {
             allowedFilesTypesHint = Some(messages("file.upload.allowed-file-types-hint")),
             fileUploadedProgressBarLabel = Some(messages("file.upload.progress-bar-label")),
             chooseFirstFileLabel = Some(""),
-            chooseNextFileLabel = Some(messages("file.upload.another-upload-label", documentType.message.toLowerCase))
+            chooseNextFileLabel = Some(messages("file.upload.another-upload-label", documentType.message.toLowerCase)),
+            signOutUrl = Some(appConfig.signedOutPageUrl),
+            timedOutUrl = Some(appConfig.signedOutPageUrl),
+            timeoutSeconds = Some(appConfig.timeout),
+            countdownSeconds = Some(appConfig.countdown)
           )
         ),
         features = Some(
