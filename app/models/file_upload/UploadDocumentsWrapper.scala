@@ -58,7 +58,7 @@ object UploadDocumentsWrapper {
             title = Some(messages("file.upload.title", documentType.message.toLowerCase)),
             descriptionHtml = Some(messages("file.upload.description", documentType.message)),
             serviceUrl = Some(appConfig.guidancePage),
-            accessibilityStatementUrl = Some(appConfig.fileUploadAccessibilityUrl),
+            accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl),
             phaseBanner = Some(appConfig.fileUploadPhase),
             phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
             userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
