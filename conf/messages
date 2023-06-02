@@ -1,24 +1,79 @@
-service.name = Claim back import duty and VAT
-back.link = Back
-site.change = Change
+service.name=Claim back import duty and VAT
+back.link=Back
+site.change=Change
 
 common.company-name-and-eori={0} - {1}
 common.company-name-and-eori-and-xieori={0} - {1} ({2})
 
-cf.header.eori=EORI:
-cf.header.eori.dash= -
-cf.header.companyName = {0} -
+header.eori=EORI:
+header.eori.dash=-
+header.companyName={0} -
 
-feedback.before = This is a new service – your
-feedback.link = feedback (opens in a new tab)
-feedback.after = will help us to improve it.
+feedback.before=This is a new service – your
+feedback.link=feedback (opens in a new tab)
+feedback.after=will help us to improve it.
 
-service.banner.home = Claims summary
-service.banner.start = Start a new claim
-service.banner.search = Find a claim
+service-banner.home=Claims summary
+service-banner.start=Start a new claim
+service-banner.search=Find a claim
 
 #===================================================
-#  SEARCH - COMPONENT
+#  CLAIM STATUS
+#===================================================
+claim-status.pending=Pending
+claim-status.in-progress=In progress
+claim-status.closed=Closed
+
+#===================================================
+# DATE FORMAT
+#===================================================
+month.1=January
+month.2=February
+month.3=March
+month.4=April
+month.5=May
+month.6=June
+month.7=July
+month.8=August
+month.9=September
+month.10=October
+month.11=November
+month.12=December
+
+month.abbr.1=Jan
+month.abbr.2=Feb
+month.abbr.3=Mar
+month.abbr.4=Apr
+month.abbr.5=May
+month.abbr.6=Jun
+month.abbr.7=Jul
+month.abbr.8=Aug
+month.abbr.9=Sep
+month.abbr.10=Oct
+month.abbr.11=Nov
+month.abbr.12=Dec
+
+#===================================================
+#  TIMEOUT MESSAGES
+#===================================================
+timeout.title=You’re about to be signed out
+timeout.message=For security reasons, you will be signed out of this service in
+timeout.keep-alive=Stay signed in
+timeout.sign-out=Sign out
+
+#===================================================
+#  PAGINATION COMPONENT
+#===================================================
+pager.prev=Previous
+pager.next=Next
+pager.summary=Showing
+pager.summary.of=of
+pager.summary.to=to
+pager.summary.accessibility=set of pages
+pager.transactions=claims
+
+#===================================================
+#  SEARCH COMPONENT
 #===================================================
 search.title=Search for a claim
 search.error=Please enter a valid input
@@ -26,300 +81,265 @@ search.desc=Search by claim reference number
 search.label=Search by claim reference number
 search.button=Search
 
+#===================================================
+#  CLAIM LIST COMPONENT
+#===================================================
+claim-list.closed.title=Claims closed
+claim-list.closed.inset=Closed claims have been approved or rejected by HMRC or withdrawn, and will be removed from this list after 31 days.
+claim-list.closed.p1=Claims will be removed from this list on the removal date.
+claim-list.closed.title.caption={0} - {1}
+
+claim-list.closed.details.heading=What does each claim decision mean?
+claim-list.closed.details.bullet.0=Approved:
+claim-list.closed.details.hint.0=Claim was approved for repayment
+claim-list.closed.details.bullet.1=Failed verification:
+claim-list.closed.details.hint.1=Claim was reviewed but the information provided failed HMRC verification checks
+claim-list.closed.details.bullet.2=No reply:
+claim-list.closed.details.hint.2=Claimant did not respond to HMRC about the claim in time
+claim-list.closed.details.bullet.3=Part approved:
+claim-list.closed.details.hint.3=Claim was reviewed and only part of the claim was approved for a refund
+claim-list.closed.details.bullet.4=Refused:
+claim-list.closed.details.hint.4=Claim was reviewed and was not eligible for a refund
+claim-list.closed.details.bullet.5=Rejected:
+claim-list.closed.details.hint.5=Claim was rejected due to lack of information or not suitable for this claim process
+claim-list.closed.details.bullet.6=Withdrawn:
+claim-list.closed.details.hint.6=Claim was withdrawn by the claimant and no refund was paid
+
+claim-list.pending.title=Claims needing more information
+claim-list.pending.inset=Claims that require additional information or documentation
+
+claim-list.progress.title=Claims in progress
+claim-list.progress.inset=Claims in progress are open and being reviewed by HMRC.
+claim-list.table.heading=All claims
+claim-list.scty=Security deposit or guarantee
+claim-list.ndrc=Overpayment or rejected goods
+
+claim-list.table.heading.claim=Claim reference
+claim-list.table.heading.start=Claim start date
+claim-list.table.heading.mrn=MRN
+claim-list.table.heading.type=Type of claim
+claim-list.table.heading.decision=Claim decision
+claim-list.table.heading.pending=Respond by date
+claim-list.table.heading.close=Claim close date
+
+claim-list.table.closed=Sorted by closest removal date.
+claim-list.table.pending=Sorted by closest respond by date.
+claim-list.table.progress=Sorted by closest claim start date.
 
 #===================================================
-#  VIEW UPLOAD - PAGE
+#  ERROR PAGE NOT FOUND
+#===================================================
+error-page-not-found.link.message=customs view and amend
+error-page-not-found.title=Page not found
+error-page-not-found.heading=Page not found
+
+error-page-not-found.message.address-typed-wrong=If you typed the web address, check it is correct.
+error-page-not-found.message.address-pasted-wrong=If you pasted the web address, check you copied the entire address.
+error-page-not-found.message.go-to-home-page-text1=Or go to the
+error-page-not-found.message.go-to-home-page-text2=home page.
+
+#===================================================
+#  VIEW UPLOAD PAGE
 #===================================================
 view-upload.page-title=Claims summary
 view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
+
 view-upload.details.bullet.0=Claims needing more information
 view-upload.details.hint.0=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
 view-upload.details.bullet.1=Claims in progress
 view-upload.details.hint.1=These claims are being looked at by HMRC. This could take up to 30 working days. If you did not provide full supporting documentation when your claim was submitted, this will delay the claim process.
 view-upload.details.bullet.2=Closed claims
 view-upload.details.hint.2=Cases are closed when HMRC have fully reviewed the claim, and have either approved or rejected it. If you withdraw your claim for any reason, it will also be classed as closed. Closed claims will remain in your list for a period of 31 days and are then removed. You will need to reference your email communication with HMRC to view any claim details.
+
 view-upload.more-information.singular.title=1 claim needs more information
 view-upload.more-information.plural.title={0} claims need more information
 view-upload.more-information.desc=Claims that require additional information or documentation.
 view-upload.more-information.link=View claims needing more information
+
 view-upload.in-progress.singular.title=1 claim is in progress
 view-upload.in-progress.plural.title={0} claims are in progress
 view-upload.in-progress.desc=Claims in progress are open and being reviewed by HMRC
 view-upload.in-progress.link=View claims in progress
+
 view-upload.closed.singular.title=1 claim has been closed
 view-upload.closed.plural.title={0} claims have been closed
 view-upload.closed.desc=Closed claims have been approved or rejected by HMRC or withdrawn, and will be removed from this list after 31 days.
 view-upload.closed.link=View closed claims
-view-upload.no-claims.p1 = You have no claims to view.
-view-upload.no-claims.p2 = It can take up to 24 hours for new claims to appear.
 
-claim.detail.title = Claim reference {0}
-claim.detail.p1 = Claim details:
-claim.detail.p1.claim.inProgress = Claim details: This claim is open and being reviewed by HMRC.
-claim.detail.p1.claim.closed = Claim details:  This claim has been closed
-claim.detail.p1.claim.pending = Claim details: This claim requires additional information or documentation.
-claim.detail.mrn = <abbr title="Movement reference number">MRN</abbr>
-claim.detail.first-mrn=First <abbr title="Movement reference number">MRN</abbr>
-claim.detail.other-mrn=Other <abbr title="Movement reference numbers">MRNs</abbr> included in this claim
-claim.detail.entry = Entry Number
-claim.detail.lrn = <abbr title="Local reference number">LRN</abbr>
-claim.detail.claimant.eori = Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
-claim.detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
-claim.detail.h2.supporting-documents=Add supporting documents
-claim.detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
-claim.detail.link.file-upload=File upload
-
-claim.detail.type = Claim type
-claim.detail.type.multiple.C285 = Overpayment (C285) </br> Multiple declarations
-claim.detail.type.single.C285 = Overpayment (C285) </br> Single declaration
-claim.detail.type.C285 = Overpayment (C285)
-claim.detail.type.multiple.CE1179 = Rejected goods (C&E1179) </br> Multiple declarations
-claim.detail.type.single.CE1179 = Rejected goods (C&E1179) </br> Single declaration
-claim.detail.type.CE1179 = Rejected goods (C&E1179)
-claim.detail.type.security = Security deposit or guarantee
-
-claim.detail.status = Claim status
-claim.detail.decision = Claim decision
-claim.detail.start.date = Claim start date
-claim.detail.removal.date = Claim removal date
-claim.detail.value = Claim amount requested
-claim.detail.name = Claimant''s name
-claim.detail.email = Claimant''s email address
-claim.detail.upload = Upload files (opens in a new tab link)
-claim.detail.descriptionOfGoods = Description of goods
-claim.detail.reasonForSecurity = Reason for security
-claim.detail.reasonForSecurity.ACS=Account Sales
-claim.detail.reasonForSecurity.MDC=Missing document: Community System of Duty Relief (CSDR)
-claim.detail.reasonForSecurity.ENU=End Use Relief
-claim.detail.reasonForSecurity.IPR=Inward Processing Relief (IPR)
-claim.detail.reasonForSecurity.MOD=Manual override of duty amount
-claim.detail.reasonForSecurity.MDL=Missing document: quota license
-claim.detail.reasonForSecurity.MDP=Missing document: preference
-claim.detail.reasonForSecurity.OPR=Outward Processing Relief (OPR)
-claim.detail.reasonForSecurity.RED=Revenue Dispute or Inland Pre-Clearance (IPC)
-claim.detail.reasonForSecurity.T24=Temporary Admissions (2 years Expiration)
-claim.detail.reasonForSecurity.TA6=Temporary Admissions (6 months Expiration)
-claim.detail.reasonForSecurity.TA3=Temporary Admissions (3 months Expiration)
-claim.detail.reasonForSecurity.TA2=Temporary Admissions (2 months Expiration)
-claim.detail.reasonForSecurity.CEP=UKAP Entry Price
-claim.detail.reasonForSecurity.CSD=UKAP Safeguard Duties
-claim.detail.reasonForSecurity.PDD=Provisional anti-dumping/countervailing duty
-claim.detail.reasonForSecurity.CRQ=Quota
-
-claim.upload.confirmation.h1 = Claim amendment sent
-claim.upload.confirmation.case = Claim reference
-claim.upload.confirmation.h2 = What happens next?
-claim.upload.confirmation.p1 = Your claim amendment will be reviewed by HMRC and we will aim to email or write a letter to you to tell you the outcome within 30 working days. We will contact you to either:
-claim.upload.confirmation.li.1 = confirm your claim and bank transfer
-claim.upload.confirmation.li.2 = ask for more information
-claim.upload.confirmation.li.3 = explain why your claim was rejected
-claim.upload.confirmation.link = View all pending claims
-claim.upload.confirmation.email = We have sent a confirmation email to <strong>{0}</strong>
-claim.upload.confirmation.email.description = This email address is the one used when you registered for the Customs Declaration Service (CDS). If you have not received this email, check your SPAM folder or contact HMRC.
-claim.upload.confirmation.close = You can now close this tab.
-claim.upload.confirmation.return-home = Return to claims list
-
-claim.list.closed.title = Claims closed
-claim.list.closed.inset = Closed claims have been approved or rejected by HMRC or withdrawn, and will be removed from this list after 31 days.
-claim.list.closed.p1 = Claims will be removed from this list on the removal date.
-claim.list.closed.title.caption={0} - {1}
-claim.list.closed.details.heading = What does each claim decision mean?
-claim.list.closed.details.bullet.0 = Approved:
-claim.list.closed.details.hint.0 = Claim was approved for repayment
-claim.list.closed.details.bullet.1 = Failed verification:
-claim.list.closed.details.hint.1 = Claim was reviewed but the information provided failed HMRC verification checks
-claim.list.closed.details.bullet.2 = No reply:
-claim.list.closed.details.hint.2 = Claimant did not respond to HMRC about the claim in time
-claim.list.closed.details.bullet.3 = Part approved:
-claim.list.closed.details.hint.3 = Claim was reviewed and only part of the claim was approved for a refund
-claim.list.closed.details.bullet.4 = Refused:
-claim.list.closed.details.hint.4 = Claim was reviewed and was not eligible for a refund
-claim.list.closed.details.bullet.5 = Rejected:
-claim.list.closed.details.hint.5 = Claim was rejected due to lack of information or not suitable for this claim process
-claim.list.closed.details.bullet.6 = Withdrawn:
-claim.list.closed.details.hint.6 = Claim was withdrawn by the claimant and no refund was paid
-
-claim.list.pending.title = Claims needing more information
-claim.list.pending.inset = Claims that require additional information or documentation
-
-claim.list.progress.title = Claims in progress
-claim.list.progress.inset = Claims in progress are open and being reviewed by HMRC.
-claim.list.table.heading = All claims
-claim.list.scty = Security deposit or guarantee
-claim.list.ndrc = Overpayment or rejected goods
-
-claim.list.table.heading.claim = Claim reference
-claim.list.table.heading.start = Claim start date
-claim.list.table.heading.mrn = MRN
-claim.list.table.heading.type = Type of claim
-claim.list.table.heading.decision = Claim decision
-claim.list.table.heading.pending = Respond by date
-claim.list.table.heading.close = Claim close date
-
-claim.list.table.closed = Sorted by closest removal date.
-claim.list.table.pending = Sorted by closest respond by date.
-claim.list.table.progress = Sorted by closest claim start date.
+view-upload.no-claims.p1=You have no claims to view.
+view-upload.no-claims.p2=It can take up to 24 hours for new claims to appear.
 
 #===================================================
-#  FIND A CLAIM - PAGE
+#  CLAIM DETAIL PAGE
 #===================================================
+claim-detail.title=Claim reference {0}
+claim-detail.p1=Claim details:
+claim-detail.p1.claim-status.in-progress=Claim details: This claim is open and being reviewed by HMRC.
+claim-detail.p1.claim-status.closed=Claim details:  This claim has been closed
+claim-detail.p1.claim-status.pending=Claim details: This claim requires additional information or documentation.
+claim-detail.mrn=<abbr title="Movement reference number">MRN</abbr>
+claim-detail.first-mrn=First <abbr title="Movement reference number">MRN</abbr>
+claim-detail.other-mrn=Other <abbr title="Movement reference numbers">MRNs</abbr> included in this claim
+claim-detail.entry=Entry Number
+claim-detail.lrn=<abbr title="Local reference number">LRN</abbr>
+claim-detail.claimant.eori=Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
+claim-detail.inset.check-email=Check your email fr details of missing documents and any requests for additional information from your caseworker
+claim-detail.h2.supporting-documents=Add supporting documents
+claim-detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
+claim-detail.link.file-upload=File upload
 
-claim.search.title=Find a claim
-claim.search.inset=Search by claim reference number
+claim-detail.type=Claim type
+claim-detail.type.multiple.C285=Overpayment (C285) </br> Multiple declarations
+claim-detail.type.single.C285=Overpayment (C285) </br> Single declaration
+claim-detail.type.C285=Overpayment (C285)
+claim-detail.type.multiple.CE1179=Rejected goods (C&E1179) </br> Multiple declarations
+claim-detail.type.single.CE1179=Rejected goods (C&E1179) </br> Single declaration
+claim-detail.type.CE1179=Rejected goods (C&E1179)
+claim-detail.type.security=Security deposit or guarantee
 
-claim.search.result.title=Your search returned
-claim.search.result.fail.title=There are no matching results for {0}.
-claim.search.result.fail.hint=Check your claim reference number and search again
-claim.search.result.claim=Claim reference
-claim.search.result.mrn=MRN
-claim.search.result.type=Claim type
-claim.search.result.status=Claim status
-claim.search.result.closed=Closed
-claim.search.result.pending=Pending
-claim.search.result.in-progress=In Progress
+claim-detail.status=Claim status
+claim-detail.decision=Claim decision
+claim-detail.start.date=Claim start date
+claim-detail.removal.date=Claim removal date
+claim-detail.value=Claim amount requested
+claim-detail.name=Claimant''s name
+claim-detail.email=Claimant''s email address
+claim-detail.upload=Upload files (opens in a new tab link)
+claim-detail.descriptionOfGoods=Description of goods
+
+claim-detail.reason-for-security=Reason for security
+claim-detail.reason-for-security.ACS=Account Sales
+claim-detail.reason-for-security.MDC=Missing document: Community System of Duty Relief (CSDR)
+claim-detail.reason-for-security.ENU=End Use Relief
+claim-detail.reason-for-security.IPR=Inward Processing Relief (IPR)
+claim-detail.reason-for-security.MOD=Manual override of duty amount
+claim-detail.reason-for-security.MDL=Missing document: quota license
+claim-detail.reason-for-security.MDP=Missing document: preference
+claim-detail.reason-for-security.OPR=Outward Processing Relief (OPR)
+claim-detail.reason-for-security.RED=Revenue Dispute or Inland Pre-Clearance (IPC)
+claim-detail.reason-for-security.T24=Temporary Admissions (2 years Expiration)
+claim-detail.reason-for-security.TA6=Temporary Admissions (6 months Expiration)
+claim-detail.reason-for-security.TA3=Temporary Admissions (3 months Expiration)
+claim-detail.reason-for-security.TA2=Temporary Admissions (2 months Expiration)
+claim-detail.reason-for-security.CEP=UKAP Entry Price
+claim-detail.reason-for-security.CSD=UKAP Safeguard Duties
+claim-detail.reason-for-security.PDD=Provisional anti-dumping/countervailing duty
+claim-detail.reason-for-security.CRQ=Quota
 
 #===================================================
-#  CLAIM STATUS
+#  CLAIM UPLOAD CONFIRMATION PAGE
 #===================================================
+claim-upload-confirmation.h1=Claim amendment sent
+claim-upload-confirmation.case=Claim reference
+claim-upload-confirmation.h2=What happens next?
+claim-upload-confirmation.p1=Your claim amendment will be reviewed by HMRC and we will aim to email or write a letter to you to tell you the outcome within 30 working days. We will contact you to either:
+claim-upload-confirmation.li.1=confirm your claim and bank transfer
+claim-upload-confirmation.li.2=ask for more information
+claim-upload-confirmation.li.3=explain why your claim was rejected
+claim-upload-confirmation.link=View all pending claims
+claim-upload-confirmation.email=We have sent a confirmation email to <strong>{0}</strong>
+claim-upload-confirmation.email.description=This email address is the one used when you registered for the Customs Declaration Service (CDS). If you have not received this email, check your SPAM folder or contact HMRC.
+claim-upload-confirmation.close=You can now close this tab.
+claim-upload-confirmation.return-home=Return to claims list
 
-claim.pending = Pending
-claim.inProgress = In progress
-claim.closed = Closed
+#===================================================
+#  VERIFY YOUR EMAIL ADDRESS PAGE
+#===================================================
+verify-your-email.title=You need to verify the registered CDS email address
+verify-your-email.heading=You need to verify the registered CDS email address
+verify-your-email.p1=This is the email address your organisation has registered for the Customs Declaration Service (CDS). You need to verify this email address or change it. You can verify the email instantly provided you have access to the email account.
+verify-your-email.need-to-verify=This will be the only email address we use for:
+verify-your-email.list.1=updates on changes to the Customs Declaration Service
+verify-your-email.list.2=urgent updates about goods in customs
+verify-your-email.list.3=some financial notifications, including Direct Debit notices and VAT
+verify-your-email.link-text=Verify or change email address
 
-# Date Format
-# ------------------------------------------------------------------------
-month.1 = January
-month.2 = February
-month.3 = March
-month.4 = April
-month.5 = May
-month.6 = June
-month.7 = July
-month.8 = August
-month.9 = September
-month.10 = October
-month.11 = November
-month.12 = December
+#===================================================
+#  CLAIM SEARCH PAGE
+#===================================================
+claim-search.title=Find a claim
+claim-search.inset=Search by claim reference number
 
-month.abbr.1 = Jan
-month.abbr.2 = Feb
-month.abbr.3 = Mar
-month.abbr.4 = Apr
-month.abbr.5 = May
-month.abbr.6 = Jun
-month.abbr.7 = Jul
-month.abbr.8 = Aug
-month.abbr.9 = Sep
-month.abbr.10 = Oct
-month.abbr.11 = Nov
-month.abbr.12 = Dec
-# ------------------------------------------------------------------------
+claim-search.result.title=Your search returned
+claim-search.result.fail.title=There are no matching results for {0}.
+claim-search.result.fail.hint=Check your claim reference number and search again
+claim-search.result.claim=Claim reference
+claim-search.result.mrn=MRN
+claim-search.result.type=Claim type
+claim-search.result.status=Claim status
+claim-search.result.closed=Closed
+claim-search.result.pending=Pending
+claim-search.result.in-progress=In Progress
 
-#Verify Your Email Address
-cf.verify.your.email.title=You need to verify the registered CDS email address
-cf.verify.your.email.heading=You need to verify the registered CDS email address
-cf.verify.your.email.p1=This is the email address your organisation has registered for the Customs Declaration Service (CDS). You need to verify this email address or change it. You can verify the email instantly provided you have access to the email account.
-cf.verify.your.email.need-to-verify=This will be the only email address we use for:
-cf.verify.your.email.list.1=updates on changes to the Customs Declaration Service
-cf.verify.your.email.list.2=urgent updates about goods in customs
-cf.verify.your.email.list.3=some financial notifications, including Direct Debit notices and VAT
-cf.verify.your.email.link-text=Verify or change email address
+#===================================================
+#  PROBLEM WITH EMAIL ADDRESS PAGE
+#===================================================
+problem-with-email-address.title=There''s a problem with the CDS registered email address
+problem-with-email-address.heading=There''s a problem with the CDS registered email address
+problem-with-email-address.p1=We tried to send you an email but it could not be delivered. This could be because the inbox is full, or due to a technical problem with your email provider.
+problem-with-email-address.p2=This is the email address your organisation has registered for the Customs Declaration Service (CDS). You need to verify this email address or change it. You can verify the email instantly provided you have access to the email account.
+problem-with-email-address.p3=This will be the only email address we use for:
+problem-with-email-address.link-text=Verify or change email address
 
-#Undeliverable Email Address
-cf.undeliverable.email.title=There''s a problem with the CDS registered email address
-cf.undeliverable.email.heading=There''s a problem with the CDS registered email address
-cf.undeliverable.email.p1=We tried to send you an email but it could not be delivered. This could be because the inbox is full, or due to a technical problem with your email provider.
-cf.undeliverable.email.p2=This is the email address your organisation has registered for the Customs Declaration Service (CDS). You need to verify this email address or change it. You can verify the email instantly provided you have access to the email account.
-cf.undeliverable.email.p3=This will be the only email address we use for:
-cf.undeliverable.email.list.1=updates on changes to the Customs Declaration Service
-cf.undeliverable.email.list.2=urgent updates about goods in customs
-cf.undeliverable.email.list.3=some financial notifications, including Direct Debit notices and VAT
-cf.undeliverable.email.link-text=Verify or change email address
+problem-with-email-address.list.1=updates on changes to the Customs Declaration Service
+problem-with-email-address.list.2=urgent updates about goods in customs
+problem-with-email-address.list.3=some financial notifications, including Direct Debit notices and VAT
 
-# Not subscribed to CDS
-cf.not-subscribed-to-cds.detail.title=Not registered with CDS
-cf.not-subscribed-to-cds.detail.heading=To continue with this you need to get access to Customs Declaration Services (CDS)
-cf.not-subscribed-to-cds.detail.eori-info=You''ll need an
-cf.not-subscribed-to-cds.detail.eori-link=Economic Operator and Registration Identification (EORI) number (opens in a new window or tab)
-cf.not-subscribed-to-cds.detail.get-access-info=If you already have an EORI number, you can
-cf.not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
-cf.not-subscribed-to-cds.detail.how-to-get-access-info=How to get access to CDS
-cf.not-subscribed-to-cds.detail.process-application-info=It can take up to two hours for HMRC to process your application.
+#===================================================
+#  NOT SUBSCRIBED TO CDS PAGE
+#===================================================
+not-subscribed-to-cds.detail.title=Not registered with CDS
+not-subscribed-to-cds.detail.heading=To continue with this you need to get access to Customs Declaration Services (CDS)
+not-subscribed-to-cds.detail.eori-info=You''ll need an
+not-subscribed-to-cds.detail.eori-link=Economic Operator and Registration Identification (EORI) number (opens in a new window or tab)
+not-subscribed-to-cds.detail.get-access-info=If you already have an EORI number, you can
+not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
+not-subscribed-to-cds.detail.how-to-get-access-info=How to get access to CDS
+not-subscribed-to-cds.detail.process-application-info=It can take up to two hours for HMRC to process your application.
 
-# Page Not Found Error
-cf.error.not-found.link.message = customs view and amend
-cf.error.not-found.title=Page not found
-cf.error.not-found.heading=Page not found
-cf.error.not-found.message.address-typed-wrong=If you typed the web address, check it is correct.
-cf.error.not-found.message.address-pasted-wrong=If you pasted the web address, check you copied the entire address.
-cf.error.not-found.message.go-to-home-page-text1=Or go to the
-cf.error.not-found.message.go-to-home-page-text2=home page.
+#===================================================
+#  FILE SELECTION PAGE
+#===================================================
+file-selection.title=Add supporting documents to your claim
+file-selection.p1=You can upload one document at a time. Repeat this step to add more documents to your claim.
+file-selection.button=Continue
+file-selection.error.required=Select which type of document you are uploading
 
-#Pagination
-# ----------------------------------------------------------
-cf.pager.prev=Previous
-cf.pager.next=Next
-cf.pager.summary=Showing
-cf.pager.summary.of=of
-cf.pager.summary.to=to
-cf.pager.summary.accessibility=set of pages
-cf.pager.transactions=claims
+file-selection.commercial-invoice=Commercial invoice
+file-selection.import-export-declaration=Import and export declaration
+file-selection.air-waybill=Air way bill
+file-selection.bill-of-lading=Bill of lading
+file-selection.packing-list=Packing list
+file-selection.proof-of-origin=Proof of origin
+file-selection.substitute-entry=Substitute or diversion entry
+file-selection.preference-certificate=Preference certificate
+file-selection.correspondence=Correspondence between trader and agent
+file-selection.airworthiness-certificates=Airworthiness certificates
+file-selection.technical-specifications=Technical specifications
+file-selection.proof-of-authority=Proof of authority
+file-selection.faulty-not-ordered=Documentary proof that the goods are faulty or not what you ordered
+file-selection.correspondence=Correspondence
+file-selection.calculation-worksheet=Calculation or customs worksheet
+file-selection.other-supporting-documents=Other documents supporting your claim
+file-selection.proof-of-export-or-destruction=Proof of export or destruction
 
-# Timeout Messages
-# ----------------------------------------------------------
-timeout.title = You’re about to be signed out
-timeout.message = For security reasons, you will be signed out of this service in
-timeout.keepAlive = Stay signed in
-timeout.signOut = Sign out
-# ----------------------------------------------------------
-
-#File Selection
-# ----------------------------------------------------------
-
-file.selection.commercial-invoice = Commercial invoice
-file.selection.import-export-declaration = Import and export declaration
-file.selection.air-waybill = Air way bill
-file.selection.bill-of-lading = Bill of lading
-file.selection.packing-list = Packing list
-file.selection.proof-of-origin = Proof of origin
-file.selection.substitute-entry = Substitute or diversion entry
-file.selection.preference-certificate = Preference certificate
-file.selection.correspondence = Correspondence between trader and agent
-file.selection.airworthiness-certificates = Airworthiness certificates
-file.selection.technical-specifications = Technical specifications
-file.selection.proof-of-authority = Proof of authority
-file.selection.faulty-not-ordered = Documentary proof that the goods are faulty or not what you ordered
-file.selection.correspondence = Correspondence
-file.selection.calculation-worksheet = Calculation or customs worksheet
-file.selection.other-supporting-documents = Other documents supporting your claim
-file.selection.proof-of-export-or-destruction = Proof of export or destruction
-# ----------------------------------------------------------
-
-
-#File Selection Generic
-# ----------------------------------------------------------
-file.selection.title = Add supporting documents to your claim
-file.selection.p1 = You can upload one document at a time. Repeat this step to add more documents to your claim.
-file.selection.button = Continue
-file.selection.error.required = Select which type of document you are uploading
-# ----------------------------------------------------------
-
-
-file.upload.yes-no-question-text = h2.Add a different type of supporting evidence to your claim?
-file.upload.yes-no-question-required-error = Select yes to add a different type of supporting document to your claim
-file.upload.allowed-file-types-hint = The selected file must be a JPG, PNG or PDF
-file.upload.progress-bar-label = Uploaded
-file.upload.description = <p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>
-file.upload.title = Upload {0}
-file.upload.another-upload-label = Upload another {0}
-
-file.upload.cya.title = Check your documents before sending
-file.upload.cya.h2 = Uploaded documents
-file.upload.p1 = By sending these files you are confirming that the details you are providing are correct.
-file.upload.button = Confirm and send
-file.uploaded.visually.hidden = currently uploaded documents.
+#===================================================
+#  FILE UPLOAD PAGE
+#===================================================
+file-upload.yes-no-question-text.h2=Add a different type of supporting evidence to your claim?
+file-upload.yes-no-question-required-error=Select yes to add a different type of supporting document to your claim
+file-upload.allowed-file-types-hint=The selected file must be a JPG, PNG or PDF
+file-upload.progress-bar-label=Uploaded
+file-upload.description=<p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>
+file-upload.title=Upload {0}
+file-upload.another-upload-label=Upload another {0}
+file-upload.cya.title=Check your documents before sending
+file-upload.cya.h2=Uploaded documents
+file-upload.p1=By sending these files you are confirming that the details you are providing are correct.
+file-upload.button=Confirm and send
+file-upload.visually.hidden=currently uploaded documents.
 
 
 

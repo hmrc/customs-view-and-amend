@@ -22,7 +22,7 @@
 
 @(model: InProgressClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
-    @key = @{"claim.list.progress"}
+    @key = @{"claim-list.progress"}
 
     @layout(pageTitle = Some(messages(s"$key.title")), backLink = Some(routes.ClaimsOverviewController.show.url)) {
         @headerArea(key, showInset = true)

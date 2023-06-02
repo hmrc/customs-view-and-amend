@@ -23,14 +23,14 @@ sealed trait ClaimStatus {
 }
 
 case object InProgress extends ClaimStatus {
-  val messageKey = "claim.inProgress"
+  val messageKey = "claim-status.in-progress"
 }
 
 case object Pending extends ClaimStatus {
-  val messageKey = "claim.pending"
+  val messageKey = "claim-status.pending"
 }
 case object Closed extends ClaimStatus {
-  val messageKey = "claim.closed"
+  val messageKey = "claim-status.closed"
 }
 
 object ClaimStatus {

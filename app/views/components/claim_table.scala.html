@@ -23,15 +23,15 @@
 <table class="govuk-table">
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
-			<th>@messages("claim.list.table.heading.claim")</th>
-			<th>@messages("claim.list.table.heading.mrn")</th>
-      <th>@messages("claim.list.table.heading.type")</th>
+			<th>@messages("claim-list.table.heading.claim")</th>
+			<th>@messages("claim-list.table.heading.mrn")</th>
+      <th>@messages("claim-list.table.heading.type")</th>
 			@{ claimType match {
         case Closed =>
-			    <th>{messages("claim.list.table.heading.close")}</th>
-          <th>{messages("claim.list.table.heading.decision")}</th>
+			    <th>{messages("claim-list.table.heading.close")}</th>
+          <th>{messages("claim-list.table.heading.decision")}</th>
 			  case Pending | InProgress =>
-          <th>{messages("claim.list.table.heading.start")}</th>
+          <th>{messages("claim-list.table.heading.start")}</th>
 			  case _ => Html("") } }
 		</tr>
 	</thead>

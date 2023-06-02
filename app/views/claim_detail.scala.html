@@ -38,7 +38,7 @@
 @claimStatus = @{claimDetail.claimStatus.messageKey}
 
 @firstMrnRow = @{claimDetail.declarationId.map(declarationId =>SummaryListRow(
-Key(content = HtmlContent(messages(if(claimDetail.mrnDetails.isEmpty) "claim.detail.mrn" else "claim.detail.first-mrn")), classes = "govuk-!-width-one-half"),
+Key(content = HtmlContent(messages(if(claimDetail.mrnDetails.isEmpty) "claim-detail.mrn" else "claim-detail.first-mrn")), classes = "govuk-!-width-one-half"),
 Value(content = HtmlContent(declarationId)),
 actions = None
 ))}
@@ -50,17 +50,17 @@ actions = None
     }
 s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
     SummaryListRow(
-        Key(content = HtmlContent(messages("claim.detail.other-mrn")), classes = "govuk-!-width-one-half"),
+        Key(content = HtmlContent(messages("claim-detail.other-mrn")), classes = "govuk-!-width-one-half"),
         Value(content = HtmlContent(mrnList.toString)),
         actions = None
     )
 })}
 
 
-@layout(pageTitle = Some(messages("claim.detail.title", claimDetail.caseNumber))) {
+@layout(pageTitle = Some(messages("claim-detail.title", claimDetail.caseNumber))) {
 
-    @h1(messages("claim.detail.title", claimDetail.caseNumber))
-    @p(s"claim.detail.p1.$claimStatus")
+    @h1(messages("claim-detail.title", claimDetail.caseNumber))
+    @p(s"claim-detail.p1.$claimStatus")
 
     @govukSummaryList(SummaryList(
         attributes = Map("id" -> "claim-summary"),
@@ -69,47 +69,47 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
             multipleMrn,
             claimDetail.lrn.map { lrn =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.lrn"))),
+                    Key(content = HtmlContent(messages("claim-detail.lrn"))),
                     Value(content = HtmlContent(lrn)),
                     actions = None
                 )
             },
             claimDetail.claimantsEori.map { eori =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.claimant.eori"))),
+                    Key(content = HtmlContent(messages("claim-detail.claimant.eori"))),
                     Value(content = HtmlContent(eori)),
                     actions = None
                 )
             },
             {
                 val content = claimDetail.claimType match {
-                    case Some(`C&E1179`) if claimDetail.caseType.contains(Bulk) => "claim.detail.type.multiple.CE1179"
-                    case Some(`C&E1179`) if claimDetail.caseType.contains(Individual)  => "claim.detail.type.single.CE1179"
-                    case Some(`C&E1179`) => "claim.detail.type.CE1179"
-                    case Some(_) if claimDetail.caseType.contains(Bulk) => "claim.detail.type.multiple.C285"
-                    case Some(_) if claimDetail.caseType.contains(Individual)  => "claim.detail.type.single.C285"
-                    case Some(_) => "claim.detail.type.C285"
-                    case None => "claim.detail.type.security"
+                    case Some(`C&E1179`) if claimDetail.caseType.contains(Bulk) => "claim-detail.type.multiple.CE1179"
+                    case Some(`C&E1179`) if claimDetail.caseType.contains(Individual)  => "claim-detail.type.single.CE1179"
+                    case Some(`C&E1179`) => "claim-detail.type.CE1179"
+                    case Some(_) if claimDetail.caseType.contains(Bulk) => "claim-detail.type.multiple.C285"
+                    case Some(_) if claimDetail.caseType.contains(Individual)  => "claim-detail.type.single.C285"
+                    case Some(_) => "claim-detail.type.C285"
+                    case None => "claim-detail.type.security"
                 }
 
                 Some(SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.type"))),
+                    Key(content = HtmlContent(messages("claim-detail.type"))),
                     Value(content = HtmlContent(messages(content))),
                     actions = None
                 ))
             },
             claimDetail.securityGoodsDescription.map { description =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.descriptionOfGoods"))),
+                    Key(content = HtmlContent(messages("claim-detail.descriptionOfGoods"))),
                     Value(content = HtmlContent(description)),
                     actions = None
                 )
             },
             claimDetail.reasonForSecurity.map { rfs =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.reasonForSecurity"))),
-                    if(messages.isDefinedAt(s"claim.detail.reasonForSecurity.$rfs"))
-                        Value(content = HtmlContent(messages(s"claim.detail.reasonForSecurity.$rfs")))
+                    Key(content = HtmlContent(messages("claim-detail.reason-for-security"))),
+                    if(messages.isDefinedAt(s"claim-detail.reason-for-security.$rfs"))
+                        Value(content = HtmlContent(messages(s"claim-detail.reason-for-security.$rfs")))
                     else 
                         Value(content = Text(rfs)),
                     actions = None
@@ -117,44 +117,44 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
             },
             claimDetail.caseSubStatus.filter(_ => claimDetail.claimStatus == Closed).fold(
                 Some(SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.status"))),
+                    Key(content = HtmlContent(messages("claim-detail.status"))),
                     Value(content = HtmlContent(messages(claimDetail.claimStatus.messageKey))),
                     actions = None
                 ))
             )(
                 caseSubStatus => Some(SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.decision"))),
+                    Key(content = HtmlContent(messages("claim-detail.decision"))),
                     Value(content = HtmlContent(messages(caseSubStatus))),
                     actions = None
                 ))
             ),
             claimDetail.formattedStartDate().map(startDate => SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.start.date"))),
+                Key(content = HtmlContent(messages("claim-detail.start.date"))),
                 Value(content = HtmlContent(startDate)),
                 actions = None
             )),
             claimDetail.formattedClosedDate().map(closedDate => SummaryListRow(
-                Key(content = HtmlContent(messages("claim.detail.removal.date"))),
+                Key(content = HtmlContent(messages("claim-detail.removal.date"))),
                 Value(content = HtmlContent(closedDate)),
                 actions = None
             )),
             claimDetail.totalClaimAmount.map { value =>
                 SummaryListRow(
-                            Key(content = HtmlContent(messages("claim.detail.value"))),
+                            Key(content = HtmlContent(messages("claim-detail.value"))),
                     Value(content = HtmlContent(s"£$value")),
                     actions = None
                 )
             },
             claimDetail.claimantsName.map { name =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.name"))),
+                    Key(content = HtmlContent(messages("claim-detail.name"))),
                     Value(content = HtmlContent(name)),
                     actions = None
                 )
             },
             verifiedEmail.map{ email =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim.detail.email"))),
+                    Key(content = HtmlContent(messages("claim-detail.email"))),
                     Value(content = HtmlContent(email)),
                     actions = None
                 )
@@ -163,12 +163,12 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
     ))
 
     @if(claimDetail.isPending) {
-        @insetText(content = HtmlContent(paragraph(Html(messages("claim.detail.inset.check-email")))))
-        @h2(messages("claim.detail.h2.supporting-documents"))
+        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.check-email")))))
+        @h2(messages("claim-detail.h2.supporting-documents"))
         @link(
-            "claim.detail.link.file-upload",
+            "claim-detail.link.file-upload",
             fileSelectionUrl
         )
-        @paragraph(Html(messages("claim.detail.p1.valid-formats")))
+        @paragraph(Html(messages("claim-detail.p1.valid-formats")))
     }
 }

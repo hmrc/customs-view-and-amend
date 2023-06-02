@@ -24,7 +24,7 @@ import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 
 sealed trait FileSelection {
   def message(implicit messages: Messages): String =
-    messages(s"file.selection.${this.toString}")
+    messages(s"file-selection.${this.toString}")
 
   def toDec64FileType: String =
     this match {
@@ -108,7 +108,7 @@ object FileSelection extends Enumerable.Implicits {
     values.map { fileType =>
       RadioItem(
         value = Some(fileType.toString),
-        content = Text(messages(s"file.selection.${fileType.toString}")),
+        content = Text(messages(s"file-selection.${fileType.toString}")),
         checked = form("value").value.contains(fileType.toString)
       )
     }
