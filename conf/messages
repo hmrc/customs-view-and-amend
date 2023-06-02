@@ -185,7 +185,7 @@ claim-detail.other-mrn=Other <abbr title="Movement reference numbers">MRNs</abbr
 claim-detail.entry=Entry Number
 claim-detail.lrn=<abbr title="Local reference number">LRN</abbr>
 claim-detail.claimant.eori=Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
-claim-detail.inset.check-email=Check your email fr details of missing documents and any requests for additional information from your caseworker
+claim-detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
 claim-detail.h2.supporting-documents=Add supporting documents
 claim-detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
 claim-detail.link.file-upload=File upload
