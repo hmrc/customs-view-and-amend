@@ -27,19 +27,19 @@
 )
 @(nextPage: String)(implicit request: AuthorisedRequest[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("cf.undeliverable.email.title")), navigationBannerEnabled = false) {
+@layout(pageTitle = Some(messages("problem-with-email-address.title")), navigationBannerEnabled = false) {
 
-    @h1(msg = "cf.undeliverable.email.heading", classes = "govuk-heading-xl govuk-!-margin-bottom-4")
+    @h1(msg = "problem-with-email-address.heading", classes = "govuk-heading-xl govuk-!-margin-bottom-4")
 
-    @p("cf.undeliverable.email.p1")
-    @p("cf.undeliverable.email.p2")
-    @p("cf.undeliverable.email.p3")
+    @p("problem-with-email-address.p1")
+    @p("problem-with-email-address.p2")
+    @p("problem-with-email-address.p3")
 
     @ul(
-        "cf.undeliverable.email.list.1",
-        "cf.undeliverable.email.list.2",
-        "cf.undeliverable.email.list.3"
+        "problem-with-email-address.list.1",
+        "problem-with-email-address.list.2",
+        "problem-with-email-address.list.3"
     )
 
-    @button("cf.undeliverable.email.link-text", Some(nextPage))
+    @button("problem-with-email-address.link-text", Some(nextPage))
 }

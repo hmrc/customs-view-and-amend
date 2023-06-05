@@ -16,21 +16,21 @@
 
 @this(claimListRows:claimListRows, h1: components.h1) 
 
-@(claim: Claim, query: String)(implicit messages: Messages) @h1("claim.search.result.title")
+@(claim: Claim, query: String)(implicit messages: Messages) @h1("claim-search.result.title")
 <table class="govuk-table">
 	<caption
 		id="claims-caption"
 		class="search-table-caption govuk-!-margin-bottom-5"
 	>
-		@Html(messages("claim.search.result", 1, query))
+		@Html(messages("claim-search.result", 1, query))
 	</caption>
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
-			<th>@messages("claim.list.table.heading.case")</th>
-			<th>@messages("claim.list.table.heading.start")</th>
-			<th>@messages("claim.list.table.heading.status")</th>
+			<th>@messages("claim-list.table.heading.case")</th>
+			<th>@messages("claim-list.table.heading.start")</th>
+			<th>@messages("claim-list.table.heading.status")</th>
 			@{ claim match { case e:ClosedClaim =>
-			<th>{messages("claim.list.table.heading.removal")}</th>
+			<th>{messages("claim-list.table.heading.removal")}</th>
 			case e:PendingClaim =>
 			<!--TODO: Removed the respond by date until secure messaging timestamp available-->
 			case _ => Html("") } }

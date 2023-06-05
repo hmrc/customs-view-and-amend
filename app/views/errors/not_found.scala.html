@@ -20,13 +20,13 @@
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("cf.error.not-found.heading"))) {
-    @h1("cf.error.not-found.heading")
-    @p("cf.error.not-found.message.address-typed-wrong")
-    @p("cf.error.not-found.message.address-pasted-wrong")
-    @link("cf.error.not-found.link.message",
+@layout(pageTitle = Some(messages("error-page-not-found.heading"))) {
+    @h1("error-page-not-found.heading")
+    @p("error-page-not-found.message.address-typed-wrong")
+    @p("error-page-not-found.message.address-pasted-wrong")
+    @link("error-page-not-found.link.message",
         controllers.routes.ClaimsOverviewController.show.url,
-        preLinkMessage = Some("cf.error.not-found.message.go-to-home-page-text1"),
-        postLinkMessage = Some("cf.error.not-found.message.go-to-home-page-text2")
+        preLinkMessage = Some("error-page-not-found.message.go-to-home-page-text1"),
+        postLinkMessage = Some("error-page-not-found.message.go-to-home-page-text2")
     )
 }

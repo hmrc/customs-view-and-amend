@@ -35,12 +35,12 @@
 
 @layout(
     fullWidth = false,
-    pageTitle = Some(messages("file.selection.title"))) {
+    pageTitle = Some(messages("file-selection.title"))) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit) {
         @errorSummary(form.errors)
-        @h1(s"${messages("file.selection.title")} $caseNumber")
-        @insetText(content = HtmlContent(paragraph(Html(messages("file.selection.p1")))))
+        @h1(s"${messages("file-selection.title")} $caseNumber")
+        @insetText(content = HtmlContent(paragraph(Html(messages("file-selection.p1")))))
 
         @govukRadios(Radios(
             classes = "govuk-radios",
@@ -49,6 +49,6 @@
             errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
         ))
 
-        @button("file.selection.button")
+        @button("file-selection.button")
     }
 }

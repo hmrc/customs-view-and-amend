@@ -25,7 +25,7 @@
         bullets: components.bullets)
 
 @(claims: Seq[Claim] = Seq.empty, query: Option[String] = None)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
-@key = @{"claim.search"}
+@key = @{"claim-search"}
 
 @layout(pageTitle = Some(messages(s"$key.title")), fullWidth = true) {
 

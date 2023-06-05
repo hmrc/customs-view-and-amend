@@ -26,6 +26,6 @@ object FileSelectionForm extends Mappings {
 
   val form: Form[FileSelection] =
     Form(
-      "value" -> enumerable[FileSelection]("file.selection.error.required")
+      "value" -> enumerable[FileSelection]("file-selection.error.required")
     )
 }

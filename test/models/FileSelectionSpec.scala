@@ -68,7 +68,7 @@ class FileSelectionSpec extends SpecBase {
 
   "FileSelection.messages" should {
     "return the correct messages key" in {
-      AdditionalSupportingDocuments.message(stubMessages()) shouldBe "file.selection.other-supporting-documents"
+      AdditionalSupportingDocuments.message(stubMessages()) shouldBe "file-selection.other-supporting-documents"
     }
   }
 }
