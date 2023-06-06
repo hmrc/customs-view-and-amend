@@ -7,7 +7,7 @@ common.company-name-and-eori-and-xieori={0} - {1} ({2})
 
 header.eori=EORI:
 header.eori.dash=-
-header.companyName={0} -
+header.company-name={0} -
 
 feedback.before=This is a new service – your
 feedback.link=feedback (opens in a new tab)
@@ -59,7 +59,7 @@ month.abbr.12=Dec
 timeout.title=You’re about to be signed out
 timeout.message=For security reasons, you will be signed out of this service in
 timeout.keep-alive=Stay signed in
-timeout.signOut=Sign out
+timeout.sign-out=Sign out
 
 #===================================================
 #  PAGINATION COMPONENT
@@ -135,14 +135,13 @@ error-page-not-found.heading=Page not found
 
 error-page-not-found.message.address-typed-wrong=If you typed the web address, check it is correct.
 error-page-not-found.message.address-pasted-wrong=If you pasted the web address, check you copied the entire address.
-error-page-not-found.message.go-to-home-page-text1=Or go to the
-error-page-not-found.message.go-to-home-page-text2=home page.
+error-page-not-found.message.go-to-home-page-text.1=Or go to the
+error-page-not-found.message.go-to-home-page-text.2=home page.
 
 #===================================================
 #  VIEW UPLOAD PAGE
 #===================================================
 view-upload.page-title=Claims summary
-view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
 
@@ -207,7 +206,7 @@ claim-detail.value=Claim amount requested
 claim-detail.name=Claimant''s name
 claim-detail.email=Claimant''s email address
 claim-detail.upload=Upload files (opens in a new tab link)
-claim-detail.descriptionOfGoods=Description of goods
+claim-detail.description-of-goods=Description of goods
 
 claim-detail.reason-for-security=Reason for security
 claim-detail.reason-for-security.ACS=Account Sales
@@ -329,7 +328,7 @@ file-selection.proof-of-export-or-destruction=Proof of export or destruction
 #  FILE UPLOAD PAGE
 #===================================================
 file-upload.yes-no-question-text.h2=Add a different type of supporting evidence to your claim?
-file-upload.yes-no-question-required-error=Select yes to add a different type of supporting document to your claim
+file-upload.yes-no-question.error.required=Select yes to add a different type of supporting document to your claim
 file-upload.allowed-file-types-hint=The selected file must be a JPG, PNG or PDF
 file-upload.progress-bar-label=Uploaded
 file-upload.description=<p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>

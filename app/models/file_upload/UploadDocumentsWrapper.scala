@@ -64,7 +64,7 @@ object UploadDocumentsWrapper {
             userResearchBannerUrl = Some(appConfig.helpMakeGovUkBetterUrl),
             contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
             yesNoQuestionText = Some(messages("file-upload.yes-no-question-text")),
-            yesNoQuestionRequiredError = Some(messages("file-upload.yes-no-question-required-error")),
+            yesNoQuestionRequiredError = Some(messages("file-upload.yes-no-question.error.required")),
             allowedFilesTypesHint = Some(messages("file-upload.allowed-file-types-hint")),
             fileUploadedProgressBarLabel = Some(messages("file-upload.progress-bar-label")),
             chooseFirstFileLabel = Some(""),

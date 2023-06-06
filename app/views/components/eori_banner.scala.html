@@ -22,7 +22,7 @@
         <div class="govuk-phase-banner">
             <p class="govuk-phase-banner__content">
                 @companyName match {
-                    case Some(companyName) => { <span id="eori-company" class="govuk-phase-banner__text">@messages("header.companyName", companyName) @eoriNumber</span> }
+                    case Some(companyName) => { <span id="eori-company" class="govuk-phase-banner__text">@messages("header.company-name", companyName) @eoriNumber</span> }
                     case _ => { <span id="eori" class="govuk-phase-banner__text">@messages("header.eori") @eoriNumber</span> }
                 }
             </p>

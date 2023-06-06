@@ -100,7 +100,7 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
             },
             claimDetail.securityGoodsDescription.map { description =>
                 SummaryListRow(
-                    Key(content = HtmlContent(messages("claim-detail.descriptionOfGoods"))),
+                    Key(content = HtmlContent(messages("claim-detail.description-of-goods"))),
                     Value(content = HtmlContent(description)),
                     actions = None
                 )
