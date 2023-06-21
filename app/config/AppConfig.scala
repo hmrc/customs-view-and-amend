@@ -20,6 +20,9 @@ import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
+import java.util.Base64
+import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 @Singleton
 class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {
@@ -71,6 +74,21 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
       .getOptional[String]("cds-reimbursement-claim.context")
       .getOrElse("/cds-reimbursement-claim")
 
-  lazy val includeXiClaims: Boolean = config.get[Boolean]("features.include-xi-claims")
+  lazy val includeXiClaims: Boolean         = config.get[Boolean]("features.include-xi-claims")
+  lazy val limitAccessToKnownEORIs: Boolean = config.get[Boolean]("features.limited-access")
+
+  @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.AsInstanceOf"))
+  lazy val limitedAccessEoriSet: Set[String] =
+    try
+      config
+        .getOptional[String]("limited-access-eori-csv-base64")
+        .map(s => Base64.getDecoder().decode(s.getBytes(StandardCharsets.UTF_8)))
+        .map(a => new String(a, StandardCharsets.UTF_8))
+        .map(_.split(',').map(_.trim.toUpperCase(Locale.ENGLISH)).toSet)
+        .getOrElse(Set.empty)
+    catch {
+      case e: Exception =>
+        throw new Exception("Error while parsing 'limited-access-eori-csv-base64' config property", e)
+    }
 
 }
