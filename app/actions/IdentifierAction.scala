@@ -76,11 +76,4 @@ class AuthenticatedIdentifierAction @Inject() (
   def checkEoriIsAllowed(eori: String): Boolean =
     config.limitedAccessEoriSet.contains(eori.trim.toUpperCase(Locale.ENGLISH))
 
-  object EoriEnrolment {
-
-    val key = "HMRC-CUS-ORG"
-
-    val eoriEnrolmentIdentifier = "EORINumber"
-
-  }
 }
