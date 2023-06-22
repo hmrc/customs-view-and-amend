@@ -51,7 +51,7 @@
 
     @phaseBannerContent = {
         @messages("feedback.before")
-        <a class='govuk-link' href='/contact/beta-feedback-unauthenticated?service=CDS-FIN'>@messages("feedback.link")</a>
+        <a class='govuk-link' href='@{appConfig.fileUploadPhaseUrl}'>@messages("feedback.link")</a>
         @messages("feedback.after")
     }
 
