@@ -233,7 +233,6 @@ class IdentifierActionSpec extends SpecBase {
     }
 
     "the user has an unsupported credential role" should {
-
       "redirect the user to the unauthorised page" in new SetupBase {
 
         val app    = application.build()
@@ -252,6 +251,78 @@ class IdentifierActionSpec extends SpecBase {
         status(result) mustBe SEE_OTHER
 
         redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+      }
+    }
+
+    "the user is on the limited access list" should {
+      "call block" in new SetupBase {
+        val mockAuthConnector = mock[AuthConnector]
+
+        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
+          .thenReturn(
+            Future.successful(
+              Enrolments(
+                Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "GB000000000000001")), "Active"))
+              )
+            )
+          )
+
+        val app = application
+          .configure(
+            "features.limited-access"        -> "true",
+            "limited-access-eori-csv-base64" -> "R0IwMDAwMDAwMDAwMDAwMDEsR0IwMDAwMDAwMDAwMDAwMDIK"
+          )
+          .overrides()
+          .build()
+
+        val config      = app.injector.instanceOf[AppConfig]
+        val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
+
+        val authAction =
+          new AuthenticatedIdentifierAction(mockAuthConnector, config, bodyParsers)
+        val controller = new Harness(authAction)
+
+        running(app) {
+          val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
+          status(result) mustBe OK
+        }
+      }
+    }
+
+    "the user is NOT on the limited access list" should {
+      "redirect the user to the unauthorised page" in new SetupBase {
+        val mockAuthConnector = mock[AuthConnector]
+
+        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
+          .thenReturn(
+            Future.successful(
+              Enrolments(
+                Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "GB000000000000003")), "Active"))
+              )
+            )
+          )
+
+        val app = application
+          .configure(
+            "features.limited-access"        -> "true",
+            "limited-access-eori-csv-base64" -> "R0IwMDAwMDAwMDAwMDAwMDEsR0IwMDAwMDAwMDAwMDAwMDIK"
+          )
+          .overrides()
+          .build()
+
+        val config      = app.injector.instanceOf[AppConfig]
+        val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
+
+        val authAction =
+          new AuthenticatedIdentifierAction(mockAuthConnector, config, bodyParsers)
+        val controller = new Harness(authAction)
+
+        running(app) {
+          val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
+          status(result) mustBe SEE_OTHER
+
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        }
       }
     }
   }
