@@ -243,7 +243,9 @@ claim-upload-confirmation.email=We have sent a confirmation email to <strong>{0}
 claim-upload-confirmation.email.description=This email address is the one used when you registered for the Customs Declaration Service (CDS). If you have not received this email, check your SPAM folder or contact HMRC.
 claim-upload-confirmation.close=You can now close this tab.
 claim-upload-confirmation.return-home=Return to claims list
-
+claim-upload-confirmation.feedback-h2=Help us improve the service
+claim-upload-confirmation.feedback-p1=Tell us about your experience using this service to help us improve it
+claim-upload-confirmation.feedback-link-text=Give feedback
 #===================================================
 #  VERIFY YOUR EMAIL ADDRESS PAGE
 #===================================================
