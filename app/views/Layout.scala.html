@@ -105,7 +105,6 @@
         pageTitle = fullPageTitle,
         serviceUrl = Some(appConfig.guidancePage),
         signOutUrl = Some(routes.LogoutController.logout.url),
-        nonce = CSPNonce.get,
         mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
         additionalHeadBlock = Some(additionalHead),
         additionalScriptsBlock = Some(scripts),
