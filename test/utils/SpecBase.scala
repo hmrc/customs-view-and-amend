@@ -41,6 +41,7 @@ import repositories.SessionCache
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
 
 import java.util.UUID
 import scala.concurrent.Future
@@ -60,13 +61,13 @@ trait SpecBase
 
   def fakeRequest(method: String = "", path: String = "")(implicit
     hc: HeaderCarrier = HeaderCarrier()
-  ): FakeRequest[AnyContentAsEmpty.type] =
+  ): FakeRequest[AnyContentAsEmpty.type] = {
+    val sessionId = hc.sessionId.map(_.value).getOrElse(UUID.randomUUID().toString())
     FakeRequest(method, path).withCSRFToken
       .asInstanceOf[FakeRequest[AnyContentAsEmpty.type]]
-      .withHeaders(
-        "X-Session-Id" ->
-          hc.sessionId.map(_.value).getOrElse(UUID.randomUUID().toString())
-      )
+      .withHeaders(HMRCHeaderNames.xSessionId -> sessionId)
+      .withSession(SessionKeys.sessionId -> sessionId)
+  }
 
   def messages(app: Application): Messages = app.injector.instanceOf[MessagesApi].preferred(fakeRequest("", ""))
 
@@ -75,7 +76,7 @@ trait SpecBase
     val mockDataStoreConnector: DataStoreConnector = mock[DataStoreConnector]
     val mockSessionCache: SessionCache             = mock[SessionCache]
     val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
-    val mockXiEoriConnector: XiEoriConnector      = mock[XiEoriConnector]
+    val mockXiEoriConnector: XiEoriConnector       = mock[XiEoriConnector]
 
     Mockito
       .lenient()
