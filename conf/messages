@@ -129,9 +129,9 @@ claim-list.table.progress=Sorted by closest claim start date.
 #===================================================
 #  ERROR PAGE NOT FOUND
 #===================================================
-error-page-not-found.link.message=customs view and amend
 error-page-not-found.title=Page not found
-error-page-not-found.heading=Page not found
+error-page-not-found.heading=This page can’t be found
+error-page-not-found.link.message=Please check that you have entered the correct web address.
 
 error-page-not-found.message.address-typed-wrong=If you typed the web address, check it is correct.
 error-page-not-found.message.address-pasted-wrong=If you pasted the web address, check you copied the entire address.

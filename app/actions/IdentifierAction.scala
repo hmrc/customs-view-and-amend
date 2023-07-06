@@ -61,7 +61,7 @@ class AuthenticatedIdentifierAction @Inject() (
           block(AuthorisedRequest(request, eori.value))
 
         case _ =>
-          Future.successful(Redirect("/claim-back-import-duty-vat/claims-status/not-found"))
+          Future.successful(Redirect(controllers.routes.NotFoundController.onPageLoad))
       }
     } recover {
       case _: NoActiveSession        =>
