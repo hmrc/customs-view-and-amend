@@ -23,10 +23,11 @@
 @(model: InProgressClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
     @key = @{"claim-list.progress"}
+    @title = @{messages(s"$key.title")}
 
-    @layout(pageTitle = Some(messages(s"$key.title")), backLink = Some(routes.ClaimsOverviewController.show.url)) {
+    @layout(pageTitle = Some(title), backLink = Some(routes.ClaimsOverviewController.show.url)) {
         @headerArea(key, showInset = true)
 
-        @claimTable(model.visibleItems, InProgress)
+        @claimTable(model.visibleItems, InProgress, title)
         @pager(model)
     }
