@@ -52,7 +52,7 @@ class AuthorisedCallbackAction @Inject() (
         .getEnrolment("HMRC-CUS-ORG")
         .flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) =>
-          block(AuthorisedRequest(request, eori.value))
+          block(AuthorisedRequest(request, eori.value, isCallback = true))
 
         case None =>
           Future.successful(Forbidden)
