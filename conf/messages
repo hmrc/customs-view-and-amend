@@ -231,6 +231,7 @@ claim-detail.reason-for-security.CRQ=Quota
 #===================================================
 #  CLAIM UPLOAD CONFIRMATION PAGE
 #===================================================
+claim-upload-confirmation.title=Claim amendment sent
 claim-upload-confirmation.h1=Claim amendment sent
 claim-upload-confirmation.case=Claim reference
 claim-upload-confirmation.h2=What happens next?
