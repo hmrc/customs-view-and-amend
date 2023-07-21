@@ -76,9 +76,9 @@ pager.transactions=claims
 #  SEARCH COMPONENT
 #===================================================
 search.title=Search for a claim
+search.hint=Search by claim reference number
 search.error=Please enter a valid input
 search.desc=Search by claim reference number
-search.label=Search by claim reference number
 search.button=Search
 
 #===================================================
