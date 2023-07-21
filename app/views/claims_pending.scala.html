@@ -21,10 +21,13 @@
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: PendingClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
+
 @key = @{"claim-list.pending"}
-@layout(pageTitle = Some(messages(s"${key}.title"))) {
+@title = @{messages(s"$key.title")}
+
+@layout(pageTitle = Some(title)) {
     @headerArea(key, showInset = true)
-    @claimTable(model.visibleItems, Pending)
+    @claimTable(model.visibleItems, Pending, title)
     @pager(model)
 
 }

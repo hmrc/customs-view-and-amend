@@ -18,9 +18,10 @@
 @this(claimListRows: claimListRows, h2: components.h2)
 
 
-@(claims: Seq[Claim], claimType: ClaimStatus)(implicit messages: Messages)
+@(claims: Seq[Claim], claimType: ClaimStatus, captionTitle: String)(implicit messages: Messages)
 
 <table class="govuk-table">
+    <caption class="govuk-table__caption govuk-visually-hidden">@captionTitle</caption>
 	<thead class="govuk-table__head">
 		<tr class="govuk-table__row">
 			<th>@messages("claim-list.table.heading.claim")</th>
