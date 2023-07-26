@@ -307,6 +307,7 @@ not-subscribed-to-cds.detail.process-application-info=It can take up to two hour
 #===================================================
 file-selection.title=Add supporting documents to your claim
 file-selection.p1=You can upload one document at a time. Repeat this step to add more documents to your claim.
+file-selection.legend=Add supporting documents to your claim
 file-selection.button=Continue
 file-selection.error.required=Select which type of document you are uploading
 
