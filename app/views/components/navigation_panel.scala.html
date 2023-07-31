@@ -20,7 +20,7 @@
 
 @()(implicit messages: Messages, appConfig: AppConfig)
 
-<nav id="secondary-nav" class="hmrc-account-menu">
+<nav id="secondary-nav" class="hmrc-account-menu" aria-label="@messages(s"service-banner.label")">
     <ul class="hmrc-account-menu__main govuk-grid-column-full">
         <li>@link("service-banner.home", routes.ClaimsOverviewController.show.url, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
         <li>@link("service-banner.search", routes.ClaimSearchController.onPageLoad.url, pWrapped = false, linkClass = "hmrc-account-menu__link")</li>
