@@ -152,7 +152,7 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
                     actions = None
                 )
             },
-            verifiedEmail.map{ email =>
+            claimDetail.claimantsEmail.map{ email =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim-detail.email"))),
                     Value(content = HtmlContent(email)),
