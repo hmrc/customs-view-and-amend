@@ -43,19 +43,22 @@ Value(content = HtmlContent(declarationId)),
 actions = None
 ))}
 
-@multipleMrn = @{claimDetail.mrnDetails.map(mrns => {
-    val mrnList = mrns.foldLeft(new StringBuilder) { (acc: StringBuilder, elem: ProcedureDetail) =>
-        acc ++= elem.MRNNumber
-        acc ++= "<br/>"
-    }
-s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
-    SummaryListRow(
-        Key(content = HtmlContent(messages("claim-detail.other-mrn")), classes = "govuk-!-width-one-half"),
-        Value(content = HtmlContent(mrnList.toString)),
-        actions = None
-    )
+@multipleMrn = @{claimDetail.mrnDetails.flatMap(mrns => {
+    val mrnList = (mrns.foldLeft(Seq.empty[String]) { (list: Seq[String], elem: ProcedureDetail) =>
+        if(elem.mainDeclarationReference) 
+            list 
+        else {
+            list :+ elem.MRNNumber
+        }
+    }).mkString("</br>")    
+    if(mrnList.nonEmpty) Some(
+        SummaryListRow(
+            Key(content = HtmlContent(messages("claim-detail.other-mrn")), classes = "govuk-!-width-one-half"),
+            Value(content = HtmlContent(mrnList)),
+            actions = None
+        )
+    ) else None
 })}
-
 
 @layout(pageTitle = Some(messages("claim-detail.title", claimDetail.caseNumber))) {
 
