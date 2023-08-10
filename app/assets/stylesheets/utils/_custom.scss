@@ -191,10 +191,6 @@ th.govuk-table__header.govuk-table__cell--numeric {
   padding-right: 5px;
 }
 
-
-
-
-
 .pending-cash-transactions {
   color: govuk-colour("dark-grey");
 }
@@ -217,8 +213,7 @@ abbr[title] {
 }
 
 
-// Wide table
-
+// Responsive table
 @media (max-width: 767px) {
   .cdsr-wide-table {
     * {
