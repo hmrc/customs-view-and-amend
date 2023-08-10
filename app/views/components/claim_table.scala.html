@@ -20,25 +20,25 @@
 
 @(claims: Seq[Claim], claimType: ClaimStatus, captionTitle: String)(implicit messages: Messages)
 
-<table class="govuk-table">
+<table class="govuk-table cdsr-wide-table">
     <caption class="govuk-table__caption govuk-visually-hidden">@captionTitle</caption>
 	<thead class="govuk-table__head">
-		<tr class="govuk-table__row">
-			<th>@messages("claim-list.table.heading.claim")</th>
-			<th>@messages("claim-list.table.heading.mrn")</th>
-      <th>@messages("claim-list.table.heading.type")</th>
+		<tr class="govuk-table__row" role="row">
+			<th id="claim-ref-label" scope="col">@messages("claim-list.table.heading.claim")</th>
+			<th id="mrn-label" scope="col">@messages("claim-list.table.heading.mrn")</th>
+            <th id="type-label" scope="col">@messages("claim-list.table.heading.type")</th>
 			@{ claimType match {
-        case Closed =>
-			    <th>{messages("claim-list.table.heading.close")}</th>
-          <th>{messages("claim-list.table.heading.decision")}</th>
-			  case Pending | InProgress =>
-          <th>{messages("claim-list.table.heading.start")}</th>
-			  case _ => Html("") } }
+                case Closed =>
+                    <th id="date-label" scope="col">{messages("claim-list.table.heading.close")}</th>
+                    <th id="decision-label" scope="col">{messages("claim-list.table.heading.decision")}</th>
+			    case Pending | InProgress =>
+                    <th id="date-label" scope="col">{messages("claim-list.table.heading.start")}</th>
+			    case _ => Html("") } }
 		</tr>
 	</thead>
-	    <tbody class="govuk-table__body">
+	<tbody class="govuk-table__body">
     @for(claim <- claims) {
-        <tr class="govuk-table__row">
+        <tr class="govuk-table__row" role="row">
         @{
             claim match {
                 case e@ClosedClaim(declarationId, caseNumber, _, _, claimStartDate, removalDate, subStatus) =>
