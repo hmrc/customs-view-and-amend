@@ -166,12 +166,12 @@ actions = None
     ))
 
     @if(claimDetail.isPending) {
-        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.check-email")))))
         @h2(messages("claim-detail.h2.supporting-documents"))
+        @paragraph(Html(messages("claim-detail.p1.check-email")))
+        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.p2.valid-formats")))))
         @link(
             "claim-detail.link.file-upload",
             fileSelectionUrl
         )
-        @paragraph(Html(messages("claim-detail.p1.valid-formats")))
     }
 }
