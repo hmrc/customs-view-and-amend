@@ -184,6 +184,17 @@ claim-detail.mrn=MRN
 claim-detail.first-mrn=First MRN
 claim-detail.other-mrn=Other MRNs included in this claim
 claim-detail.entry=Entry Number
+claim-detail.lrn=<abbr title="Local reference number">LRN</abbr>
+claim-detail.claimant.eori=Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
+claim-detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
+claim-detail.inset.check-correspondence=Check your correspondence for details of missing documents and any requests for additional information from your caseworker
+claim-detail.h2.supporting-documents=Add supporting documents
+claim-detail.h2.supporting-documents-online=Online claim - upload supporting documents
+claim-detail.h2.supporting-documents-postal=Postal claims - send supporting documents
+claim-detail.p1.online-claims=If your claim was submitted online, upload your supporting documents
+claim-detail.p1.postal-claims=If your claim was submitted manually, you will need to send your supporting documents by post.
+claim-detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
+claim-detail.link.file-upload=File upload
 claim-detail.lrn=LRN
 claim-detail.claimant.eori=Claimant''s EORI number
 claim-detail.h2.supporting-documents=Add supporting documents
