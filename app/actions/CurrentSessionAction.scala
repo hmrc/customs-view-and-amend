@@ -47,7 +47,11 @@ class CurrentSessionAction @Inject(
   override def refine[A](
     request: AuthorisedRequest[A]
   ): Future[Either[Result, AuthorisedRequestWithSessionData[A]]] = {
-    implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier = if (request.isCallback)
+      HeaderCarrierConverter.fromRequest(request)
+    else
+      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+
     sessionCache
       .get()
       .flatMap(

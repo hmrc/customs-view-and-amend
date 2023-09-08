@@ -29,6 +29,8 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import java.util.Locale
+import play.api.Logger
 
 @ImplementedBy(classOf[AuthenticatedIdentifierAction])
 trait IdentifierAction
@@ -43,6 +45,9 @@ class AuthenticatedIdentifierAction @Inject() (
 )(implicit val executionContext: ExecutionContext)
     extends IdentifierAction
     with AuthorisedFunctions {
+
+  val logger: Logger = Logger(this.getClass)
+
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
 
     implicit val hc: HeaderCarrier =
@@ -51,13 +56,12 @@ class AuthenticatedIdentifierAction @Inject() (
     authorised().retrieve(Retrievals.allEnrolments) { allEnrolments =>
       allEnrolments
         .getEnrolment("HMRC-CUS-ORG")
-        .flatMap(_.getIdentifier("EORINumber"))
-      match {
-        case Some(eori) =>
+        .flatMap(_.getIdentifier("EORINumber")) match {
+        case Some(eori) if !config.limitAccessToKnownEORIs || checkEoriIsAllowed(eori.value) =>
           block(AuthorisedRequest(request, eori.value))
 
-        case None =>
-          Future.successful(Redirect(routes.UnauthorisedController.onPageLoad))
+        case _ =>
+          Future.successful(Redirect(controllers.routes.NotFoundController.onPageLoad))
       }
     } recover {
       case _: NoActiveSession        =>
@@ -68,4 +72,8 @@ class AuthenticatedIdentifierAction @Inject() (
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }
+
+  def checkEoriIsAllowed(eori: String): Boolean =
+    config.limitedAccessEoriSet.contains(eori.trim.toUpperCase(Locale.ENGLISH))
+
 }

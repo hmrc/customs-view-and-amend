@@ -201,13 +201,50 @@ th.govuk-table__header.govuk-table__cell--numeric {
   margin-right: 40px;
 }
 
-// abbreviations
-abbr[title] {
-  text-decoration: none;
-}
-
 // pagination
 .govuk-pagination {
   justify-content: space-between;
   align-items: center;
+}
+
+
+// Responsive table
+@media (max-width: 767px) {
+  .cdsr-wide-table {
+    * {
+      display:block;
+      margin:0;
+      padding:0;
+    }
+
+    .govuk-table__head {
+      display:none;
+    }
+
+    .govuk-table__row {
+      margin-bottom:20px;
+    }
+
+    .govuk-table__cell {
+      padding:10px 0;
+      display: flex;
+      justify-content: space-between;
+      text-align:right;
+
+      span.cdsr-responsive-heading {
+        text-align:left;
+        font-weight:700;
+      }
+
+      &:last-child {
+        border-bottom-width:2px;
+      }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  span.cdsr-responsive-heading {
+    display:none;
+  }
 }

@@ -25,12 +25,16 @@
 
 @(claimNumber: String, verifiedEmail: Option[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageTitle = Some(messages("claim-list.progress.title")), navigationBannerEnabled = false, fullWidth = false) {
+@layout(pageTitle = Some(messages("claim-upload-confirmation.title")), navigationBannerEnabled = false, fullWidth = false) {
     @confirmation(claimNumber)
 
     @h2("claim-upload-confirmation.h2")
     @p("claim-upload-confirmation.p1")
     @ul("claim-upload-confirmation.li.1", "claim-upload-confirmation.li.2", "claim-upload-confirmation.li.3")
 
-    @link("claim-upload-confirmation.return-home", controllers.routes.ClaimsOverviewController.show.url, pWrapped = false)
+    @link("claim-upload-confirmation.return-home", controllers.routes.ClaimsOverviewController.show.url)
+
+    @h2(messages(s"claim-upload-confirmation.feedback-h2"), classes = "govuk-heading-s")
+    @p(messages(s"claim-upload-confirmation.feedback-p1"))
+    @link("claim-upload-confirmation.feedback-link-text", appConfig.feedbackService, pWrapped = false)
 }

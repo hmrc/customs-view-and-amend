@@ -45,6 +45,13 @@
         @govukRadios(Radios(
             classes = "govuk-radios",
             name = "value",
+            fieldset = Some(Fieldset(
+                legend = Some(Legend(
+                    content = HtmlContent(messages("file-selection.legend")),
+                    isPageHeading = false,
+                    classes = "govuk-visually-hidden"
+                ))
+            )),
             items = items,
             errorMessage = form("value").error.map(err => ErrorMessage(content = Text(messages(err.message, err.args: _*))))
         ))

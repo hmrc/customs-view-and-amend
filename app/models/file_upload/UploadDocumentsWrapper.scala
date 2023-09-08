@@ -60,7 +60,7 @@ object UploadDocumentsWrapper {
             serviceUrl = Some(appConfig.guidancePage),
             accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl),
             phaseBanner = Some(appConfig.fileUploadPhase),
-            phaseBannerUrl = Some(appConfig.fileUploadPhaseUrl),
+            phaseBannerUrl = Some(appConfig.betaFeedbackUrl),
             contactFrontendServiceId = Some(appConfig.contactFrontendServiceId),
             yesNoQuestionText = Some(messages("file-upload.yes-no-question-text.h2")),
             yesNoQuestionRequiredError = Some(messages("file-upload.yes-no-question.error.required")),

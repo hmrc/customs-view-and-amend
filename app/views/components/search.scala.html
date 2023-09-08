@@ -18,7 +18,6 @@
 @import forms.SearchFormHelper
 
 @this(
-        subHeading: components.sub_heading,
         button: components.button,
         formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 )
@@ -28,16 +27,25 @@
     @key = @{"search"}
 
     <br/>
-    @if(showSearchTitle) {
-        @subHeading(Html(messages(s"$key.title")), classes = "govuk-heading-m")
-    }
 
     @formWithCSRF(routes.ClaimSearchController.onSubmit, 'novalidate -> "novalidate") {
 
-        <label for="@key" class="govuk-label">@messages(s"search.label")</label>
-
         <div class="govuk-form-group">
+
+            @if(showSearchTitle) {
+                <h2 class="govuk-label-wrapper">
+                    <label class="govuk-label govuk-label--m" for="@key">
+                        @messages(s"search.title")
+                    </label>
+                </h2>
+            }
+
+            <div id="subject-hint" class="govuk-hint">
+                @messages(s"search.hint")
+            </div>
             <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="text"/>
             @button(s"$key.button")
+
         </div>
+    
     }

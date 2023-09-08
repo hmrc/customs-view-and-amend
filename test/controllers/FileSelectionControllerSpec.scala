@@ -38,6 +38,7 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
+        redirectLocation(result) shouldBe None
         status(result) mustBe OK
       }
     }

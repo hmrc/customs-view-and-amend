@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package models
+package controllers
 
-import play.api.mvc.{Request, WrappedRequest}
+import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.test.Helpers._
+import utils.SpecBase
 
-final case class AuthorisedRequest[A](
-  request: Request[A],
-  eori: String,
-  isCallback: Boolean = false
-) extends WrappedRequest[A](request)
-    with RequestWithEori[A] {
+class NotFoundControllerSpec extends SpecBase {
 
-  def withSessionData(sessionData: SessionData): AuthorisedRequestWithSessionData[A] =
-    AuthorisedRequestWithSessionData(request, eori, sessionData)
+  "onPageLoad" should {
+    "return OK" in new SetupBase {
+      val app = application.build()
+
+      running(app) {
+        val result = route(app, fakeRequest("GET", routes.NotFoundController.onPageLoad.url)).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
+  }
 }

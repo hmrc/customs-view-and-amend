@@ -23,7 +23,6 @@ lazy val microservice = Project(appName, file("."))
     uglifyCompressOptions := Seq("unused=false", "dead_code=false"),
     scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s"
   )
-  .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
 

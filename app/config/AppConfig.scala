@@ -20,6 +20,9 @@ import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
+import java.util.Base64
+import java.nio.charset.StandardCharsets
+import java.util.Locale
 
 @Singleton
 class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {
@@ -33,7 +36,7 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
   lazy val signedOutPageUrl: String          = config.get[String]("urls.signedOutPage")
   lazy val signOutUrl: String                = config.get[String]("urls.signOut")
   lazy val accessibilityStatementUrl: String = config.get[String]("urls.accessibilityStatement")
-  lazy val feedbackService                   = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
+  lazy val feedbackService: String           = config.getOptional[String]("feedback.url").getOrElse("/feedback") +
     config.getOptional[String]("feedback.source").getOrElse("/CDSRC")
   lazy val contactFrontendServiceId: String  = config.get[String]("contact-frontend.serviceId")
 
@@ -51,8 +54,8 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
   lazy val fileUploadServiceName: String       =
     config.get[String]("microservice.services.upload-documents-frontend.serviceName")
   lazy val fileUploadPhase: String             = config.get[String]("microservice.services.upload-documents-frontend.phaseBanner")
-  lazy val fileUploadPhaseUrl: String          =
-    config.get[String]("microservice.services.upload-documents-frontend.phaseBannerUrl")
+  lazy val betaFeedbackUrl: String          =
+    config.get[String]("urls.betaFeedbackUrl")
   lazy val fileUploadMultiple: Boolean         =
     config.get[Boolean]("microservice.services.upload-documents-frontend.multiple-upload")
   lazy val fileUploadSummaryUrl: String        = s"$fileUploadPublicUrl/upload-customs-documents/summary"
@@ -71,6 +74,21 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
       .getOptional[String]("cds-reimbursement-claim.context")
       .getOrElse("/cds-reimbursement-claim")
 
-  lazy val includeXiClaims: Boolean = config.get[Boolean]("features.include-xi-claims")
+  lazy val includeXiClaims: Boolean         = config.get[Boolean]("features.include-xi-claims")
+  lazy val limitAccessToKnownEORIs: Boolean = config.get[Boolean]("features.limited-access")
+
+  @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.AsInstanceOf"))
+  lazy val limitedAccessEoriSet: Set[String] =
+    try
+      config
+        .getOptional[String]("limited-access-eori-csv-base64")
+        .map(s => Base64.getDecoder().decode(s.getBytes(StandardCharsets.UTF_8)))
+        .map(a => new String(a, StandardCharsets.UTF_8))
+        .map(_.split(',').map(_.trim.toUpperCase(Locale.ENGLISH)).toSet)
+        .getOrElse(Set.empty)
+    catch {
+      case e: Exception =>
+        throw new Exception("Error while parsing 'limited-access-eori-csv-base64' config property", e)
+    }
 
 }
