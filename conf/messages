@@ -200,7 +200,6 @@ claim-detail.claimant.eori=Claimant''s EORI number
 claim-detail.h2.supporting-documents=Add supporting documents
 claim-detail.p1.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker.
 claim-detail.p2.valid-formats=Valid file formats: JPG, PNG, PDF.
-claim-detail.link.file-upload=Upload a file
 
 claim-detail.type=Claim type
 claim-detail.type.multiple.C285=Overpayment (C285) <br> Multiple declarations
