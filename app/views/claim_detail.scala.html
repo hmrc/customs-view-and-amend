@@ -163,12 +163,17 @@ s"${claimDetail.declarationId} <br/> ${claimDetail.declarationId} <br/>"
     ))
 
     @if(claimDetail.isPending) {
-        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.check-email")))))
-        @h2(messages("claim-detail.h2.supporting-documents"))
+        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.check-correspondence")))))
+        @h2(messages("claim-detail.h2.supporting-documents-online"))
+        @paragraph(Html(messages("claim-detail.p1.online-claims")))
+
         @link(
             "claim-detail.link.file-upload",
             fileSelectionUrl
         )
         @paragraph(Html(messages("claim-detail.p1.valid-formats")))
+
+        @h2(messages("claim-detail.h2.supporting-documents-postal"))
+        @paragraph(Html(messages("claim-detail.p1.postal-claims")))
     }
 }
