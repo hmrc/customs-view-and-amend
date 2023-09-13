@@ -26,8 +26,11 @@
 @title = @{messages(s"$key.title")}
 
 @layout(pageTitle = Some(title)) {
+    
     @headerArea(key, showInset = true)
-    @claimTable(model.visibleItems, Pending, title)
+
     @pager(model)
+
+    @claimTable(model.visibleItems, Pending, title)
 
 }
