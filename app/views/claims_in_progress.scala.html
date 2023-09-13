@@ -26,8 +26,11 @@
     @title = @{messages(s"$key.title")}
 
     @layout(pageTitle = Some(title), backLink = Some(routes.ClaimsOverviewController.show.url)) {
+
         @headerArea(key, showInset = true)
 
-        @claimTable(model.visibleItems, InProgress, title)
         @pager(model)
+
+        @claimTable(model.visibleItems, InProgress, title)
+        
     }
