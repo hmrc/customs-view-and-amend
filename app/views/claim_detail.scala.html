@@ -166,15 +166,16 @@ actions = None
     ))
 
     @if(claimDetail.isPending) {
-        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.check-correspondence")))))
+        @paragraph(Html(messages("claim-detail.p1.check-correspondence")))
         @h2(messages("claim-detail.h2.supporting-documents-online"))
         @paragraph(Html(messages("claim-detail.p1.online-claims")))
+        @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.valid-formats")))))
 
         @link(
             "claim-detail.link.file-upload",
-            fileSelectionUrl
+            fileSelectionUrl,
+            linkClass = "govuk-button"
         )
-        @paragraph(Html(messages("claim-detail.p1.valid-formats")))
 
         @h2(messages("claim-detail.h2.supporting-documents-postal"))
         @paragraph(Html(messages("claim-detail.p1.postal-claims")))

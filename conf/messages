@@ -184,22 +184,22 @@ claim-detail.mrn=MRN
 claim-detail.first-mrn=First MRN
 claim-detail.other-mrn=Other MRNs included in this claim
 claim-detail.entry=Entry Number
-claim-detail.lrn=<abbr title="Local reference number">LRN</abbr>
-claim-detail.claimant.eori=Claimant''s <abbr title="Economic Operators Registration and Identification number">EORI</abbr> number
-claim-detail.inset.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker
-claim-detail.inset.check-correspondence=Check your correspondence for details of missing documents and any requests for additional information from your caseworker
+claim-detail.lrn=LRN
+claim-detail.claimant.eori=Claimant‘s EORI number
+claim-detail.p1.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker.
+claim-detail.p1.check-correspondence=Check your correspondence for details of missing documents and any requests for additional information from your caseworker.
 claim-detail.h2.supporting-documents=Add supporting documents
 claim-detail.h2.supporting-documents-online=Online claim - upload supporting documents
 claim-detail.h2.supporting-documents-postal=Postal claims - send supporting documents
-claim-detail.p1.online-claims=If your claim was submitted online, upload your supporting documents
+claim-detail.p1.online-claims=If your claim was submitted online, upload your supporting documents.
 claim-detail.p1.postal-claims=If your claim was submitted manually, you will need to send your supporting documents by post.
-claim-detail.p1.valid-formats=Valid file formats: JPG, PNG, PDF.
-claim-detail.link.file-upload=File upload
+claim-detail.inset.valid-formats=Valid file formats: JPG, PNG, PDF
+claim-detail.link.file-upload=Upload a file
 claim-detail.lrn=LRN
-claim-detail.claimant.eori=Claimant''s EORI number
+claim-detail.claimant.eori=Claimant‘s EORI number
 claim-detail.h2.supporting-documents=Add supporting documents
 claim-detail.p1.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker.
-claim-detail.p2.valid-formats=Valid file formats: JPG, PNG, PDF.
+claim-detail.p2.valid-formats=Valid file formats: JPG, PNG, PDF
 
 claim-detail.type=Claim type
 claim-detail.type.multiple.C285=Overpayment (C285) <br> Multiple declarations
@@ -215,8 +215,8 @@ claim-detail.decision=Claim decision
 claim-detail.start.date=Claim start date
 claim-detail.removal.date=Claim removal date
 claim-detail.value=Claim amount requested
-claim-detail.name=Claimant''s name
-claim-detail.email=Claimant''s email address
+claim-detail.name=Claimant‘s name
+claim-detail.email=Claimant‘s email address
 claim-detail.upload=Upload files (opens in a new tab link)
 claim-detail.description-of-goods=Description of goods
 
@@ -290,8 +290,8 @@ claim-search.result.in-progress=In Progress
 #===================================================
 #  PROBLEM WITH EMAIL ADDRESS PAGE
 #===================================================
-problem-with-email-address.title=There''s a problem with the CDS registered email address
-problem-with-email-address.heading=There''s a problem with the CDS registered email address
+problem-with-email-address.title=There‘s a problem with the CDS registered email address
+problem-with-email-address.heading=There‘s a problem with the CDS registered email address
 problem-with-email-address.p1=We tried to send you an email but it could not be delivered. This could be because the inbox is full, or due to a technical problem with your email provider.
 problem-with-email-address.p2=This is the email address your organisation has registered for the Customs Declaration Service (CDS). You need to verify this email address or change it. You can verify the email instantly provided you have access to the email account.
 problem-with-email-address.p3=This will be the only email address we use for:
@@ -306,7 +306,7 @@ problem-with-email-address.list.3=some financial notifications, including Direct
 #===================================================
 not-subscribed-to-cds.detail.title=Not registered with CDS
 not-subscribed-to-cds.detail.heading=To continue with this you need to get access to Customs Declaration Services (CDS)
-not-subscribed-to-cds.detail.eori-info=You''ll need an
+not-subscribed-to-cds.detail.eori-info=You‘ll need an
 not-subscribed-to-cds.detail.eori-link=Economic Operator and Registration Identification (EORI) number (opens in a new window or tab)
 not-subscribed-to-cds.detail.get-access-info=If you already have an EORI number, you can
 not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
