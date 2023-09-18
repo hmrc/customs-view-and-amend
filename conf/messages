@@ -193,13 +193,13 @@ claim-detail.h2.supporting-documents-online=Online claim - upload supporting doc
 claim-detail.h2.supporting-documents-postal=Postal claims - send supporting documents
 claim-detail.p1.online-claims=If your claim was submitted online, upload your supporting documents.
 claim-detail.p1.postal-claims=If your claim was submitted manually, you will need to send your supporting documents by post.
-claim-detail.inset.valid-formats=Valid file formats: JPG, PNG, PDF
+claim-detail.inset.valid-formats=Valid file formats: JPG, PNG, PDF.
 claim-detail.link.file-upload=Upload a file
 claim-detail.lrn=LRN
 claim-detail.claimant.eori=Claimant‘s EORI number
 claim-detail.h2.supporting-documents=Add supporting documents
 claim-detail.p1.check-email=Check your email for details of missing documents and any requests for additional information from your caseworker.
-claim-detail.p2.valid-formats=Valid file formats: JPG, PNG, PDF
+claim-detail.p2.valid-formats=Valid file formats: JPG, PNG, PDF.
 
 claim-detail.type=Claim type
 claim-detail.type.multiple.C285=Overpayment (C285) <br> Multiple declarations
