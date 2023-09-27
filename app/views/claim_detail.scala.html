@@ -50,7 +50,7 @@ actions = None
         else {
             list :+ elem.MRNNumber
         }
-    }).mkString("</br>")    
+    }).mkString("<br>")    
     if(mrnList.nonEmpty) Some(
         SummaryListRow(
             Key(content = HtmlContent(messages("claim-detail.other-mrn")), classes = "govuk-!-width-one-half"),
