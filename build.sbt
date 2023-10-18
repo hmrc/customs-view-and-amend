@@ -17,14 +17,12 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9399)
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.10",
+    scalaVersion := "2.13.12",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
     Assets / pipelineStages := Seq(uglify, gzip),
     uglifyCompressOptions := Seq("unused=false", "dead_code=false"),
     scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s"
   )
-  .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
 
 lazy val scoverageSettings = {
   import scoverage.ScoverageKeys
