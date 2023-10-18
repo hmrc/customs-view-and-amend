@@ -36,14 +36,16 @@ object CorrelationIdHeader {
 
   def from(uuid: UUID): (String, String) = (headerName, uuid.toString)
 
-  def from(eori: String, sessionId: Option[String]): (String, String) =
+  def from(eori: String, sessionId: Option[String]): (String, String) = {
+    val uuid = UUID.randomUUID().toString
     (
       headerName,
       Hash(eori).take(8) +
         sessionId
-          .map(_.drop(8).take(10) + UUID.randomUUID().toString.drop(18))
-          .getOrElse(UUID.randomUUID().toString.drop(8))
+          .map(_.drop(8).take(10) + uuid.drop(18))
+          .getOrElse(uuid.drop(8))
     )
+  }
 
   def from(eori: String, uuid: UUID): (String, String) =
     (headerName, Hash(eori).take(8) + uuid.toString.drop(8).take(10) + UUID.randomUUID().toString.drop(18))
