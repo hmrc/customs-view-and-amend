@@ -21,23 +21,25 @@ import play.api.i18n.{I18nSupport, Messages}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.ErrorTemplate
-import views.html.errors.{not_found, unauthorised}
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
 class NotFoundController @Inject() (
-                                         controllerComponents: MessagesControllerComponents,
-                                         errorTemplate: ErrorTemplate
-                                       )(implicit val appConfig: AppConfig)
-  extends FrontendController(controllerComponents)
+  controllerComponents: MessagesControllerComponents,
+  errorTemplate: ErrorTemplate
+)(implicit val appConfig: AppConfig)
+    extends FrontendController(controllerComponents)
     with I18nSupport {
 
   final val onPageLoad: Action[AnyContent] = Action { implicit request =>
     val messages = implicitly[Messages]
-    NotFound(errorTemplate(
-      messages("error-page-not-found.title"),
-      messages("error-page-not-found.heading"),
-      messages("error-page-not-found.link.message"))(request, messages, implicitly))
+    NotFound(
+      errorTemplate(
+        messages("error-page-not-found.title"),
+        messages("error-page-not-found.heading"),
+        messages("error-page-not-found.link.message")
+      )(request, messages, implicitly)
+    )
   }
 }
