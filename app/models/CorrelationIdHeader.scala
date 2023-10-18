@@ -34,8 +34,7 @@ object CorrelationIdHeader {
   def from(eori: String): (String, String) =
     (headerName, Hash(eori).take(8) + UUID.randomUUID().toString.drop(8))
 
-  def from(uuid: UUID): (String, String) =
-    (headerName, uuid.toString.drop(8))
+  def from(uuid: UUID): (String, String) = (headerName, uuid.toString)
 
   def from(eori: String, sessionId: Option[String]): (String, String) =
     (
@@ -54,7 +53,7 @@ object CorrelationIdHeader {
       if (
         headers.keys
           .map(_.toLowerCase(Locale.UK))
-          .contains(CorrelationIdHeader.headerNameLowercase)
+          .contains(newHeader._1)
       ) headers
       else
         headers.add(newHeader)
