@@ -17,6 +17,11 @@
 package models
 
 import play.api.mvc.{Request, WrappedRequest}
+import play.api.mvc.Headers
+import models.CorrelationIdHeader
+import models.CorrelationIdHeader._
+import uk.gov.hmrc.http.HeaderNames
+import uk.gov.hmrc.http.SessionKeys
 
 final case class AuthorisedRequestWithSessionData[A](
   request: Request[A],
@@ -25,6 +30,17 @@ final case class AuthorisedRequestWithSessionData[A](
 ) extends WrappedRequest[A](request)
     with RequestWithEori[A]
     with RequestWithSessionData[A] {
+
+  override def headers: Headers =
+    request.headers
+      .addIfMissing(
+        CorrelationIdHeader.from(
+          eori,
+          request.session
+            .get(SessionKeys.sessionId)
+            .orElse(request.headers.get(HeaderNames.xSessionId))
+        )
+      )
 
   def withAllClaims(allClaims: AllClaims): AuthorisedRequestWithSessionData[A] =
     copy(sessionData = sessionData.withAllClaims(allClaims))
