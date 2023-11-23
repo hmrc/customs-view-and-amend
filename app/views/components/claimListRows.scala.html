@@ -19,17 +19,15 @@
 @(linkUrl: String, linkMessage: String, col2: String, col3: Option[String], col4: Option[String], col5: Option[String])(implicit messages: Messages)
 
 <td class="govuk-table__cell" aria-labelledby="claim-ref-label" role="cell">
-    <span class="cdsr-responsive-heading" aria-hidden="true">@messages("claim-list.table.heading.claim")</span>
     @link(linkMessage, linkUrl, pWrapped = false, linkClass = "govuk-link govuk-body")
 </td>
 <td class="govuk-table__cell" aria-labelledby="mrn-label" role="cell">
-    <span class="cdsr-responsive-heading" aria-hidden="true">@messages("claim-list.table.heading.mrn")</span>
     @col2
 </td>
 
 @hasFourthRow = @{col4.isDefined}
 @hasFifthRow = @{col5.isDefined}
 
-@col3.map(value => <td class="govuk-table__cell" aria-labelledby="type-label" role="cell"><span class="cdsr-responsive-heading" aria-hidden="true">{messages("claim-list.table.heading.type")}</span>{value}</td>).orElse(if(hasFourthRow || hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
-@col4.map(value => <td class="govuk-table__cell" aria-labelledby="date-label" role="cell"><span class="cdsr-responsive-heading" aria-hidden="true">{if(hasFifthRow) messages("claim-list.table.heading.close") else messages("claim-list.table.heading.start")}</span>{value}</td>).orElse(if(hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
-@col5.map(value => <td class="govuk-table__cell" aria-labelledby="decision-label" role="cell"><span class="cdsr-responsive-heading" aria-hidden="true">{messages("claim-list.table.heading.decision")}</span>{value}</td>)
+@col3.map(value => <td class="govuk-table__cell" aria-labelledby="type-label" role="cell">{value}</td>).orElse(if(hasFourthRow || hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
+@col4.map(value => <td class="govuk-table__cell" aria-labelledby="date-label" role="cell">{value}</td>).orElse(if(hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
+@col5.map(value => <td class="govuk-table__cell" aria-labelledby="decision-label" role="cell">{value}</td>)
