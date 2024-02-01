@@ -23,6 +23,7 @@
 
 @this(
     layout: Layout,
+    ul: components.bullets,
     h1: components.h1,
     h2: components.h2,
     p: components.p,
@@ -44,17 +45,11 @@ actions = None
 ))}
 
 @multipleMrn = @{claimDetail.mrnDetails.flatMap(mrns => {
-    val mrnList = (mrns.foldLeft(Seq.empty[String]) { (list: Seq[String], elem: ProcedureDetail) =>
-        if(elem.mainDeclarationReference) 
-            list 
-        else {
-            list :+ elem.MRNNumber
-        }
-    }).mkString("<br>")    
+    val mrnList = mrns.filterNot(_.mainDeclarationReference).map(elem => Html(elem.MRNNumber))
     if(mrnList.nonEmpty) Some(
         SummaryListRow(
             Key(content = HtmlContent(messages("claim-detail.other-mrn")), classes = "govuk-!-width-one-half"),
-            Value(content = HtmlContent(mrnList)),
+            Value(content = HtmlContent(ul(mrnList, Some("govuk-list govuk-list--spaced")))),
             actions = None
         )
     ) else None
