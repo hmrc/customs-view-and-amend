@@ -44,57 +44,60 @@
     eori: String
 )(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
-@key = @{"view-upload"}
+@dropdownContent = {
+    @paragraph(Html(messages("view-upload.details.intro")))
+    @ul(titleAndDescriptionList("view-upload", 2))
+}
 
-@layout(pageTitle = Some(messages(s"$key.title")), fullWidth = true) {
+@layout(pageTitle = Some(messages(s"view-upload.title")), fullWidth = true) {
 
-    @headerArea(key)
+    @headerArea("view-upload")
 
     @dropdown(
-        summary = s"$key.updated.title",
-        ul(titleAndDescriptionList(key, 2))
+        summary = s"view-upload.updated.title",
+        dropdownContent
     )
 
     @if(allClaims.nonEmpty) {
         @card(
             if(allClaims.pendingClaims.size == 1) {
-                messages(s"$key.more-information.singular.title")
+                messages(s"view-upload.more-information.singular.title")
             } else {
-                messages(s"$key.more-information.plural.title", allClaims.pendingClaims.size)
+                messages(s"view-upload.more-information.plural.title", allClaims.pendingClaims.size)
             },
-            messages(s"$key.more-information.desc"),
+            messages(s"view-upload.more-information.desc"),
             allClaims.pendingClaims.nonEmpty,
-            messages(s"$key.more-information.link"),
+            messages(s"view-upload.more-information.link"),
             controllers.routes.ClaimListController.showPendingClaimList(None).url,
             insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
         )
 
         @card(
             if(allClaims.inProgressClaims.size == 1) {
-                messages(s"$key.in-progress.singular.title")
+                messages(s"view-upload.in-progress.singular.title")
             } else {
-                messages(s"$key.in-progress.plural.title", allClaims.inProgressClaims.size)
+                messages(s"view-upload.in-progress.plural.title", allClaims.inProgressClaims.size)
             },
-            messages(s"$key.in-progress.desc"),
+            messages(s"view-upload.in-progress.desc"),
             allClaims.inProgressClaims.nonEmpty,
-            messages(s"$key.in-progress.link"),
+            messages(s"view-upload.in-progress.link"),
             controllers.routes.ClaimListController.showInProgressClaimList(None).url
         )
 
         @card(
             if(allClaims.closedClaims.size == 1) {
-                messages(s"$key.closed.singular.title")
+                messages(s"view-upload.closed.singular.title")
             } else {
-                messages(s"$key.closed.plural.title", allClaims.closedClaims.size)
+                messages(s"view-upload.closed.plural.title", allClaims.closedClaims.size)
             },
-            messages(s"$key.closed.desc"),
+            messages(s"view-upload.closed.desc"),
             allClaims.closedClaims.nonEmpty,
-            messages(s"$key.closed.link"),
+            messages(s"view-upload.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
             cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9"
         )
     } else {
-        @p(s"$key.no-claims.p1")
-        @p(s"$key.no-claims.p2")
+        @p(s"view-upload.no-claims.p1")
+        @p(s"view-upload.no-claims.p2")
     }
 }
