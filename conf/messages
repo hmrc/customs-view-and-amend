@@ -147,6 +147,7 @@ view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
 
+view-upload.details.intro=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
 view-upload.details.bullet.0=Claims needing more information
 view-upload.details.hint.0=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
 view-upload.details.bullet.1=Claims in progress

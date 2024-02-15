@@ -22,6 +22,6 @@
 @(key: String, max: Int)(implicit messages: Messages)
 
 @{(0 to max).map(index => li(titleAndDescription(
- messages(s"$key.details.bullet.$index") + ": ",
+ messages(s"$key.details.bullet.$index"),
  messages(s"$key.details.hint.$index")
 )))}

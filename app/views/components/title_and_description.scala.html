@@ -18,6 +18,9 @@
 
 @this()
 
-@(title:String,description:String)
+@(title:String, description:String)
 
-<strong>@Html(title)</strong> @Html(description)
+<span class="govuk-body govuk-!-font-weight-bold ">@title</span>
+<div class="govuk-!-margin-top-1">
+@description
+</div>
