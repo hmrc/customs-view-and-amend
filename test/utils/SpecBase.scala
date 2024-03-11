@@ -16,13 +16,11 @@
 
 package utils
 
-import akka.stream.testkit.NoMaterializer
-import com.codahale.metrics.MetricRegistry
-import com.kenshoo.play.metrics.Metrics
 import connector.{ClaimsConnector, DataStoreConnector, XiEoriConnector}
 import models.CaseType.Individual
 import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
+import org.apache.pekko.stream.testkit.NoMaterializer
 import org.mockito.Mockito
 import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
@@ -40,16 +38,10 @@ import play.api.test.Helpers.stubPlayBodyParsers
 import repositories.SessionCache
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.Email
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.http.{SessionKeys, HeaderNames => HMRCHeaderNames}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames => HMRCHeaderNames, SessionKeys}
 
 import java.util.UUID
 import scala.concurrent.Future
-
-class FakeMetrics extends Metrics {
-  override val defaultRegistry: MetricRegistry = new MetricRegistry
-  override val toJson: String                  = "{}"
-}
 
 trait SpecBase
     extends AnyWordSpecLike
@@ -110,12 +102,12 @@ trait SpecBase
         closedDate = Some("20221112"),
         MRNDetails = Some(
           Seq(
-            ProcedureDetail("MRN", true)
+            ProcedureDetail(MRNNumber = "MRN", mainDeclarationReference = true)
           )
         ),
         entryDetails = Some(
           Seq(
-            EntryDetail("entryNumber", true)
+            EntryDetail(entryNumber = "entryNumber", mainDeclarationReference = true)
           )
         ),
         reimbursement = Some(Seq(reimbursement))
@@ -161,8 +153,7 @@ trait SpecBase
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[SessionCache].toInstance(mockSessionCache),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
-        bind[XiEoriConnector].toInstance(mockXiEoriConnector),
-        bind[Metrics].toInstance(new FakeMetrics)
+        bind[XiEoriConnector].toInstance(mockXiEoriConnector)
       )
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",
@@ -176,8 +167,7 @@ trait SpecBase
         bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
-        bind[XiEoriConnector].toInstance(mockXiEoriConnector),
-        bind[Metrics].toInstance(new FakeMetrics)
+        bind[XiEoriConnector].toInstance(mockXiEoriConnector)
       )
       .configure(
         "play.filters.csp.nonce.enabled" -> "false",
