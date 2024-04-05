@@ -66,7 +66,7 @@ object UploadDocumentsWrapper {
             yesNoQuestionRequiredError = Some(messages("file-upload.yes-no-question.error.required")),
             allowedFilesTypesHint = Some(messages("file-upload.allowed-file-types-hint")),
             fileUploadedProgressBarLabel = Some(messages("file-upload.progress-bar-label")),
-            chooseFirstFileLabel = Some(""),
+            chooseFirstFileLabel = Some(messages("file-upload.upload-label", documentType.message.toLowerCase)),
             chooseNextFileLabel = Some(messages("file-upload.another-upload-label", documentType.message.toLowerCase)),
             signOutUrl = Some(appConfig.signedOutPageUrl),
             timedOutUrl = Some(appConfig.signedOutPageUrl),

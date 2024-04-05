@@ -351,6 +351,7 @@ file-upload.progress-bar-label=Uploaded
 file-upload.description=<p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be a JPG, PNG or PDF.</p>
 file-upload.title=Upload {0}
 file-upload.another-upload-label=Upload another {0}
+file-upload.upload-label=Upload {0}
 file-upload.cya.title=Check your documents before sending
 file-upload.cya.h2=Uploaded documents
 file-upload.p1=By sending these files you are confirming that the details you are providing are correct.
