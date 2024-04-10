@@ -22,7 +22,7 @@
         formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 )
 
-@(form: Form[String] = SearchFormHelper.form, showSearchTitle: Boolean = true)(implicit request: Request[_], messages: Messages)
+@(form: Form[String] = SearchFormHelper.form, showSearchTitle: Boolean = true, query: Option[String] = None)(implicit request: Request[_], messages: Messages)
 
     @key = @{"search"}
 
@@ -47,7 +47,7 @@
             <div id="subject-hint" class="govuk-hint">
                 @messages(s"search.hint")
             </div>
-            <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="search"/>
+            <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="search" value='@query.getOrElse("")'/>
             @button(s"$key.button")
 
         </div>
