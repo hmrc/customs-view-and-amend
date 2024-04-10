@@ -30,7 +30,8 @@
   showCompanyNameAndEori: Boolean = true,
   showInset: Boolean = false,
   showSearchTitle: Boolean = true,
-  xiEori: Option[XiEori] = Option.empty
+  xiEori: Option[XiEori] = Option.empty,
+  query: Option[String] = None
 )(implicit request: RequestWithSessionData[_], messages: Messages)
 
 @if(showCompanyNameAndEori) {
@@ -50,4 +51,4 @@
     @insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
 }
 
-@search(showSearchTitle = showSearchTitle)
+@search(showSearchTitle = showSearchTitle, query = query)

@@ -275,6 +275,7 @@ verify-your-email.link-text=Verify or change email address
 #  CLAIM SEARCH PAGE
 #===================================================
 claim-search.title=Find a claim
+claim-search.titleSearchResultSuffix=Search result
 claim-search.inset=Search by claim reference number
 
 claim-search.result.title=Your search returned
