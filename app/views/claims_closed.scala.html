@@ -18,6 +18,7 @@
 @import viewmodels.ClosedClaimListViewModel
 @import views.html.components.pager
 @import views.components.hints.DropdownHints
+@import helpers.GenericFormatters._
 
 @this(layout: Layout,
       headerArea: components.header_area,
@@ -29,7 +30,7 @@
   caseStatusHints: DropdownHints)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"claim-list.closed"}
-@title = @{messages(s"$key.title")}
+@title = @{titleWithPossibleSuffix(model, "claim-list.closed.title")}
 
 @layout(pageTitle = Some(title)) {
           
