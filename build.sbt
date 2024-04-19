@@ -32,6 +32,7 @@ lazy val scoverageSettings = {
       "Reverse.*",
       ".*views.*",
       ".*config.*",
+      ".*helpers.*",
       ".*(BuildInfo|Routes|testOnly).*"
     ).mkString(";"),
     ScoverageKeys.coverageMinimumStmtTotal := 100,
