@@ -161,7 +161,9 @@ actions = None
     ))
 
     @if(claimDetail.isPending) {
-        @paragraph(Html(messages("claim-detail.p1.check-correspondence")))
+        @claimDetail.claimantsEmail.map{ email =>
+            @paragraph(Html(messages("claim-detail.p1.check-correspondence", email)))
+        }
         @h2(messages("claim-detail.h2.supporting-documents-online"))
         @paragraph(Html(messages("claim-detail.p1.online-claims")))
         @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.valid-formats")))))
