@@ -17,13 +17,14 @@
 @import viewmodels.InProgressClaimListViewModel
 @import config.AppConfig
 @import views.html.components.pager
+@import helpers.GenericFormatters._
 
 @this(layout: Layout, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: InProgressClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
     @key = @{"claim-list.progress"}
-    @title = @{messages(s"$key.title")}
+    @title = @{titleWithPossibleSuffix(model, "claim-list.progress.title")}
 
     @layout(pageTitle = Some(title), backLink = Some(routes.ClaimsOverviewController.show.url)) {
 

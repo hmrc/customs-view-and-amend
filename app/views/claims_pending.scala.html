@@ -17,13 +17,14 @@
 @import viewmodels.PendingClaimListViewModel
 @import config.AppConfig
 @import views.html.components.pager
+@import helpers.GenericFormatters._
 
 @this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: PendingClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
 @key = @{"claim-list.pending"}
-@title = @{messages(s"$key.title")}
+@title = @{titleWithPossibleSuffix(model, "claim-list.pending.title")}
 
 @layout(pageTitle = Some(title)) {
     

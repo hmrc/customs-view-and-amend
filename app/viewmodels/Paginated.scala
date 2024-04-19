@@ -72,4 +72,10 @@ trait Paginated[A] {
     range.filter(n => n >= FirstPage && n <= lastPage)
   }
 
+  lazy val totalNumberOfPages: Int = {
+    val possibleNoOfPages = totalNumberOfItems / itemsPerPage
+    val remainder = totalNumberOfItems % itemsPerPage
+    if (remainder == 0) possibleNoOfPages else possibleNoOfPages + 1
+  }
+
 }

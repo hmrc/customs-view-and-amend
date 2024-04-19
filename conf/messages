@@ -72,6 +72,7 @@ pager.summary.of=of
 pager.summary.to=to
 pager.summary.accessibility=set of pages
 pager.transactions=claims
+pager.titleSuffix=(page {0} of {1})
 
 #===================================================
 #  SEARCH COMPONENT
