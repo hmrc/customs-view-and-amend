@@ -113,6 +113,11 @@ actions = None
                     actions = None
                 )
             },
+            claimDetail.formattedStartDate().map(startDate => SummaryListRow(
+                Key(content = HtmlContent(messages("claim-detail.start.date"))),
+                Value(content = HtmlContent(startDate)),
+                actions = None
+            )),
             claimDetail.caseSubStatus.filter(_ => claimDetail.claimStatus == Closed).fold(
                 Some(SummaryListRow(
                     Key(content = HtmlContent(messages("claim-detail.status"))),
@@ -126,11 +131,6 @@ actions = None
                     actions = None
                 ))
             ),
-            claimDetail.formattedStartDate().map(startDate => SummaryListRow(
-                Key(content = HtmlContent(messages("claim-detail.start.date"))),
-                Value(content = HtmlContent(startDate)),
-                actions = None
-            )),
             claimDetail.formattedClosedDate().map(closedDate => SummaryListRow(
                 Key(content = HtmlContent(messages("claim-detail.removal.date"))),
                 Value(content = HtmlContent(closedDate)),
