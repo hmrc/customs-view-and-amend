@@ -78,7 +78,7 @@ pager.titleSuffix=(page {0} of {1})
 #  SEARCH COMPONENT
 #===================================================
 search.title=Search for a claim
-search.hint=Search by claim reference number
+search.hint=You can search using a claim reference number or the first movement reference number (MRN)
 search.error=Please enter a valid input
 search.desc=Search by claim reference number
 search.button=Search
@@ -281,7 +281,7 @@ claim-search.inset=Search by claim reference number
 
 claim-search.result.title=Your search returned
 claim-search.result.fail.title=There are no matching results for {0}.
-claim-search.result.fail.hint=Check your claim reference number and search again
+claim-search.result.fail.hint=Check your claim reference number or the first movement reference number (MRN) and search again.
 claim-search.result.claim=Claim reference
 claim-search.result.mrn=MRN
 claim-search.result.type=Claim type
