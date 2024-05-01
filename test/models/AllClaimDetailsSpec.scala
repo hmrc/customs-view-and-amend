@@ -146,12 +146,20 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         c.caseNumber shouldBe "NDRC-3078"
       }
     }
-    "search claim by query" in {
+    "search claim by query - search by claim number" in {
       allClaims.searchForClaim("NDRC-3033") should have size 1
       allClaims.searchForClaim("NDRC-2001") should have size 1
       allClaims.searchForClaim("SCTY-1099") should have size 1
       allClaims.searchForClaim("NDRC-1099") should have size 0
       allClaims.searchForClaim("NDRC-4000") should have size 0
+      allClaims.searchForClaim("")          should have size 0
+      allClaims.searchForClaim("foo")       should have size 0
+    }
+    "search claim by query - search by MRN" in {
+      allClaims.searchForClaim("MRN-3033") should have size 1
+      allClaims.searchForClaim("MRN-2001") should have size 1
+      allClaims.searchForClaim("MRN-1099") should have size 1
+      allClaims.searchForClaim("MRN") should have size 0
       allClaims.searchForClaim("")          should have size 0
       allClaims.searchForClaim("foo")       should have size 0
     }
@@ -229,7 +237,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
 
   val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
     ClosedClaim(
-      "MRN",
+      s"MRN-${1000 + value}",
       s"SCTY-${1000 + value}",
       SCTY,
       None,
@@ -240,7 +248,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
   }
   val pendingClaims: Seq[PendingClaim]      = (1 to 100).map { value =>
     PendingClaim(
-      "MRN",
+      s"MRN-${2000 + value}",
       s"NDRC-${2000 + value}",
       NDRC,
       None,
@@ -249,7 +257,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     )
   }
   val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
-    InProgressClaim("MRN", s"NDRC-${3000 + value}", NDRC, None, Some(LocalDate.of(2021, 2, 1).plusDays(value)))
+    InProgressClaim(s"MRN-${3000 + value}", s"NDRC-${3000 + value}", NDRC, None, Some(LocalDate.of(2021, 2, 1).plusDays(value)))
   }
 
   val allClaims: AllClaims = AllClaims(

@@ -29,7 +29,7 @@ case class AllClaims(
   /** Searches for a claim based on the user's query */
   def searchForClaim(query: String): Seq[Claim] = {
     val predicate: Claim => Boolean = claim =>
-      query.equalsIgnoreCase(claim.caseNumber)
+      (query.equalsIgnoreCase(claim.caseNumber) || query.equalsIgnoreCase(claim.declarationId))
 
     pendingClaims.filter(predicate) ++
       inProgressClaims.filter(predicate) ++
