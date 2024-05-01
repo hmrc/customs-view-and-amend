@@ -290,7 +290,7 @@ class IdentifierActionSpec extends SpecBase {
     }
 
     "the user is NOT on the limited access list" should {
-      "redirect the user to the not-found page" in new SetupBase {
+      "redirect the user to the unauthorised page" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
         when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
@@ -321,7 +321,7 @@ class IdentifierActionSpec extends SpecBase {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
           status(result) mustBe SEE_OTHER
 
-          redirectLocation(result) mustBe Some(routes.NotFoundController.onPageLoad.url)
+          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
         }
       }
     }

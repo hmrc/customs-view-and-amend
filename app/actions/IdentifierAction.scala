@@ -59,16 +59,13 @@ class AuthenticatedIdentifierAction @Inject() (
         .flatMap(_.getIdentifier("EORINumber")) match {
         case Some(eori) if !config.limitAccessToKnownEORIs || checkEoriIsAllowed(eori.value) =>
           block(AuthorisedRequest(request, eori.value))
-
         case _ =>
-          Future.successful(Redirect(controllers.routes.NotFoundController.onPageLoad))
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad))
       }
     } recover {
       case _: NoActiveSession        =>
         Redirect(config.loginUrl, Map("continue" -> Seq(config.loginContinueUrl)))
-      case _: InsufficientEnrolments =>
-        Redirect(routes.UnauthorisedController.onPageLoad)
-      case _: AuthorisationException =>
+      case _ =>
         Redirect(routes.UnauthorisedController.onPageLoad)
     }
   }
