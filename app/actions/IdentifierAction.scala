@@ -61,7 +61,7 @@ class AuthenticatedIdentifierAction @Inject() (
           block(AuthorisedRequest(request, eori.value))
 
         case _ =>
-          Future.successful(Redirect(controllers.routes.NotFoundController.onPageLoad))
+          Future.successful(Redirect(controllers.routes.UnauthorisedController.onPageLoad))
       }
     } recover {
       case _: NoActiveSession        =>

@@ -305,16 +305,13 @@ problem-with-email-address.list.2=urgent updates about goods in customs
 problem-with-email-address.list.3=some financial notifications, including Direct Debit notices and VAT
 
 #===================================================
-#  NOT SUBSCRIBED TO CDS PAGE
+#  UNAUTHORISED PAGE
 #===================================================
-not-subscribed-to-cds.detail.title=Not registered with CDS
-not-subscribed-to-cds.detail.heading=To continue with this you need to get access to Customs Declaration Services (CDS)
-not-subscribed-to-cds.detail.eori-info=You‘ll need an
-not-subscribed-to-cds.detail.eori-link=Economic Operator and Registration Identification (EORI) number (opens in a new window or tab)
-not-subscribed-to-cds.detail.get-access-info=If you already have an EORI number, you can
-not-subscribed-to-cds.detail.get-access-link=get access to CDS (opens in a new window or tab)
-not-subscribed-to-cds.detail.how-to-get-access-info=How to get access to CDS
-not-subscribed-to-cds.detail.process-application-info=It can take up to two hours for HMRC to process your application.
+unauthorised.h2.already-subscribed=If you are already subscribed to CDS
+unauthorised.h2.subscribe=Subscribe to CDS
+unauthorised.link-to-subscribe=<a href="{0}" class="govuk-link">Subscribe to the Custom Declaration Service</a>
+unauthorised.p1=Check that you signed in with the Government Gateway user ID that is linked to your Economic Operator and Registration Identification (EORI) number and CDS account.
+unauthorised.title=To continue you need to subscribe to the Customs Declaration Service (CDS)
 
 #===================================================
 #  FILE SELECTION PAGE

@@ -17,19 +17,23 @@
 @import config.AppConfig
 
 @this(
-        layout: Layout,
-        h1: components.h1,
-        h2: components.h2,
-        p: components.p,
-        newTabLink: components.newTabLink
+    layout: Layout,
+    h1: components.h1,
+    h2: components.h2,
+    subHeading: components.sub_heading,
+    heading: components.heading,
+    p: components.p,
+    paragraph: components.paragraph
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @layout(pageTitle = Some(messages("not-subscribed-to-cds.detail.title")), backLink = None, navigationBannerEnabled = false) {
-        @h1("not-subscribed-to-cds.detail.heading",id = None, classes = "govuk-heading-l")
-        @h2("not-subscribed-to-cds.detail.how-to-get-access-info", id = None)
-        @newTabLink("not-subscribed-to-cds.detail.eori-link", appConfig.registerCdsUrl, preLinkMessage = Some("not-subscribed-to-cds.detail.eori-info"))
-        @newTabLink("not-subscribed-to-cds.detail.get-access-link", appConfig.subscribeCdsUrl, preLinkMessage = Some("not-subscribed-to-cds.detail.get-access-info"))
-        @p("not-subscribed-to-cds.detail.process-application-info")
-    }
+@title = @{messages(s"unauthorised.title")}
+
+@layout(pageTitle = Some(s"$title")) {
+    @heading(Html(title))
+    @subHeading(Html(messages("unauthorised.h2.already-subscribed")), classes = "govuk-heading-m govuk-!-margin-top-8")
+    @paragraph(Html(messages(s"unauthorised.p1")))
+    @subHeading(Html(messages("unauthorised.h2.subscribe")), classes = "govuk-heading-m")
+    @paragraph(Html(messages(s"unauthorised.link-to-subscribe", appConfig.subscribeCdsUrl)))
+}
