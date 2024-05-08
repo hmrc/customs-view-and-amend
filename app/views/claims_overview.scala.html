@@ -45,8 +45,12 @@
 )(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
 @dropdownContent = {
-    @paragraph(Html(messages("view-upload.details.intro")))
-    @ul(titleAndDescriptionList("view-upload", 2))
+    <div class="govuk-grid-row">
+        <div class="govuk-grid-column-two-thirds">
+            @paragraph(Html(messages("view-upload.details.intro")))
+            @ul(titleAndDescriptionList("view-upload", 2))
+        </div>
+    </div>
 }
 
 @layout(pageTitle = Some(messages(s"view-upload.title")), fullWidth = true) {
