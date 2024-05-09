@@ -29,6 +29,7 @@
     p: components.p,
     govukSummaryList: GovukSummaryList,
     link: components.link,
+    button: components.button,
     newTabLink: components.newTabLink,
     insetText: components.inset_text,
     paragraph: components.paragraph
@@ -168,10 +169,9 @@ actions = None
         @paragraph(Html(messages("claim-detail.p1.online-claims")))
         @insetText(content = HtmlContent(paragraph(Html(messages("claim-detail.inset.valid-formats")))))
 
-        @link(
+        @button(
             "claim-detail.link.file-upload",
-            fileSelectionUrl,
-            linkClass = "govuk-button"
+            Some(fileSelectionUrl)
         )
 
         @h2(messages("claim-detail.h2.supporting-documents-postal"))
