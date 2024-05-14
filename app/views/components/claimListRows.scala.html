@@ -18,16 +18,14 @@
 
 @(linkUrl: String, linkMessage: String, col2: String, col3: Option[String], col4: Option[String], col5: Option[String])(implicit messages: Messages)
 
-<td class="govuk-table__cell" aria-labelledby="claim-ref-label" role="cell">
+<td class="govuk-table__cell">
     @link(linkMessage, linkUrl, pWrapped = false, linkClass = "govuk-link govuk-body")
 </td>
-<td class="govuk-table__cell" aria-labelledby="mrn-label" role="cell">
-    @col2
-</td>
+<td class="govuk-table__cell break-word">@col2</td>
 
 @hasFourthRow = @{col4.isDefined}
 @hasFifthRow = @{col5.isDefined}
 
-@col3.map(value => <td class="govuk-table__cell" aria-labelledby="type-label" role="cell">{value}</td>).orElse(if(hasFourthRow || hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
-@col4.map(value => <td class="govuk-table__cell" aria-labelledby="date-label" role="cell">{value}</td>).orElse(if(hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
-@col5.map(value => <td class="govuk-table__cell" aria-labelledby="decision-label" role="cell">{value}</td>)
+@col3.map(value => <td class="govuk-table__cell">{value}</td>).orElse(if(hasFourthRow || hasFifthRow) Some(<td class="govuk-table__cell" role="cell"></td>) else None)
+@col4.map(value => <td class="govuk-table__cell break-word">{value}</td>).orElse(Some(<td class="govuk-table__cell" role="cell"></td>))
+@col5.map(value => <td class="govuk-table__cell break-word">{value}</td>)

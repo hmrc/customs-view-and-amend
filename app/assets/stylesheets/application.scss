@@ -13,3 +13,10 @@ $hmrc-assets-path: "/customs/payment-records/assets/lib/hmrc-frontend/hmrc/";
 nav#secondary-nav>ul {
     padding: 0;
 }
+
+td.break-word {
+  word-wrap: break-word; // Fallback for older browsers only
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
