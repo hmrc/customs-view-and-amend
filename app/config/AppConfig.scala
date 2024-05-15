@@ -76,6 +76,7 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
 
   lazy val includeXiClaims: Boolean         = config.get[Boolean]("features.include-xi-claims")
   lazy val limitAccessToKnownEORIs: Boolean = config.get[Boolean]("features.limited-access")
+  lazy val welshLanguageSupportEnabled: Boolean = config.get[Boolean]("features.welsh-language-support")
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.AsInstanceOf"))
   lazy val limitedAccessEoriSet: Set[String] =
