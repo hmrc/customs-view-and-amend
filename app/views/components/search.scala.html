@@ -28,7 +28,7 @@
 
     <br>
 
-    @formWithCSRF(routes.ClaimSearchController.onSubmit, 'novalidate -> "novalidate") {
+    @formWithCSRF(routes.ClaimSearchController.onSubmit, 'novalidate -> "novalidate", 'role -> "search") {
 
         <div class="govuk-form-group">
 
@@ -47,7 +47,7 @@
             <div id="subject-hint" class="govuk-hint">
                 @messages(s"search.hint")
             </div>
-            <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="search" value='@query.getOrElse("")'/>
+            <input class="govuk-input govuk-input--width-20" id="@key" name="@key" type="search" aria-label="search text" value='@query.getOrElse("")'/>
             @button(s"$key.button")
 
         </div>
