@@ -146,11 +146,11 @@ error-page-not-found.message.go-to-home-page-text.2=home page.
 
 view-upload.title=Claims summary
 view-upload.updated.title=When and how often are claim statuses updated?
-view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
+view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in progress’ list.
 
-view-upload.details.intro=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in Progress’ list.
+view-upload.details.intro=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in progress’ list.
 view-upload.details.bullet.0=Claims needing more information
-view-upload.details.hint.0=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC
+view-upload.details.hint.0=When HMRC requires more information about your claim, the claim status will change from ‘in progress’ to ‘needing more information’. The claim will only be progressed when all of the information requested has been provided to HMRC.
 view-upload.details.bullet.1=Claims in progress
 view-upload.details.hint.1=These claims are being looked at by HMRC. This could take up to 30 working days. If you did not provide full supporting documentation when your claim was submitted, this will delay the claim process.
 view-upload.details.bullet.2=Closed claims
@@ -163,7 +163,7 @@ view-upload.more-information.link=View claims needing more information
 
 view-upload.in-progress.singular.title=1 claim is in progress
 view-upload.in-progress.plural.title={0} claims are in progress
-view-upload.in-progress.desc=Claims in progress are open and being reviewed by HMRC
+view-upload.in-progress.desc=Claims in progress are open and being reviewed by HMRC.
 view-upload.in-progress.link=View claims in progress
 
 view-upload.closed.singular.title=1 claim has been closed
