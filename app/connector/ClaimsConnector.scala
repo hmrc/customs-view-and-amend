@@ -26,6 +26,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import uk.gov.hmrc.http.UpstreamErrorResponse
 
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {
@@ -34,7 +35,7 @@ trait ClaimsConnector {
 
   def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
-  ): Future[Option[ClaimDetail]]
+  ): Future[Either[String, Option[ClaimDetail]]]
 
 }
 
@@ -44,8 +45,8 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
 ) extends ClaimsConnector
     with Logging {
 
-  private val baseUrl         = appConfig.cdsReimbursementClaim
-  private val getGbClaimsUrl = s"$baseUrl/claims"
+  private val baseUrl             = appConfig.cdsReimbursementClaim
+  private val getGbClaimsUrl      = s"$baseUrl/claims"
   private val getGbAndXiClaimsUrl = s"$baseUrl/claims?includeXiClaims=true"
 
   private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String) =
@@ -73,20 +74,23 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
 
   final def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
-  ): Future[Option[ClaimDetail]] =
+  ): Future[Either[String, Option[ClaimDetail]]] =
     httpClient
       .GET[SpecificClaimResponse](
         getSpecificClaimUrl(serviceType, caseNumber)
       )
       .map {
-        case SpecificClaimResponse("NDRC", true, Some(e: NDRCCase), None) => Some(e.toClaimDetail(lrn))
-        case SpecificClaimResponse("SCTY", true, None, Some(e: SCTYCase)) => Some(e.toClaimDetail(lrn))
+        case SpecificClaimResponse("NDRC", true, Some(e: NDRCCase), None) => Right(Some(e.toClaimDetail(lrn)))
+        case SpecificClaimResponse("SCTY", true, None, Some(e: SCTYCase)) => Right(Some(e.toClaimDetail(lrn)))
         case SpecificClaimResponse(_, _, Some(_), Some(_))                =>
           logger.error(s"Both NDRC/SCTY claim returned for case number $caseNumber")
-          None
-        case _                                                            => None
+          Right(None)
+        case _                                                            => Right(None)
       }
-      .recover { case _ =>
-        None
+      .recover {
+        case UpstreamErrorResponse(_, 500, _, _) =>
+          Left("ERROR_HTTP_500")
+        case _                                   =>
+          Right(None)
       }
 }

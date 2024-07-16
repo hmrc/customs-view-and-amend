@@ -42,11 +42,13 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames => HMRCHeaderNames, SessionK
 
 import java.util.UUID
 import scala.concurrent.Future
+import org.scalatest.EitherValues
 
 trait SpecBase
     extends AnyWordSpecLike
     with MockitoSugar
     with OptionValues
+    with EitherValues
     with ScalaFutures
     with Matchers
     with IntegrationPatience {

@@ -71,7 +71,7 @@ class ClaimsConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getAllClaims(includeXiClaims = true))
-        result.closedClaims shouldBe Seq(
+        result.closedClaims     shouldBe Seq(
           ClosedClaim(
             "21LLLLLLLLLL12343",
             "SEC-2107",
@@ -85,7 +85,7 @@ class ClaimsConnectorSpec extends SpecBase {
         result.inProgressClaims shouldBe Seq(
           InProgressClaim("21LLLLLLLLLLLLLLL9", "NDRC-2109", NDRC, Some("KWMREF1"), startDate)
         )
-        result.pendingClaims shouldBe Seq(
+        result.pendingClaims    shouldBe Seq(
           PendingClaim(
             "21LLLLLLLLLL12344",
             "SEC-2108",
@@ -106,7 +106,7 @@ class ClaimsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(specificClaimResponse))
 
       running(app) {
-        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None)).value
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None)).value.value
         result.claimantsEori.value     shouldBe "ClaimaintEori"
         result.claimType.value         shouldBe C285
         result.mrn                     shouldBe Seq(ProcedureDetail("MRN", mainDeclarationReference = true))
@@ -130,7 +130,7 @@ class ClaimsConnectorSpec extends SpecBase {
         .thenReturn(Future.successful(response))
 
       running(app) {
-        val result = await(connector.getClaimInformation("SCTY-1234", NDRC, None)).value
+        val result = await(connector.getClaimInformation("SCTY-1234", NDRC, None)).value.value
 
         result.caseNumber           shouldBe "caseNumber"
         result.claimantsEmail.value shouldBe "email@email.com"
@@ -139,13 +139,23 @@ class ClaimsConnectorSpec extends SpecBase {
       }
     }
 
-    "return None when NO_CONTENT returned from the API" in new Setup {
+    "return ERROR_HTTP_500 when 500 returned from the API" in new Setup {
       when[Future[SpecificClaimResponse]](mockHttp.GET(any, any, any)(any, any, any))
         .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
-        result shouldBe None
+        result shouldBe Left("ERROR_HTTP_500")
+      }
+    }
+
+    "return None when 503 returned from the API" in new Setup {
+      when[Future[SpecificClaimResponse]](mockHttp.GET(any, any, any)(any, any, any))
+        .thenReturn(Future.failed(UpstreamErrorResponse("", 503, 500)))
+
+      running(app) {
+        val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
+        result shouldBe Right(None)
       }
     }
 
@@ -162,7 +172,7 @@ class ClaimsConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
-        result shouldBe None
+        result shouldBe Right(None)
       }
     }
 
@@ -179,7 +189,7 @@ class ClaimsConnectorSpec extends SpecBase {
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
-        result shouldBe None
+        result shouldBe Right(None)
       }
     }
   }

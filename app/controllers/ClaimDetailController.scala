@@ -51,13 +51,20 @@ class ClaimDetailController @Inject() (
           claimsConnector
             .getClaimInformation(caseNumber, claim.serviceType, claim.lrn)
             .map {
-              case None =>
+              case Right(Some(claimDetails)) =>
+                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
+                Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
+
+              case Right(None) =>
                 NotFound(notFound())
                   .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
 
-              case Some(claimDetails) =>
-                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
-                Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
+              case Left("ERROR_HTTP_500") =>
+                Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))
+
+              case Left(other) =>
+                NotFound(notFound())
+                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
             }
 
         case _ =>
