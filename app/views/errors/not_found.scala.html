@@ -16,12 +16,12 @@
 
 @import config.AppConfig
 
-@this(layout: Layout, h1: components.h1, p: components.p, link: components.link)
+@this(layout: Layout, heading: components.heading, p: components.p, link: components.link)
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageTitle = Some(messages("error-page-not-found.heading"))) {
-    @h1("error-page-not-found.heading")
+    @heading(Html(messages("error-page-not-found.heading")), classes = "govuk-heading-xl govuk-!-margin-top-2 govuk-!-margin-bottom-10")
     @p("error-page-not-found.message.address-typed-wrong")
     @p("error-page-not-found.message.address-pasted-wrong")
     @link("error-page-not-found.link.message",

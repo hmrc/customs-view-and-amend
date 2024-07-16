@@ -40,12 +40,12 @@ class FileSubmissionConnectorSpec extends SpecBase {
       running(app) {
         val result = await(
           connector.submitFileToCDFPay(
-            "declarationId",
-            false,
-            "eori",
-            NDRC,
-            "caseNumber",
-            Seq(
+            declarationId = "declarationId",
+            entryNumber = false,
+            eori = "eori",
+            serviceType = NDRC,
+            caseNumber = "caseNumber",
+            files = Seq(
               UploadedFile(
                 "ref",
                 "/uri",
@@ -59,7 +59,7 @@ class FileSubmissionConnectorSpec extends SpecBase {
                 None
               )
             ),
-            None
+            reasonForSecurity = None
           )
         )
         result shouldBe true
@@ -72,7 +72,17 @@ class FileSubmissionConnectorSpec extends SpecBase {
 
       running(app) {
         val result =
-          await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty, None))
+          await(
+            connector.submitFileToCDFPay(
+              declarationId = "declarationId",
+              entryNumber = false,
+              eori = "eori",
+              serviceType = NDRC,
+              caseNumber = "caseNumber",
+              files = Seq.empty,
+              reasonForSecurity = None
+            )
+          )
         result shouldBe false
       }
     }
@@ -83,7 +93,17 @@ class FileSubmissionConnectorSpec extends SpecBase {
 
       running(app) {
         val result =
-          await(connector.submitFileToCDFPay("declarationId", false, "eori", NDRC, "caseNumber", Seq.empty, None))
+          await(
+            connector.submitFileToCDFPay(
+              declarationId = "declarationId",
+              entryNumber = false,
+              eori = "eori",
+              serviceType = NDRC,
+              caseNumber = "caseNumber",
+              files = Seq.empty,
+              reasonForSecurity = None
+            )
+          )
         result shouldBe false
       }
     }

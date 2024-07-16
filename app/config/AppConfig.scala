@@ -54,7 +54,7 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
   lazy val fileUploadServiceName: String       =
     config.get[String]("microservice.services.upload-documents-frontend.serviceName")
   lazy val fileUploadPhase: String             = config.get[String]("microservice.services.upload-documents-frontend.phaseBanner")
-  lazy val betaFeedbackUrl: String          =
+  lazy val betaFeedbackUrl: String             =
     config.get[String]("urls.betaFeedbackUrl")
   lazy val fileUploadMultiple: Boolean         =
     config.get[Boolean]("microservice.services.upload-documents-frontend.multiple-upload")
@@ -68,14 +68,15 @@ class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig
     config.get[String]("microservice.services.customs-data-store.context")
 
   lazy val emailFrontendUrl: String = config.get[String]("urls.emailFrontend")
+  lazy val contactHmrcUrl: String   = config.get[String]("urls.contactHmrcUrl")
 
   lazy val cdsReimbursementClaim: String = servicesConfig.baseUrl("cds-reimbursement-claim") +
     config
       .getOptional[String]("cds-reimbursement-claim.context")
       .getOrElse("/cds-reimbursement-claim")
 
-  lazy val includeXiClaims: Boolean         = config.get[Boolean]("features.include-xi-claims")
-  lazy val limitAccessToKnownEORIs: Boolean = config.get[Boolean]("features.limited-access")
+  lazy val includeXiClaims: Boolean             = config.get[Boolean]("features.include-xi-claims")
+  lazy val limitAccessToKnownEORIs: Boolean     = config.get[Boolean]("features.limited-access")
   lazy val welshLanguageSupportEnabled: Boolean = config.get[Boolean]("features.welsh-language-support")
 
   @SuppressWarnings(Array("org.wartremover.warts.Throw", "org.wartremover.warts.AsInstanceOf"))

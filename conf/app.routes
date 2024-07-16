@@ -3,7 +3,10 @@
 GET         /                                                     controllers.ClaimsOverviewController.show
 
 GET         /claims-in-progress                                   controllers.ClaimListController.showInProgressClaimList(page: Option[Int])
+
 GET         /claims-need-more-info                                controllers.ClaimListController.showPendingClaimList(page: Option[Int])
+GET         /new-tax-type-code-validation/:claim                  controllers.ErrorNewTaxTypeCodeValidationController.showError(claim: String)
+
 GET         /claims-closed                                        controllers.ClaimListController.showClosedClaimList(page: Option[Int])
 
 GET         /claim/:claim                                         controllers.ClaimDetailController.claimDetail(claim: String)

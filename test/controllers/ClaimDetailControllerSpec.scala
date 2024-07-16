@@ -34,7 +34,7 @@ class ClaimDetailControllerSpec extends SpecBase {
   "claimDetail" should {
     "return OK when a in progress claim has been found" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail)))
+        .thenReturn(Future.successful(Right(Some(claimDetail))))
 
       running(app) {
         val request =
@@ -46,7 +46,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "return OK when a in progress claim has been found without claimType" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail.copy(claimType = None))))
+        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimType = None)))))
 
       running(app) {
         val request =
@@ -58,7 +58,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "return OK when a pending claim has been found" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Pending))))
+        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimStatus = Pending)))))
 
       running(app) {
         val request =
@@ -70,7 +70,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "return OK when a closed claim has been found" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail.copy(claimStatus = Closed))))
+        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimStatus = Closed)))))
 
       running(app) {
         val request =
@@ -104,7 +104,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       when(mockDataStoreConnector.getEmail(any)(any))
         .thenReturn(Future.failed(new Exception("email check fails")))
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Some(claimDetail)))
+        .thenReturn(Future.successful(Right(Some(claimDetail))))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -115,7 +115,30 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "return NOT_FOUND when claim not found from the API" in new Setup {
       when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(None))
+        .thenReturn(Future.successful(Right(None)))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result  = route(app, request).value
+        status(result) mustBe NOT_FOUND
+      }
+    }
+
+    "redirect to error page when API returns 500" in new Setup {
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Left("ERROR_HTTP_500")))
+
+      running(app) {
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val result  = route(app, request).value
+        status(result) mustBe SEE_OTHER
+        redirectLocation(result) mustBe Some(routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url)
+      }
+    }
+
+    "return NOT_FOUND when API returns other error" in new Setup {
+      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
+        .thenReturn(Future.successful(Left("FOO")))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -140,7 +163,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       "caseNumber",
       NDRC,
       Some("DeclarationId"),
-      Seq(ProcedureDetail("DeclarationId", true)),
+      Seq(ProcedureDetail(MRNNumber = "DeclarationId", mainDeclarationReference = true)),
       Seq.empty,
       Some("SomeLrn"),
       Some("GB746502538945"),

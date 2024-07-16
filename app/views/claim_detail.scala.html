@@ -24,7 +24,7 @@
 @this(
     layout: Layout,
     ul: components.bullets,
-    h1: components.h1,
+    heading: components.heading,
     h2: components.h2,
     p: components.p,
     govukSummaryList: GovukSummaryList,
@@ -58,7 +58,7 @@ actions = None
 
 @layout(pageTitle = Some(messages("claim-detail.title", claimDetail.caseNumber))) {
 
-    @h1(messages("claim-detail.title", claimDetail.caseNumber))
+    @heading(Html(messages("claim-detail.title", claimDetail.caseNumber)))
     @p(s"claim-detail.p1.$claimStatus")
 
     @govukSummaryList(SummaryList(

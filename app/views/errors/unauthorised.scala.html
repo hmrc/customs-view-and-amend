@@ -31,7 +31,7 @@
 @title = @{messages(s"unauthorised.title")}
 
 @layout(pageTitle = Some(s"$title")) {
-    @heading(Html(title))
+    @heading(Html(title), classes = "govuk-heading-xl govuk-!-margin-top-2 govuk-!-margin-bottom-10")
     @subHeading(Html(messages("unauthorised.h2.already-subscribed")), classes = "govuk-heading-m govuk-!-margin-top-8")
     @paragraph(Html(messages(s"unauthorised.p1")))
     @subHeading(Html(messages("unauthorised.h2.subscribe")), classes = "govuk-heading-m")

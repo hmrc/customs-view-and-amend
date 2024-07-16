@@ -159,9 +159,9 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
       allClaims.searchForClaim("MRN-3033") should have size 1
       allClaims.searchForClaim("MRN-2001") should have size 1
       allClaims.searchForClaim("MRN-1099") should have size 1
-      allClaims.searchForClaim("MRN") should have size 0
-      allClaims.searchForClaim("")          should have size 0
-      allClaims.searchForClaim("foo")       should have size 0
+      allClaims.searchForClaim("MRN")      should have size 0
+      allClaims.searchForClaim("")         should have size 0
+      allClaims.searchForClaim("foo")      should have size 0
     }
     "check claims not empty" in {
       allClaims.nonEmpty                                                               shouldBe true
@@ -218,7 +218,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     caseNumber = "NDRC-2109",
     serviceType = NDRC,
     declarationId = Some("21LLLLLLLLLLLLLLL9"),
-    mrn = Seq(ProcedureDetail("21LLLLLLLLLLLLLLL9", true)),
+    mrn = Seq(ProcedureDetail(MRNNumber = "21LLLLLLLLLLLLLLL9", mainDeclarationReference = true)),
     entryNumbers = Seq.empty,
     lrn = None,
     claimantsEori = Some("GB744638982000"),
@@ -257,7 +257,13 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     )
   }
   val inProgressClaim: Seq[InProgressClaim] = (1 to 100).map { value =>
-    InProgressClaim(s"MRN-${3000 + value}", s"NDRC-${3000 + value}", NDRC, None, Some(LocalDate.of(2021, 2, 1).plusDays(value)))
+    InProgressClaim(
+      s"MRN-${3000 + value}",
+      s"NDRC-${3000 + value}",
+      NDRC,
+      None,
+      Some(LocalDate.of(2021, 2, 1).plusDays(value))
+    )
   }
 
   val allClaims: AllClaims = AllClaims(

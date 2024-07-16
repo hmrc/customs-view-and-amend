@@ -308,3 +308,9 @@ unauthorised.h2.subscribe=Tanysgrifiwch i CDS
 unauthorised.link-to-subscribe=<a href="{0}" class="govuk-link">Tanysgrifiwch i’r Gwasanaeth Datganiadau Tollau (CDS)</a>
 unauthorised.p1=Gwiriwch eich bod wedi mewngofnodi gyda?r Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth sy?n gysylltiedig â?ch rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (EORI) a?ch cyfrif CDS.
 unauthorised.title=Er mwyn mynd yn eich blaen, mae angen i chi danysgrifio i’r Gwasanaeth Datganiadau Tollau (CDS)
+
+error-tax-type-code-validation.title=Sorry, the claim details are not available
+error-tax-type-code-validation.h2=Sorry, the claim details are not available
+error-tax-type-code-validation.p1=The claim <strong>{0}</strong> includes a tax-type code we do not support in our service.
+error-tax-type-code-validation.p2=You can return to <a href="{0}" class="govuk-link">claims summary</a> page.
+error-tax-type-code-validation.p3=You can get help by <a href="{0}" target="_blank" class="govuk-link">contacting HMRC</a> (opens in new tab).
