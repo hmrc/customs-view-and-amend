@@ -33,12 +33,14 @@
 
 @layout(pageTitle = Some(pageTitle), fullWidth = true) {
 
-    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query)
+    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty)
 
     @if(query.isDefined){
         @if(claims.nonEmpty) {
-            @subHeading(Html(messages(s"$key.result.title")), classes = "govuk-heading-m")
-            @searchTable(claims)
+            <div id="search-results">
+                @subHeading(Html(messages(s"$key.result.title")), classes = "govuk-heading-m")
+                @searchTable(claims)
+            </div>
         } else {
             @subHeading(Html(messages(s"$key.result.fail.title", query.get)), classes = "govuk-heading-m")
             @p(s"$key.result.fail.hint")

@@ -22,7 +22,8 @@
     heading: components.heading,
     insetText: components.inset_text,
     search: components.search,
-    paragraph: components.paragraph
+    paragraph: components.paragraph,
+    govukSkipLink : GovukSkipLink
     )
 
 @(key: String,
@@ -31,7 +32,8 @@
   showInset: Boolean = false,
   showSearchTitle: Boolean = true,
   xiEori: Option[XiEori] = Option.empty,
-  query: Option[String] = None
+  query: Option[String] = None,
+  showingResults: Boolean = false
 )(implicit request: RequestWithSessionData[_], messages: Messages)
 
 @if(showCompanyNameAndEori) {
@@ -49,6 +51,13 @@
 
 @if(showInset){
     @insetText(content = HtmlContent(paragraph(Html(messages(s"${key}.inset")))))
+}
+
+@if(showingResults){
+    @govukSkipLink(SkipLink(
+        href = "#search-results",
+        content = Text(messages("claim-search.skipToResults"))
+    ))
 }
 
 @search(showSearchTitle = showSearchTitle, query = query)
