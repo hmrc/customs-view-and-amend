@@ -257,7 +257,7 @@ problem-with-email-address.p3=Dyma fydd yr unig gyfeiriad e-bost a ddefnyddiwn a
 month.abbr.11=Tach
 file-upload.yes-no-question.error.required=Dewiswch ?Iawn? i ychwanegu math gwahanol o dystiolaeth ategol at eich hawliad
 file-selection.preference-certificate=Tystysgrif ddewis
-claim-search.result.title=Canlyniadau’ch chwiliad
+claim-search.result.title=Canlyniadau’ch hawliad
 problem-with-email-address.list.2=diweddariadau brys am nwyddau yn y tollau
 claim-upload-confirmation.title=Diwygiad i’r hawliad wedi?i anfon
 file-upload.description=<p class=govuk-body"">Gall {0} o ffeiliau fod hyd at uchafswm maint o 9MB fesul ffeil. Mae’n rhaid i’r ffeil dan sylw fod yn JPG
