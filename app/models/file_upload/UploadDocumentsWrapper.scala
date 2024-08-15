@@ -50,8 +50,11 @@ object UploadDocumentsWrapper {
         sendoffUrl = Some(s"${appConfig.selfUrl}$claimsDatailsUrl"),
         cargo = UploadCargo(caseNumber),
         newFileDescription = documentType,
-        allowedContentTypes = Some("image/jpeg,image/png,application/pdf"),
-        allowedFileExtensions = Some(".jpg,.jpeg,.png,.pdf"),
+        allowedContentTypes = Some(
+          "application/pdf,image/jpeg,image/png,text/csv,text/plain,application/vnd.ms-outlook,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet"
+        ),
+        allowedFileExtensions =
+          Some(".pdf,.png,.jpg,.jpeg,.csv,.txt,.msg,.pst,.ost,.eml,.doc,.docx,.xls,.xlsx,.ods,.odt"),
         content = Some(
           UploadDocumentsContent(
             serviceName = Some(messages("service.name")),
