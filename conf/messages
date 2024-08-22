@@ -346,7 +346,7 @@ file-selection.proof-of-export-or-destruction=Proof of export or destruction
 #===================================================
 file-upload.yes-no-question-text.h2=Add a different type of supporting evidence to your claim?
 file-upload.yes-no-question.error.required=Select yes to add a different type of supporting document to your claim
-file-upload.allowed-file-types-hint=The selected file must be Excel, Outlook, JPG, PNG, PDF, CSV, TXT or Word
+file-upload.allowed-file-types-hint=Excel, Outlook, JPG, PNG, PDF, CSV, TXT or Word
 file-upload.progress-bar-label=Uploaded
 file-upload.description=<p class="govuk-body">{0} files can be up to a maximum of 9MB size per file. The selected file must be Excel, Outlook, JPG, PNG, PDF, CSV, TXT or Word.</p>
 file-upload.title=Upload {0}
