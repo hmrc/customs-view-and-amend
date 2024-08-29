@@ -314,3 +314,14 @@ error-tax-type-code-validation.h2=Sorry, the claim details are not available
 error-tax-type-code-validation.p1=The claim <strong>{0}</strong> includes a tax-type code we do not support in our service.
 error-tax-type-code-validation.p2=You can return to <a href="{0}" class="govuk-link">claims summary</a> page.
 error-tax-type-code-validation.p3=You can get help by <a href="{0}" target="_blank" class="govuk-link">contacting HMRC</a> (opens in new tab).
+
+substatus.withdrawn=Wedi’i dynnu’n ôl
+substatus.failed-validation=Wedi methu’r cam dilysu
+substatus.rejected=Wedi’i wrthod
+substatus.no-reply=Dim ymateb
+substatus.refused=Heb ei dderbyn
+substatus.approved=Wedi’i gymeradwyo
+substatus.partial-refused=Heb ei dderbyn yn rhannol
+substatus.underpayment=Tandaliad
+substatus.part-approved=Wedi’i gymeradwyo’n rhannol
+
