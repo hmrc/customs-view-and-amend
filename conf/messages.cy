@@ -296,11 +296,11 @@ verify-your-email.link-text=Dilysu neu newid y cyfeiriad e-bost
 month.abbr.4=Ebr
 claim-search.titleSearchResultSuffix=Canlyniad chwilio
 not-subscribed-to-cds.detail.how-to-get-access-info=Sut i gael mynediad at CDS
-view-upload.updated.title=Pryd a pha mor aml y caiff statws hawliad ei ddiweddaru?
+view-upload.updated.title=Pan fo hawliad newydd wedi agor, gallai gymryd hyd at 1 diwrnod gwaith i ymddangos ar y rhestr ‘hawliadau ar y gweill’.
 claim-detail.reason-for-security.CRQ=Cwota
 claim-detail.start.date=Dyddiad cyflwyno’r hawliad
 claim-detail.mrn=MRN
-view-upload.updated.desc=Pan fo hawliad newydd wedi agor, gallai gymryd o leiaf 1 diwrnod gwaith i’w ddangos yn y rhestr ’hawliadau ar y gweill’.
+view-upload.updated.desc=Pan fo hawliad newydd wedi agor, gallai gymryd hyd at 1 diwrnod gwaith i ymddangos ar y rhestr ‘hawliadau ar y gweill’.
 verify-your-email.need-to-verify=Dyma fydd yr unig gyfeiriad e-bost a ddefnyddiwn ar gyfer:
 verify-your-email.title=Mae angen i chi ddilysu?r cyfeiriad e-bost cofrestredig ar gyfer y Gwasanaeth Datganiadau Tollau 
 unauthorised.h2.already-subscribed=Os ydych eisoes wedi tanysgrifio i CDS
@@ -309,8 +309,21 @@ unauthorised.link-to-subscribe=<a href="{0}" class="govuk-link">Tanysgrifiwch i�
 unauthorised.p1=Gwiriwch eich bod wedi mewngofnodi gyda?r Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth sy?n gysylltiedig â?ch rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (EORI) a?ch cyfrif CDS.
 unauthorised.title=Er mwyn mynd yn eich blaen, mae angen i chi danysgrifio i’r Gwasanaeth Datganiadau Tollau (CDS)
 
-error-tax-type-code-validation.title=Sorry, the claim details are not available
-error-tax-type-code-validation.h2=Sorry, the claim details are not available
-error-tax-type-code-validation.p1=The claim <strong>{0}</strong> includes a tax-type code we do not support in our service.
-error-tax-type-code-validation.p2=You can return to <a href="{0}" class="govuk-link">claims summary</a> page.
-error-tax-type-code-validation.p3=You can get help by <a href="{0}" target="_blank" class="govuk-link">contacting HMRC</a> (opens in new tab).
+error-tax-type-code-validation.title=Mae’n ddrwg gennym, ond nid yw manylion yr hawliad ar gael
+error-tax-type-code-validation.h2=Mae’n ddrwg gennym, ond nid yw manylion yr hawliad ar gael
+error-tax-type-code-validation.p1=Mae’r hawliad <strong>{0}</strong> yn cynnwys math o god treth nad yw’n gwasanaeth yn gallu ei gefnogi.
+error-tax-type-code-validation.p2=Gallwch fynd yn ôl i’r <a href="{0}" class="govuk-link">dudalen crynodeb o’r hawliadau.</a>.
+error-tax-type-code-validation.p3=Gallwch gael help drwy <a href="{0}" target="_blank" class="govuk-link">gysylltu â CThEF (yn agor tab newydd).</a>.
+
+substatus.withdrawn=Wedi’i dynnu’n ôl
+substatus.failed-validation=Wedi methu’r cam dilysu
+substatus.rejected=Wedi’i wrthod
+substatus.no-reply=Dim ymateb
+substatus.refused=Heb ei dderbyn
+substatus.approved=Wedi’i gymeradwyo
+substatus.partial-refused=Heb ei dderbyn yn rhannol
+substatus.underpayment=Tandaliad
+substatus.part-approved=Wedi’i gymeradwyo’n rhannol
+
+
+
