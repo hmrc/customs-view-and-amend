@@ -144,7 +144,7 @@ error-page-not-found.message.go-to-home-page-text.2=home page.
 #  VIEW UPLOAD PAGE
 #===================================================
 
-view-upload.title=Claims summary
+view-upload.title=Claim dashboard
 view-upload.updated.title=When and how often are claim statuses updated?
 view-upload.updated.desc=When a new claim is opened, it may take at least 1 working day to show in the ‘claims in progress’ list.
 
