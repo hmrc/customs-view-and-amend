@@ -19,11 +19,12 @@ package models.file_upload
 import play.api.libs.json.{Json, OFormat}
 
 case class UploadDocumentsFeatures(
-                                    showUploadMultiple: Option[Boolean] = None,
-                                    showYesNoQuestionBeforeContinue: Option[Boolean] = None,
-                                    showAddAnotherDocumentButton: Option[Boolean] = None,
-                                    showLanguageSelection: Option[Boolean] = None
-                                  )
+  showUploadMultiple: Option[Boolean] = None,
+  showYesNoQuestionBeforeContinue: Option[Boolean] = None,
+  showAddAnotherDocumentButton: Option[Boolean] = None,
+  showLanguageSelection: Option[Boolean] = None,
+  enableMultipleFilesPicker: Option[Boolean] = None
+)
 
 object UploadDocumentsFeatures {
   implicit val format: OFormat[UploadDocumentsFeatures] = Json.format[UploadDocumentsFeatures]

@@ -260,7 +260,7 @@ file-selection.preference-certificate=Tystysgrif ddewis
 claim-search.result.title=Canlyniadau’ch hawliad
 problem-with-email-address.list.2=diweddariadau brys am nwyddau yn y tollau
 claim-upload-confirmation.title=Diwygiad i’r hawliad wedi?i anfon
-file-upload.description=<p class=govuk-body"">Gall {0} o ffeiliau fod hyd at uchafswm maint o 9MB fesul ffeil. Mae’n rhaid i’r ffeil dan sylw fod ar ffurf Excel, Outlook, JPG, PNG, PDF, CSV, TXT neu Word
+file-upload.description=<p class="govuk-body">Gall {0} o ffeiliau fod hyd at uchafswm maint o 9MB fesul ffeil. Mae’n rhaid i’r ffeil dan sylw fod ar ffurf Excel, Outlook, JPG, PNG, PDF, CSV, TXT neu Word</p><p class="govuk-body">Gallwch ddewis y botwm dewis ffeiliau i uwchlwytho un ffeil neu gallwch lusgo a gollwng sawl ffeil.</p>
 not-subscribed-to-cds.detail.eori-link=Rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (EORI) (yn agor ffenestr neu dab newydd)
 claim-detail.claimant.eori=Rhif EORI yr hawliwr
 not-subscribed-to-cds.detail.get-access-info=Os oes gennych rif EORI eisoes, mae modd
