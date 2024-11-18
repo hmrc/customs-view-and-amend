@@ -17,7 +17,7 @@
 package forms
 
 import play.api.data.Form
-import play.api.data.Forms.{mapping, nonEmptyText}
+import play.api.data.Forms.{mapping, text}
 import org.jsoup.safety.Safelist
 import org.jsoup.Jsoup
 
@@ -27,10 +27,10 @@ object SearchFormHelper {
     Form(
       mapping(
         "search" ->
-          nonEmptyText
+          text
             .transform(cleanInput, identity[String])
             .verifying(
-              "error",
+              "claim-search.error.required",
               str => str.nonEmpty
             )
       )(identity)(Some(_))

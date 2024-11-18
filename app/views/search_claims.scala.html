@@ -22,9 +22,10 @@
         subHeading: components.sub_heading,
         searchTable: components.search_table,
         p: components.p,
-        bullets: components.bullets)
+        bullets: components.bullets,
+        errorSummary: components.error_summary)
 
-@(claims: Seq[Claim] = Seq.empty, query: Option[String] = None)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
+@(claims: Seq[Claim] = Seq.empty, query: Option[String] = None, form: Form[String])(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim-search"}
 
 @title = @{messages(s"$key.title")}
@@ -33,7 +34,8 @@
 
 @layout(pageTitle = Some(pageTitle), fullWidth = true) {
 
-    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty)
+    @errorSummary(form.errors)
+    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty, form = form)
 
     @if(query.isDefined){
         @if(claims.nonEmpty) {

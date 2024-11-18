@@ -32,7 +32,8 @@
     headerArea: components.header_area,
     formWithCSRF: uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF,
     titleAndDescriptionList: components.title_and_description_list,
-    ul: components.ul
+    ul: components.ul,
+    errorSummary: components.error_summary
     )
 
 @(
@@ -55,7 +56,8 @@
 
 @layout(pageTitle = Some(messages(s"view-upload.title")), fullWidth = true) {
 
-    @headerArea("view-upload")
+    @errorSummary(form.errors)
+    @headerArea("view-upload", form = form)
 
     @dropdown(
         summary = s"view-upload.updated.title",

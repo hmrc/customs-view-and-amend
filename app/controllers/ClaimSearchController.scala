@@ -44,7 +44,7 @@ class ClaimSearchController @Inject() (
   final val onPageLoad: Action[AnyContent] =
     actions { case (request, _) =>
       implicit val r = request
-      Ok(searchClaim())
+      Ok(searchClaim(form = SearchFormHelper.form))
     }
 
   final val onSubmit: Action[AnyContent] =
@@ -53,10 +53,10 @@ class ClaimSearchController @Inject() (
       SearchFormHelper.form
         .bindFromRequest()
         .fold(
-          _ => BadRequest(searchClaim()),
+          errors => BadRequest(searchClaim(form = errors)),
           query => {
             val claims = allClaims.searchForClaim(query)
-            Ok(searchClaim(claims, Some(query)))
+            Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
           }
         )
     }

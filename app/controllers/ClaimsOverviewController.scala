@@ -23,7 +23,7 @@ import models.RequestWithSessionData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.claims_overview
+import views.html.{claims_overview, search_claims}
 
 import javax.inject.{Inject, Singleton}
 
@@ -34,7 +34,8 @@ class ClaimsOverviewController @Inject() (
   currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
   xiEoriAction: XiEoriAction,
-  claimsOverview: claims_overview
+  claimsOverview: claims_overview,
+  searchClaim: search_claims
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
@@ -49,11 +50,33 @@ class ClaimsOverviewController @Inject() (
           0,
           allClaims,
           SearchFormHelper.form,
-          routes.ClaimSearchController.onSubmit,
+          routes.ClaimsOverviewController.onSubmit,
           request.companyName.orNull,
           request.eori
         )
       )
     }
 
+  final val onSubmit: Action[AnyContent] =
+    actions { case (request, allClaims) =>
+      implicit val r = request
+      SearchFormHelper.form
+        .bindFromRequest()
+        .fold(
+          errors =>
+            BadRequest(
+              claimsOverview(
+                0,
+                allClaims,
+                errors,
+                routes.ClaimsOverviewController.onSubmit,
+                request.companyName.orNull,
+                request.eori
+              )),
+          query => {
+            val claims = allClaims.searchForClaim(query)
+            Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+          }
+        )
+    }
 }
