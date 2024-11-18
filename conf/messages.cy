@@ -325,5 +325,4 @@ substatus.partial-refused=Heb ei dderbyn yn rhannol
 substatus.underpayment=Tandaliad
 substatus.part-approved=Wedi’i gymeradwyo’n rhannol
 
-
-
+claim-search.error.required=Nodwch gyfeirnod hawliad neu’r cyfeirnod symud (MRN) cyntaf

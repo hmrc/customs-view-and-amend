@@ -64,5 +64,7 @@
     spellcheck = spellcheck,
     prefix = prefix,
     suffix = suffix,
-    errorMessage = form(name).error.map(err => ErrorMessage(content = HtmlContent(messages(s"$name.${err.message}", err.args:_*))))
+    errorMessage = form(name).error.map(err => ErrorMessage(content = HtmlContent(messages(s"${err.message}"))))
 ))
+
+<br/>

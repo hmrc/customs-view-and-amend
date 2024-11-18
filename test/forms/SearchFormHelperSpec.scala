@@ -32,7 +32,7 @@ class SearchFormHelperSpec extends SpecBase {
 
     "report error when an empty input" in {
       val result = testForm.fillAndValidate("")
-      result.error("search") must contain(FormError("search", "error.required"))
+      result.error("search") must contain(FormError("search", "claim-search.error.required"))
     }
 
     "bind valid input" in {
