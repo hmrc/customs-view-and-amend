@@ -32,10 +32,10 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
   "show" should {
     "return OK" in new Setup {
-      Mockito
-        .lenient()
-        .when(mockClaimsConnector.getAllClaims(any)(any))
-        .thenReturn(Future.successful(allClaims))
+//      Mockito
+//        .lenient()
+//        .when(mockClaimsConnector.getAllClaims(any)(any))
+//        .thenReturn(Future.successful(allClaims))
 
       Mockito
         .lenient()
@@ -45,6 +45,28 @@ class ClaimsOverviewControllerSpec extends SpecBase {
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverviewController.show.url)
       val result: Future[Result]                       = route(app, request).value
       status(result) mustBe OK
+    }
+  }
+
+  "onSubmit" should {
+    "return BAD_REQUEST when field is empty" in new Setup {
+      running(app) {
+        val request = fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "")
+        val result: Future[Result] = route(app, request).value
+        status(result) mustBe BAD_REQUEST
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+      }
+    }
+
+    "return OK when the field is not empty" in new Setup {
+      running(app) {
+        val request =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-0003")
+        val result: Future[Result] = route(app, request).value
+
+        status(result) mustBe OK
+        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+      }
     }
   }
 
@@ -69,6 +91,16 @@ class ClaimsOverviewControllerSpec extends SpecBase {
     )
 
     val app: Application = applicationWithMongoCache.build()
+
+    Mockito
+      .lenient()
+      .when(mockClaimsConnector.getAllClaims(any)(any))
+      .thenReturn(Future.successful(allClaims))
+
+    Mockito
+      .lenient()
+      .when(mockXiEoriConnector.getXiEori(any))
+      .thenReturn(Future.successful(Some(XiEori("bob", "bob"))))
   }
 
 }
