@@ -1,4 +1,5 @@
 service.name=Claim back import duty and VAT
+service.title.error=Error:
 back.link=Back
 site.change=Change
 

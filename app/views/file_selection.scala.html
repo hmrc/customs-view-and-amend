@@ -33,9 +33,12 @@
 
 @(form: Form[_], serviceType: ServiceType, caseNumber: String, items: Seq[RadioItem])(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 
+@hasErrors = @{form.hasErrors || form.hasGlobalErrors}
+
 @layout(
     fullWidth = false,
-    pageTitle = Some(messages("file-selection.title"))) {
+    pageTitle = Some(messages("file-selection.title")),
+    hasErrors = hasErrors) {
 
     @formHelper(action = controllers.routes.FileSelectionController.onSubmit) {
         @errorSummary(form.errors)

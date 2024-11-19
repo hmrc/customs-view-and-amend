@@ -31,8 +31,9 @@
 @title = @{messages(s"$key.title")}
 @titleAfterSearch = @{s"$title - ${messages(s"$key.titleSearchResultSuffix")}"}
 @pageTitle = @{if (query.nonEmpty) titleAfterSearch else title}
+@hasErrors = @{form.hasErrors || form.hasGlobalErrors}
 
-@layout(pageTitle = Some(pageTitle), fullWidth = true) {
+@layout(pageTitle = Some(pageTitle), fullWidth = true, hasErrors = hasErrors) {
 
     @errorSummary(form.errors)
     @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty, form = form)

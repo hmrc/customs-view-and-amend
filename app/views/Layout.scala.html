@@ -44,9 +44,9 @@
         deskpro: Boolean = true,
         welshToggle: Boolean = false,
         userResearchBanner: Boolean = false,
-        navigationBannerEnabled: Boolean = true
+        navigationBannerEnabled: Boolean = true,
+        hasErrors: Boolean = false
 )(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
 
     @phaseBannerContent = {
         @messages("feedback.before")
@@ -54,10 +54,12 @@
         @messages("feedback.after")
     }
 
+    @errorPrefix = @{ if(hasErrors) s"${messages("service.title.error")} " else "" }
+
     @fullPageTitle = @{
         pageTitle match {
-            case Some(text) => Some(s"$text - ${messages("service.name")} - GOV.UK")
-            case _ => Some(s"${messages("service.name")} - GOV.UK")
+            case Some(text) => Some(s"$errorPrefix$text - ${messages("service.name")} - GOV.UK")
+            case _ => Some(s"$errorPrefix${messages("service.name")} - GOV.UK")
         }
     }
 

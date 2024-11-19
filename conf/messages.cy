@@ -1,4 +1,5 @@
 service.name = customs-view-and-amend
+service.title.error=Gwall:
 service.text = Dyma'ch gwasanaeth newydd
 back.link=Yn Ã´l
 
