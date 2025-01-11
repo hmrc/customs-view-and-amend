@@ -19,8 +19,8 @@ package viewmodels
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
 
 final case class SummaryListRow(
-                                 key: Key,
-                                 value: Value,
-                                 classes: String,
-                                 actions: Option[Actions]
-                               )
+  key: Key,
+  value: Value,
+  classes: String,
+  actions: Option[Actions]
+)

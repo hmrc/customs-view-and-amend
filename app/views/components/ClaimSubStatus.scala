@@ -19,16 +19,17 @@ package views.components
 import play.api.i18n.Messages
 
 object ClaimSubStatus {
-  
-  def apply(subStatus: String)(implicit messages: Messages): String = {
+
+  def apply(subStatus: String)(implicit messages: Messages): String =
     messages.lang.language match {
       case "en" => subStatus
       case "cy" => applyWelsh(subStatus)
     }
-  }
 
-  private def applyWelsh(subStatus: String)(implicit messages: Messages): String = messages(s"substatus.${subStatusWithDashes(subStatus)}")
+  private def applyWelsh(subStatus: String)(implicit messages: Messages): String = messages(
+    s"substatus.${subStatusWithDashes(subStatus)}"
+  )
 
-  private def subStatusWithDashes(subStatus: String): String = subStatus.split(" ").map(w => w.toLowerCase).mkString("-")
+  private def subStatusWithDashes(subStatus: String): String =
+    subStatus.split(" ").map(w => w.toLowerCase).mkString("-")
 }
-

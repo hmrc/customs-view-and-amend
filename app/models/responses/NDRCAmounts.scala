@@ -19,16 +19,16 @@ package models.responses
 import play.api.libs.json.{Json, OFormat}
 
 case class NDRCAmounts(
-                        totalCustomsClaimAmount: Option[String],
-                        totalVATClaimAmount: Option[String],
-                        totalExciseClaimAmount: Option[String],
-                        totalClaimAmount: Option[String],
-                        totalCustomsRefundAmount: Option[String],
-                        totalVATRefundAmount: Option[String],
-                        totalExciseRefundAmount: Option[String],
-                        totalRefundAmount: Option[String],
-                        totalReimbursmentAmount: Option[String]
-                      )
+  totalCustomsClaimAmount: Option[String],
+  totalVATClaimAmount: Option[String],
+  totalExciseClaimAmount: Option[String],
+  totalClaimAmount: Option[String],
+  totalCustomsRefundAmount: Option[String],
+  totalVATRefundAmount: Option[String],
+  totalExciseRefundAmount: Option[String],
+  totalRefundAmount: Option[String],
+  totalReimbursmentAmount: Option[String]
+)
 
 object NDRCAmounts {
   implicit val format: OFormat[NDRCAmounts] = Json.format[NDRCAmounts]

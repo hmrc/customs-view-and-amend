@@ -20,26 +20,26 @@ import models.{CaseType, Reimbursement}
 import play.api.libs.json.{Json, OFormat}
 
 case class NDRCDetail(
-                       CDFPayCaseNumber: String,
-                       declarationID: String,
-                       claimType: ClaimType,
-                       caseType: CaseType,
-                       caseStatus: String,
-                       caseSubStatus: Option[String],
-                       descOfGoods: Option[String],
-                       descOfRejectedGoods: Option[String],
-                       declarantEORI: String,
-                       importerEORI: String,
-                       claimantEORI: Option[String],
-                       basisOfClaim: Option[String],
-                       claimStartDate: String,
-                       claimantName: Option[String],
-                       claimantEmailAddress: Option[String],
-                       closedDate: Option[String],
-                       MRNDetails: Option[Seq[ProcedureDetail]],
-                       entryDetails: Option[Seq[EntryDetail]],
-                       reimbursement: Option[Seq[Reimbursement]]
-                     )
+  CDFPayCaseNumber: String,
+  declarationID: String,
+  claimType: ClaimType,
+  caseType: CaseType,
+  caseStatus: String,
+  caseSubStatus: Option[String],
+  descOfGoods: Option[String],
+  descOfRejectedGoods: Option[String],
+  declarantEORI: String,
+  importerEORI: String,
+  claimantEORI: Option[String],
+  basisOfClaim: Option[String],
+  claimStartDate: String,
+  claimantName: Option[String],
+  claimantEmailAddress: Option[String],
+  closedDate: Option[String],
+  MRNDetails: Option[Seq[ProcedureDetail]],
+  entryDetails: Option[Seq[EntryDetail]],
+  reimbursement: Option[Seq[Reimbursement]]
+)
 
 object NDRCDetail {
   implicit val format: OFormat[NDRCDetail] = Json.format[NDRCDetail]

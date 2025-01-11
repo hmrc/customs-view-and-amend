@@ -18,10 +18,12 @@ package models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class Reimbursement(reimbursementDate: String,
-                         reimbursementAmount: String,
-                         taxType: String,
-                         reimbursementMethod: String)
+case class Reimbursement(
+  reimbursementDate: String,
+  reimbursementAmount: String,
+  taxType: String,
+  reimbursementMethod: String
+)
 
 object Reimbursement {
   implicit val format: OFormat[Reimbursement] = Json.format[Reimbursement]

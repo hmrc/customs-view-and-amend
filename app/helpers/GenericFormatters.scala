@@ -20,10 +20,9 @@ import play.api.i18n.Messages
 import viewmodels.Paginated
 
 object GenericFormatters {
-  def titleWithPossibleSuffix(model: Paginated[_], titleKey: String)(implicit messages: Messages): String = {
+  def titleWithPossibleSuffix(model: Paginated[_], titleKey: String)(implicit messages: Messages): String =
     if (model.allItems.size <= model.itemsPerPage)
       messages(titleKey)
     else s"${messages(titleKey)} ${messages("pager.titleSuffix", model.requestedPage, model.totalNumberOfPages)}"
-  }
 
 }

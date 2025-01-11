@@ -23,13 +23,19 @@ import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
 
 import javax.inject.{Inject, Singleton}
+import play.api.mvc.RequestHeader
+import scala.concurrent.Future
+import scala.concurrent.ExecutionContext
 
 @Singleton
-class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)
-    extends FrontendErrorHandler {
+class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)(implicit
+  val ec: ExecutionContext
+) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
-    request: Request[_]
-  ): Html =
-    errorTemplate(pageTitle, heading, message)(request, implicitly, appConfig)
+    requestHeader: RequestHeader
+  ): Future[Html] = {
+    implicit val r: Request[_] = Request(requestHeader, "")
+    Future.successful(errorTemplate(pageTitle, heading, message)(r, implicitly, appConfig))
+  }
 }

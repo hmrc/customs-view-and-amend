@@ -51,7 +51,8 @@ class ClaimsOverviewControllerSpec extends SpecBase {
   "onSubmit" should {
     "return BAD_REQUEST when field is empty" in new Setup {
       running(app) {
-        val request = fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "")
+        val request                =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "")
         val result: Future[Result] = route(app, request).value
         status(result) mustBe BAD_REQUEST
         verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
@@ -60,8 +61,9 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
     "return OK when the field is not empty" in new Setup {
       running(app) {
-        val request =
-          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-0003")
+        val request                =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
+            .withFormUrlEncodedBody("search" -> "NDRC-0003")
         val result: Future[Result] = route(app, request).value
 
         status(result) mustBe OK

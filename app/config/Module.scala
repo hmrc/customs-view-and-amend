@@ -32,12 +32,15 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.io.AnsiColor._
 import scala.util.{Failure, Success, Try}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.client.HttpClientV2Impl
 
 class Module extends AbstractModule {
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   override def configure(): Unit = {
     bind(classOf[HttpClient]).to(classOf[DebuggingHttpClient])
+    bind(classOf[HttpClientV2]).to(classOf[DebuggingHttpClientV2])
     ()
   }
 }
@@ -45,7 +48,7 @@ class Module extends AbstractModule {
 @Singleton
 class DebuggingHttpClient @Inject() (
   config: Configuration,
-  override val httpAuditing: HttpAuditing,
+  val httpAuditing: HttpAuditing,
   override val wsClient: WSClient,
   override protected val actorSystem: ActorSystem
 ) extends DefaultHttpClient(config, httpAuditing, wsClient, actorSystem) {
@@ -111,3 +114,11 @@ class DebuggingHook(config: Configuration) extends HttpHook {
   }
 
 }
+
+@Singleton
+class DebuggingHttpClientV2 @Inject() (
+  config: Configuration,
+  httpAuditing: HttpAuditing,
+  wsClient: WSClient,
+  actorSystem: ActorSystem
+) extends HttpClientV2Impl(wsClient, actorSystem, config, Seq(httpAuditing.AuditingHook, new DebuggingHook(config)))

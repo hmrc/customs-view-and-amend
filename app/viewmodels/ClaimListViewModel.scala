@@ -18,23 +18,28 @@ package viewmodels
 import config.AppConfig
 import models.{ClosedClaim, InProgressClaim, PendingClaim}
 
-case class PendingClaimListViewModel(pendingClaims: Seq[PendingClaim], page: Option[Int])(implicit appConfig: AppConfig) extends Paginated[PendingClaim] {
+case class PendingClaimListViewModel(pendingClaims: Seq[PendingClaim], page: Option[Int])(implicit appConfig: AppConfig)
+    extends Paginated[PendingClaim] {
   override val allItems: Seq[PendingClaim] = pendingClaims
-  override val itemsPerPage: Int = appConfig.itemsPerPage
-  override val requestedPage: Int = page.getOrElse(1)
-  override val urlForPage: Int => String = e => controllers.routes.ClaimListController.showPendingClaimList(Some(e)).url
+  override val itemsPerPage: Int           = appConfig.itemsPerPage
+  override val requestedPage: Int          = page.getOrElse(1)
+  override val urlForPage: Int => String   = e => controllers.routes.ClaimListController.showPendingClaimList(Some(e)).url
 }
 
-case class InProgressClaimListViewModel(inProgressClaims: Seq[InProgressClaim], page: Option[Int])(implicit appConfig: AppConfig) extends Paginated[InProgressClaim] {
+case class InProgressClaimListViewModel(inProgressClaims: Seq[InProgressClaim], page: Option[Int])(implicit
+  appConfig: AppConfig
+) extends Paginated[InProgressClaim] {
   override val allItems: Seq[InProgressClaim] = inProgressClaims
-  override val itemsPerPage: Int = appConfig.itemsPerPage
-  override val requestedPage: Int = page.getOrElse(1)
-  override val urlForPage: Int => String = e => controllers.routes.ClaimListController.showInProgressClaimList(Some(e)).url
+  override val itemsPerPage: Int              = appConfig.itemsPerPage
+  override val requestedPage: Int             = page.getOrElse(1)
+  override val urlForPage: Int => String      = e =>
+    controllers.routes.ClaimListController.showInProgressClaimList(Some(e)).url
 }
 
-case class ClosedClaimListViewModel(closedClaims: Seq[ClosedClaim], page: Option[Int])(implicit appConfig: AppConfig) extends Paginated[ClosedClaim] {
+case class ClosedClaimListViewModel(closedClaims: Seq[ClosedClaim], page: Option[Int])(implicit appConfig: AppConfig)
+    extends Paginated[ClosedClaim] {
   override val allItems: Seq[ClosedClaim] = closedClaims
-  override val itemsPerPage: Int = appConfig.itemsPerPage
-  override val requestedPage: Int = page.getOrElse(1)
-  override val urlForPage: Int => String = e => controllers.routes.ClaimListController.showClosedClaimList(Some(e)).url
+  override val itemsPerPage: Int          = appConfig.itemsPerPage
+  override val requestedPage: Int         = page.getOrElse(1)
+  override val urlForPage: Int => String  = e => controllers.routes.ClaimListController.showClosedClaimList(Some(e)).url
 }

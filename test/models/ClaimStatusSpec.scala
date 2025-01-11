@@ -22,12 +22,12 @@ import utils.SpecBase
 class ClaimStatusSpec extends SpecBase {
 
   "format correctly" in {
-    ClaimStatus.format.reads(JsString("InProgress")) shouldBe JsSuccess(InProgress)
-    ClaimStatus.format.reads(JsString("Pending")) shouldBe JsSuccess(Pending)
-    ClaimStatus.format.reads(JsString("Closed")) shouldBe JsSuccess(Closed)
+    ClaimStatus.format.reads(JsString("InProgress"))      shouldBe JsSuccess(InProgress)
+    ClaimStatus.format.reads(JsString("Pending"))         shouldBe JsSuccess(Pending)
+    ClaimStatus.format.reads(JsString("Closed"))          shouldBe JsSuccess(Closed)
     ClaimStatus.format.reads(JsString("Unknown")).isError shouldBe true
-    ClaimStatus.format.writes(InProgress) shouldBe JsString("InProgress")
-    ClaimStatus.format.writes(Closed) shouldBe JsString("Closed")
-    ClaimStatus.format.writes(Pending) shouldBe JsString("Pending")
+    ClaimStatus.format.writes(InProgress)                 shouldBe JsString("InProgress")
+    ClaimStatus.format.writes(Closed)                     shouldBe JsString("Closed")
+    ClaimStatus.format.writes(Pending)                    shouldBe JsString("Pending")
   }
 }
