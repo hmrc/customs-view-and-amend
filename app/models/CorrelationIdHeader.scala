@@ -21,11 +21,12 @@ import utils.Hash
 
 import java.util.Locale
 import java.util.UUID
+import scala.util.matching.Regex
 
 object CorrelationIdHeader {
 
-  val headerName          = "X-Correlation-ID"
-  val headerNameLowercase = headerName.toLowerCase(Locale.UK)
+  val headerName                  = "X-Correlation-ID"
+  val headerNameLowercase: String = headerName.toLowerCase(Locale.UK)
 
   def random(): (String, String) = (headerName, UUID.randomUUID().toString)
 
@@ -51,7 +52,7 @@ object CorrelationIdHeader {
   def from(eori: String, uuid: UUID): (String, String) =
     (headerName, Hash(eori).take(8) + uuid.toString.drop(8).take(10) + UUID.randomUUID().toString.drop(18))
 
-  val uuidRegex = "^.*\\w{8}(-\\w{4}-\\w{4})-\\w{4}-\\w{12}.*$".r
+  val uuidRegex: Regex = "^.*\\w{8}(-\\w{4}-\\w{4})-\\w{4}-\\w{12}.*$".r
 
   def getUuidPart(value: String): Option[String] =
     value match {

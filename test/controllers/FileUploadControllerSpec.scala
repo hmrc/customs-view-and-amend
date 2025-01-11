@@ -228,7 +228,7 @@ class FileUploadControllerSpec extends SpecBase {
       )
       .build()
 
-    def sessionCache = app.injector.instanceOf[SessionCache]
+    def sessionCache: SessionCache = app.injector.instanceOf[SessionCache]
 
     implicit val hc: HeaderCarrier =
       HeaderCarrier(

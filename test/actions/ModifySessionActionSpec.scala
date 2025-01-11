@@ -24,6 +24,8 @@ import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 
 class ModifySessionActionSpec extends SpecBase {
 
@@ -71,14 +73,14 @@ class ModifySessionActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app                 = application.build()
-    val modifySessionAction = app.injector.instanceOf[ModifySessionAction]
+    val app: Application                         = application.build()
+    val modifySessionAction: ModifySessionAction = app.injector.instanceOf[ModifySessionAction]
 
-    val existingSessionData = SessionData()
+    val existingSessionData: SessionData = SessionData()
       .withVerifiedEmail("foo@bar.com")
       .withCompanyName("companyName")
 
-    val authenticatedRequest =
+    val authenticatedRequest: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",

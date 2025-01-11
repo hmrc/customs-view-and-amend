@@ -24,6 +24,8 @@ import utils.SpecBase
 
 import scala.concurrent.Future
 import connector.XiEoriConnector
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 
 class XiEoriActionSpec extends SpecBase {
 
@@ -112,18 +114,18 @@ class XiEoriActionSpec extends SpecBase {
 
     def includeXiClaims: Boolean = true
 
-    val app = application
+    val app: Application = application
       .configure("features.include-xi-claims" -> s"$includeXiClaims")
       .build()
 
-    val xiEoriAction = app.injector.instanceOf[XiEoriAction]
+    val xiEoriAction: XiEoriAction = app.injector.instanceOf[XiEoriAction]
 
     val xiEori: XiEori = XiEori(
       eoriXI = "XI744638982000",
       eoriGB = "GB744638982000"
     )
 
-    val authorisedRequestWithXiEori =
+    val authorisedRequestWithXiEori: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
@@ -133,7 +135,7 @@ class XiEoriActionSpec extends SpecBase {
           .withXiEori(Some(xiEori))
       )
 
-    val authorisedRequestWithoutXiEori =
+    val authorisedRequestWithoutXiEori: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",

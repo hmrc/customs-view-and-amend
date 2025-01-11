@@ -175,8 +175,8 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
 
   trait Setup {
 
-    val startDate          = Some(LocalDate.of(2021, 3, 20))
-    val endDate: LocalDate = LocalDate.of(2021, 5, 20)
+    val startDate: Some[LocalDate] = Some(LocalDate.of(2021, 3, 20))
+    val endDate: LocalDate         = LocalDate.of(2021, 5, 20)
 
     def createSctyDetailsClaim(status: String): SCTYCaseDetails =
       SCTYCaseDetails(

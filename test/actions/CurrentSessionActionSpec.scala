@@ -26,6 +26,8 @@ import models.email.{UndeliverableEmail, UnverifiedEmail}
 
 import scala.concurrent.Future
 import uk.gov.hmrc.http.ServiceUnavailableException
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 
 class CurrentSessionActionSpec extends SpecBase {
 
@@ -163,8 +165,9 @@ class CurrentSessionActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app                  = application.build()
-    val currentSessionAction = app.injector.instanceOf[CurrentSessionAction]
-    val authorisedRequest    = AuthorisedRequest(FakeRequest("GET", "/"), "someEori")
+    val app: Application                                             = application.build()
+    val currentSessionAction: CurrentSessionAction                   = app.injector.instanceOf[CurrentSessionAction]
+    val authorisedRequest: AuthorisedRequest[AnyContentAsEmpty.type] =
+      AuthorisedRequest(FakeRequest("GET", "/"), "someEori")
   }
 }

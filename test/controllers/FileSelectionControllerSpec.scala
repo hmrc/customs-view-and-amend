@@ -201,7 +201,7 @@ class FileSelectionControllerSpec extends SpecBase {
 
     val app: Application = applicationWithMongoCache.build()
 
-    def sessionCache = app.injector.instanceOf[SessionCache]
+    def sessionCache: SessionCache = app.injector.instanceOf[SessionCache]
 
     implicit val hc: HeaderCarrier =
       HeaderCarrier(sessionId = Some(SessionId(UUID.randomUUID().toString)))

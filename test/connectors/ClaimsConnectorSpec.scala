@@ -205,7 +205,7 @@ class ClaimsConnectorSpec extends SpecBase {
       None
     )
 
-    val startDate = Some(LocalDate.of(2021, 3, 21))
+    val startDate: Some[LocalDate] = Some(LocalDate.of(2021, 3, 21))
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(

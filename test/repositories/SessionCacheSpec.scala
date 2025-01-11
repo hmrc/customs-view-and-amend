@@ -217,7 +217,7 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
 
 object SessionCacheSpec {
 
-  val config = Configuration(
+  val config: Configuration = Configuration(
     ConfigFactory.parseString(
       """
         | session-store.expiry-time = 7 days
@@ -226,7 +226,7 @@ object SessionCacheSpec {
   )
 
   class TestEnvironment {
-    val sessionId                  = SessionId(UUID.randomUUID().toString)
+    val sessionId: SessionId       = SessionId(UUID.randomUUID().toString)
     implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(sessionId))
   }
 

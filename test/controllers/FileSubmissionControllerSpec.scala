@@ -154,8 +154,8 @@ class FileSubmissionControllerSpec extends SpecBase {
 
   trait Setup extends SetupBase {
 
-    val mockFileSubmissionConnector  = mock[FileSubmissionConnector]
-    val mockUploadDocumentsConnector = mock[UploadDocumentsConnector]
+    val mockFileSubmissionConnector: FileSubmissionConnector   = mock[FileSubmissionConnector]
+    val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
 
     val app: Application = applicationWithMongoCache
       .overrides(
@@ -164,7 +164,7 @@ class FileSubmissionControllerSpec extends SpecBase {
       )
       .build()
 
-    def sessionCache = app.injector.instanceOf[SessionCache]
+    def sessionCache: SessionCache = app.injector.instanceOf[SessionCache]
 
     implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
 
@@ -188,7 +188,7 @@ class FileSubmissionControllerSpec extends SpecBase {
       closedClaims = Seq.empty
     )
 
-    val uploadedFiles = Seq(
+    val uploadedFiles: Seq[UploadedFile] = Seq(
       UploadedFile(
         "reference",
         "/url",

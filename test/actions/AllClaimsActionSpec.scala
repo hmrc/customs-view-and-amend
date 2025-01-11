@@ -23,6 +23,8 @@ import play.api.test.Helpers._
 import utils.SpecBase
 
 import scala.concurrent.Future
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 
 class AllClaimsActionSpec extends SpecBase {
 
@@ -81,8 +83,8 @@ class AllClaimsActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app             = application.build()
-    val allClaimsAction = app.injector.instanceOf[AllClaimsAction]
+    val app: Application                 = application.build()
+    val allClaimsAction: AllClaimsAction = app.injector.instanceOf[AllClaimsAction]
 
     val testClaims: AllClaims = AllClaims(
       pendingClaims = Seq.empty[PendingClaim],
@@ -90,7 +92,7 @@ class AllClaimsActionSpec extends SpecBase {
       closedClaims = Seq.empty[ClosedClaim]
     )
 
-    val authorisedRequestWithClaims =
+    val authorisedRequestWithClaims: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
@@ -100,7 +102,7 @@ class AllClaimsActionSpec extends SpecBase {
           .withAllClaims(testClaims)
       )
 
-    val authorisedRequestWithoutClaims =
+    val authorisedRequestWithoutClaims: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
