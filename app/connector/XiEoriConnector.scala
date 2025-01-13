@@ -22,12 +22,12 @@ import config.AppConfig
 import models.XiEori
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import java.net.URL
 
 @ImplementedBy(classOf[XiEoriConnectorImpl])
 trait XiEoriConnector {

@@ -19,7 +19,7 @@ package controllers
 import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.SpecBase
 
 class LogoutControllerSpec extends SpecBase {
@@ -51,7 +51,7 @@ class LogoutControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app: Application = application
+    val app = application
       .build()
   }
 }

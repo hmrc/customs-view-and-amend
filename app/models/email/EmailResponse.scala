@@ -16,8 +16,7 @@
 
 package models.email
 
-import play.api.libs.json.{Json, OFormat}
-import play.api.libs.json.JsValue
+import play.api.libs.json.{JsValue, Json, OFormat}
 
 case class EmailResponse(address: Option[String], timestamp: Option[String], undeliverable: Option[JsValue])
 

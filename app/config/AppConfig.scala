@@ -19,10 +19,9 @@ package config
 import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import javax.inject.{Inject, Singleton}
-import java.util.Base64
 import java.nio.charset.StandardCharsets
-import java.util.Locale
+import java.util.{Base64, Locale}
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject() (config: Configuration, servicesConfig: ServicesConfig) {

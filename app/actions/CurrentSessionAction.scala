@@ -21,7 +21,7 @@ import connector.DataStoreConnector
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import models.{AuthorisedRequest, AuthorisedRequestWithSessionData, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results._
+import play.api.mvc.Results.*
 import play.api.mvc.{ActionRefiner, Result}
 import repositories.SessionCache
 import uk.gov.hmrc.http.HeaderCarrier

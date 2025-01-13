@@ -19,10 +19,9 @@ package actions
 import com.google.inject.Inject
 import config.AppConfig
 import controllers.routes
-
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -30,6 +29,35 @@ import utils.SpecBase
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.mvc.Result
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
+import play.api.Application
+import play.api.mvc.BodyParsers.Default
 
 class IdentifierActionSpec extends SpecBase {
 
@@ -44,7 +72,7 @@ class IdentifierActionSpec extends SpecBase {
   "IdentifierAction" when {
     "successfully passes all checks" should {
       "call block" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
@@ -72,7 +100,7 @@ class IdentifierActionSpec extends SpecBase {
 
     "the user does not have the correct enrolment" should {
       "return unauthorised" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
@@ -260,7 +288,7 @@ class IdentifierActionSpec extends SpecBase {
 
     "the user is on the limited access list" should {
       "call block" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
@@ -297,7 +325,7 @@ class IdentifierActionSpec extends SpecBase {
 
     "the user is NOT on the limited access list" should {
       "redirect the user to the unauthorised page" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))

@@ -16,7 +16,7 @@
 
 package viewmodels
 
-import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist._
+import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.*
 
 final case class SummaryListRow(
   key: Key,

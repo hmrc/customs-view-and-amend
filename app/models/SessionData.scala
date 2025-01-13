@@ -17,7 +17,6 @@
 package models
 
 import cats.Eq
-import models.Nonce
 import models.file_upload.UploadedFile
 import play.api.libs.json.{Format, JsFalse, JsNull, JsSuccess, Json, Reads, Writes}
 

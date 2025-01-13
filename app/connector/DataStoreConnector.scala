@@ -21,13 +21,13 @@ import models.company.CompanyInformationResponse
 import models.email.{EmailResponse, EmailResponses, UndeliverableEmail, UnverifiedEmail}
 import play.api.Logging
 import play.api.http.Status.NOT_FOUND
-import uk.gov.hmrc.http.HttpReads.Implicits._
 import uk.gov.hmrc.auth.core.retrieve.Email
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 
+import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
-import java.net.URL
 
 class DataStoreConnector @Inject() (http: HttpClient, appConfig: AppConfig)(implicit executionContext: ExecutionContext)
     extends Logging {

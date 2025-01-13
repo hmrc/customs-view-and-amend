@@ -16,9 +16,8 @@
 
 package helpers
 
-import play.api.i18n.Messages
-
 import models.ServiceType
+import play.api.i18n.Messages
 
 trait ServiceTypeFormatters {
   def serviceTypeAsMessage(serviceType: ServiceType)(implicit messages: Messages): String = messages(

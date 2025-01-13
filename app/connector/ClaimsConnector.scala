@@ -18,16 +18,15 @@ package connector
 
 import com.google.inject.ImplementedBy
 import config.AppConfig
-import models._
+import models.*
 import models.responses.{AllClaimsResponse, NDRCCase, SCTYCase, SpecificClaimResponse}
 import play.api.Logging
-import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HttpReads.Implicits.*
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import uk.gov.hmrc.http.UpstreamErrorResponse
-import java.net.URL
 
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {

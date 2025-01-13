@@ -16,10 +16,10 @@
 
 package forms
 
+import org.jsoup.Jsoup
+import org.jsoup.safety.Safelist
 import play.api.data.Form
 import play.api.data.Forms.{mapping, text}
-import org.jsoup.safety.Safelist
-import org.jsoup.Jsoup
 
 object SearchFormHelper {
 

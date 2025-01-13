@@ -17,25 +17,34 @@
 package connectors
 
 import connector.FileSubmissionConnector
+import models.*
 import models.FileSelection.AdditionalSupportingDocuments
-import models._
 import models.file_upload.UploadedFile
 import models.responses.{AllClaimsResponse, Claims, NDRCCaseDetails, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers._
+import play.api.libs.json.Writes
+import play.api.test.Helpers.*
 import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
 
 import java.time.LocalDate
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class FileSubmissionConnectorSpec extends SpecBase {
 
   "fileUpload" should {
     "return 'true' if the upload was successful" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.successful(HttpResponse(ACCEPTED, "")))
+
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(HttpResponse(ACCEPTED, "")))
 
       running(app) {
         val result = await(
@@ -67,8 +76,15 @@ class FileSubmissionConnectorSpec extends SpecBase {
     }
 
     "return 'false' if the status returned was not ACCEPTED" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       running(app) {
         val result =
@@ -88,8 +104,15 @@ class FileSubmissionConnectorSpec extends SpecBase {
     }
 
     "return false on an exception from the API" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
         val result =
@@ -178,7 +201,7 @@ class FileSubmissionConnectorSpec extends SpecBase {
         )
       )
 
-    val app: Application = GuiceApplicationBuilder()
+    val app = GuiceApplicationBuilder()
       .overrides(
         inject.bind[HttpClient].toInstance(mockHttp)
       )

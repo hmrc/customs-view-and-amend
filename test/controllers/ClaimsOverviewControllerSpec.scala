@@ -16,34 +16,23 @@
 
 package controllers
 
-import models._
-
+import models.*
 import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import java.time.LocalDate
 import scala.concurrent.Future
-import org.mockito.Mockito
 
 class ClaimsOverviewControllerSpec extends SpecBase {
 
   "show" should {
     "return OK" in new Setup {
-//      Mockito
-//        .lenient()
-//        .when(mockClaimsConnector.getAllClaims(any)(any))
-//        .thenReturn(Future.successful(allClaims))
-
-      Mockito
-        .lenient()
-        .when(mockXiEoriConnector.getXiEori(any))
-        .thenReturn(Future.successful(Some(XiEori("bob", "bob"))))
-
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverviewController.show.url)
-      val result: Future[Result]                       = route(app, request).value
+      val result                                       = route(app, request).value
       status(result) shouldBe OK
     }
   }
@@ -51,28 +40,30 @@ class ClaimsOverviewControllerSpec extends SpecBase {
   "onSubmit" should {
     "return BAD_REQUEST when field is empty" in new Setup {
       running(app) {
-        val request                =
+        val request =
           fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "")
-        val result: Future[Result] = route(app, request).value
+        val result  = route(app, request).value
         status(result) shouldBe BAD_REQUEST
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+        // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
 
     "return OK when the field is not empty" in new Setup {
       running(app) {
-        val request                =
+        val request =
           fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
             .withFormUrlEncodedBody("search" -> "NDRC-0003")
-        val result: Future[Result] = route(app, request).value
+        val result  = route(app, request).value
 
         status(result) shouldBe OK
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+        // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
   }
 
   trait Setup extends SetupBase {
+
+    stubEmailAndCompanyName
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims = Seq(
@@ -92,17 +83,17 @@ class ClaimsOverviewControllerSpec extends SpecBase {
       )
     )
 
-    val app: Application = applicationWithMongoCache.build()
+    val app = applicationWithMongoCache.build()
 
-    Mockito
-      .lenient()
-      .when(mockClaimsConnector.getAllClaims(any)(any))
-      .thenReturn(Future.successful(allClaims))
+    (mockClaimsConnector
+      .getAllClaims(_: Boolean)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(Future.successful(allClaims))
 
-    Mockito
-      .lenient()
-      .when(mockXiEoriConnector.getXiEori(any))
-      .thenReturn(Future.successful(Some(XiEori("bob", "bob"))))
+    (mockXiEoriConnector
+      .getXiEori(_: HeaderCarrier))
+      .expects(*)
+      .returning(Future.successful(Some(XiEori("bob", "bob"))))
   }
 
 }

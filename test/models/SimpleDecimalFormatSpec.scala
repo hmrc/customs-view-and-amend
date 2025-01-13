@@ -16,9 +16,6 @@
 
 package models
 
-import models.SimpleDecimalFormat
-import models.Nonce
-
 import play.api.libs.json.{JsResult, JsString}
 import utils.SpecBase
 

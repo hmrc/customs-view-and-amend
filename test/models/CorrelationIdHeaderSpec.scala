@@ -16,10 +16,10 @@
 
 package models
 
-import utils.SpecBase
-import java.util.UUID
-import utils.Hash
 import play.api.mvc.Headers
+import utils.{Hash, SpecBase}
+
+import java.util.UUID
 
 class CorrelationIdHeaderSpec extends SpecBase {
 

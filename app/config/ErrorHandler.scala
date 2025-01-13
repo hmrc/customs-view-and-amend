@@ -17,15 +17,13 @@
 package config
 
 import play.api.i18n.MessagesApi
-import play.api.mvc.Request
+import play.api.mvc.{Request, RequestHeader}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.RequestHeader
-import scala.concurrent.Future
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)(implicit

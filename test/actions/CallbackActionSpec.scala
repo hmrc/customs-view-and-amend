@@ -18,10 +18,9 @@ package actions
 
 import com.google.inject.Inject
 import config.AppConfig
-
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -43,12 +42,7 @@ class CallbackActionSpec extends SpecBase {
   "Callback Action" when {
     "successfully passes all checks" should {
       "call block" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
-
-        (mockDataStoreConnector
-          .getCompanyName(_: String)(_: HeaderCarrier))
-          .expects(*, *)
-          .returning(Future.successful(None))
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
@@ -76,7 +70,7 @@ class CallbackActionSpec extends SpecBase {
 
     "the user does not have the correct enrolment" should {
       "return unauthorised" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
         (mockAuthConnector
           .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))

@@ -16,11 +16,12 @@
 
 package config
 
-import org.apache.pekko.actor.ActorSystem
 import com.google.inject.AbstractModule
+import org.apache.pekko.actor.ActorSystem
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.api.{Configuration, Logger}
+import uk.gov.hmrc.http.client.{HttpClientV2, HttpClientV2Impl}
 import uk.gov.hmrc.http.hooks.HookData.{FromMap, FromString}
 import uk.gov.hmrc.http.hooks.{Data, HttpHook, RequestData, ResponseData}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -30,10 +31,8 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.AnsiColor._
+import scala.io.AnsiColor.*
 import scala.util.{Failure, Success, Try}
-import uk.gov.hmrc.http.client.HttpClientV2
-import uk.gov.hmrc.http.client.HttpClientV2Impl
 
 class Module extends AbstractModule {
 

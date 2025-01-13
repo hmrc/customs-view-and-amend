@@ -16,12 +16,9 @@
 
 package models
 
-import play.api.mvc.{Request, WrappedRequest}
-import play.api.mvc.Headers
-import models.CorrelationIdHeader
-import models.CorrelationIdHeader._
-import uk.gov.hmrc.http.HeaderNames
-import uk.gov.hmrc.http.SessionKeys
+import models.CorrelationIdHeader.*
+import play.api.mvc.{Headers, Request, WrappedRequest}
+import uk.gov.hmrc.http.{HeaderNames, SessionKeys}
 
 final case class AuthorisedRequest[A](
   request: Request[A],

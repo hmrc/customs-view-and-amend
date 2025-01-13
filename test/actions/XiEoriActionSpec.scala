@@ -16,17 +16,16 @@
 
 package actions
 
+import connector.XiEoriConnector
 import models.{AuthorisedRequestWithSessionData, Error, SessionData, XiEori}
-
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import scala.concurrent.Future
-import connector.XiEoriConnector
-import play.api.Application
-import play.api.mvc.AnyContentAsEmpty
-import uk.gov.hmrc.http.HeaderCarrier
 
 class XiEoriActionSpec extends SpecBase {
 
@@ -47,34 +46,32 @@ class XiEoriActionSpec extends SpecBase {
     }
 
     "call for XI EORI when not checked yet and update the request if found" in new Setup {
+      (mockXiEoriConnector
+        .getXiEori(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(Some(xiEori)))
+
+      (mockSessionCache
+        .store(_: SessionData)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Right(())))
+
       running(app) {
-        (mockXiEoriConnector
-          .getXiEori(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(Some(xiEori)))
-        (
-          mockSessionCache
-            .store(_: SessionData)(_: HeaderCarrier)
-          )
-          .expects(*, *)
-          .returning(Future.successful(Right(())))
         val response = await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
         response shouldBe (authorisedRequestWithoutXiEori.withXiEori(Some(xiEori)))
       }
     }
 
     "call for XI EORI when not checked yet and update the request if missing" in new Setup {
+      (mockXiEoriConnector
+        .getXiEori(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(None))
+      (mockSessionCache
+        .store(_: SessionData)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Right(())))
       running(app) {
-        (mockXiEoriConnector
-          .getXiEori(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(None))
-        (
-          mockSessionCache
-            .store(_: SessionData)(_: HeaderCarrier)
-          )
-          .expects(*, *)
-          .returning(Future.successful(Right(())))
         val response = await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
         response shouldBe authorisedRequestWithoutXiEori.withXiEori(None)
       }
@@ -89,11 +86,11 @@ class XiEoriActionSpec extends SpecBase {
     }
 
     "throw exception if XI EORI connector error" in new Setup {
+      (mockXiEoriConnector
+        .getXiEori(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.failed(new XiEoriConnector.Exception("be not afraid")))
       running(app) {
-        (mockXiEoriConnector
-          .getXiEori(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.failed(new XiEoriConnector.Exception("be not afraid")))
         an[XiEoriConnector.Exception] shouldBe thrownBy {
           await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
         }
@@ -101,17 +98,15 @@ class XiEoriActionSpec extends SpecBase {
     }
 
     "throw exception if session cache error when storing" in new Setup {
+      (mockXiEoriConnector
+        .getXiEori(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(Some(xiEori)))
+      (mockSessionCache
+        .store(_: SessionData)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.failed(new Exception("be not afraid")))
       running(app) {
-        (mockXiEoriConnector
-          .getXiEori(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(Some(xiEori)))
-        (
-          mockSessionCache
-            .store(_: SessionData)(_: HeaderCarrier)
-          )
-          .expects(*, *)
-          .returning(Future.failed(new Exception("be not afraid")))
         an[Exception] shouldBe thrownBy {
           await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
         }
@@ -119,17 +114,15 @@ class XiEoriActionSpec extends SpecBase {
     }
 
     "throw exception if session cache connection error when store" in new Setup {
+      (mockXiEoriConnector
+        .getXiEori(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(Some(xiEori)))
+      (mockSessionCache
+        .store(_: SessionData)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Left(Error(new Exception("be not afraid")))))
       running(app) {
-        (mockXiEoriConnector
-          .getXiEori(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(Some(xiEori)))
-        (
-          mockSessionCache
-            .store(_: SessionData)(_: HeaderCarrier)
-          )
-          .expects(*, *)
-          .returning(Future.successful(Left(Error(new Exception("be not afraid")))))
         an[Exception] shouldBe thrownBy {
           await(xiEoriAction.transform(authorisedRequestWithoutXiEori))
         }
@@ -141,7 +134,7 @@ class XiEoriActionSpec extends SpecBase {
 
     def includeXiClaims: Boolean = true
 
-    val app: Application = application
+    val app = application
       .configure("features.include-xi-claims" -> s"$includeXiClaims")
       .build()
 

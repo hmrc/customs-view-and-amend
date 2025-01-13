@@ -16,15 +16,15 @@
 
 package actions
 
-import models.{AllClaims, ClosedClaim, Error, AuthorisedRequestWithSessionData, InProgressClaim, PendingClaim, SessionData}
+import models.{AllClaims, AuthorisedRequestWithSessionData, ClosedClaim, Error, InProgressClaim, PendingClaim, SessionData}
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import scala.concurrent.Future
-import play.api.Application
-import play.api.mvc.AnyContentAsEmpty
-import uk.gov.hmrc.http.HeaderCarrier
 
 class AllClaimsActionSpec extends SpecBase {
 
@@ -98,7 +98,7 @@ class AllClaimsActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app: Application                 = application.build()
+    val app                              = application.build()
     val allClaimsAction: AllClaimsAction = app.injector.instanceOf[AllClaimsAction]
 
     val testClaims: AllClaims = AllClaims(

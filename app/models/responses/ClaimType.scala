@@ -16,7 +16,7 @@
 
 package models.responses
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 sealed trait ClaimType

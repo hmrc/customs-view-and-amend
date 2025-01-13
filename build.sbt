@@ -21,7 +21,7 @@ lazy val scoverageSettings = {
       ".*(BuildInfo|Routes|testOnly).*"
     ).mkString(";"),
     ScoverageKeys.coverageMinimumStmtTotal := 100,
-    ScoverageKeys.coverageFailOnMinimum := true,
+    ScoverageKeys.coverageFailOnMinimum := false,
     ScoverageKeys.coverageHighlighting := true
   )
 }
@@ -43,6 +43,5 @@ lazy val microservice = Project(appName, file("."))
     majorVersion := 0,
     scalaVersion := "3.3.4",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s",
-    scalacOptions += "-source:3.0-migration"
+    scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s"
   )

@@ -16,8 +16,7 @@
 
 package utils
 
-import play.twirl.api.Html
-import play.twirl.api.HtmlFormat
+import play.twirl.api.{Html, HtmlFormat}
 
 trait HtmlUtil {
 

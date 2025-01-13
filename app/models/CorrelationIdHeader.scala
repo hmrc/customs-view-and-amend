@@ -19,8 +19,7 @@ package models
 import play.api.mvc.Headers
 import utils.Hash
 
-import java.util.Locale
-import java.util.UUID
+import java.util.{Locale, UUID}
 import scala.util.matching.Regex
 
 object CorrelationIdHeader {
@@ -60,7 +59,7 @@ object CorrelationIdHeader {
       case _            => None
     }
 
-  implicit class HeaderOps(val headers: Headers) extends AnyVal {
+  implicit class HeaderOps(private val headers: Headers) extends AnyVal {
     def addIfMissing(newHeader: (String, String)): Headers =
       if (
         headers.keys

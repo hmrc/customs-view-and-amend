@@ -17,20 +17,18 @@
 package connector
 
 import config.AppConfig
-import models.file_upload.UploadDocumentsWrapper
-import models.Nonce
-import models.{FileSelection, ServiceType}
+import models.file_upload.{UploadDocumentsWrapper, UploadedFile}
+import models.{FileSelection, Nonce, ServiceType}
 import play.api.Logging
 import play.api.http.Status.{ACCEPTED, CREATED, NO_CONTENT}
 import play.api.i18n.Messages
 import play.mvc.Http.HeaderNames
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import uk.gov.hmrc.http.HttpReads.Implicits._
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import models.file_upload.UploadedFile
-import java.net.URL
 
 @Singleton
 class UploadDocumentsConnector @Inject() (httpClient: HttpClient)(implicit

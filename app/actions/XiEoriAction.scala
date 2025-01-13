@@ -16,6 +16,7 @@
 
 package actions
 
+import config.AppConfig
 import connector.XiEoriConnector
 import models.AuthorisedRequestWithSessionData
 import play.api.i18n.{I18nSupport, MessagesApi}
@@ -26,7 +27,6 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import config.AppConfig
 
 @Singleton
 class XiEoriAction @Inject(

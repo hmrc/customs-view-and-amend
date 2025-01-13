@@ -18,7 +18,6 @@ package forms
 
 import forms.MappingsSpec.{Bar, Foo}
 import models.Enumerable
-
 import play.api.data.{Form, FormError}
 import utils.SpecBase
 

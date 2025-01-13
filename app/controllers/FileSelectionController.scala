@@ -20,11 +20,11 @@ import actions.{CurrentSessionAction, IdentifierAction, ModifySessionAction}
 import config.AppConfig
 import connector.UploadDocumentsConnector
 import forms.FileSelectionForm
-import forms.FormUtils._
+import forms.FormUtils.*
 import models.{FileSelection, FileUploadJourney, SessionData}
 import play.api.data.Form
 import play.api.i18n.I18nSupport
-import play.api.mvc._
+import play.api.mvc.*
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.errors.not_found
 import views.html.file_selection

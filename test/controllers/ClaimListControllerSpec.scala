@@ -16,11 +16,10 @@
 
 package controllers
 
-import models._
-import org.mockito.Mockito
-
+import models.*
 import play.api.Application
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -60,6 +59,8 @@ class ClaimListControllerSpec extends SpecBase {
 
   trait Setup extends SetupBase {
 
+    stubEmailAndCompanyName
+
     val closedClaims: Seq[ClosedClaim]        = (1 to 100).map { value =>
       ClosedClaim(
         "MRN",
@@ -91,12 +92,13 @@ class ClaimListControllerSpec extends SpecBase {
       closedClaims = closedClaims
     )
 
-    val app: Application = applicationWithMongoCache.build()
+    val app = applicationWithMongoCache.build()
 
-    Mockito
-      .lenient()
-      .when(mockClaimsConnector.getAllClaims(any)(any))
-      .thenReturn(Future.successful(allClaims))
+    (mockClaimsConnector
+      .getAllClaims(_: Boolean)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(Future.successful(allClaims))
+
   }
 
 }

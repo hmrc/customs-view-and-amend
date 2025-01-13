@@ -16,9 +16,9 @@
 
 package models
 
-import models.FileSelection._
+import models.FileSelection.*
 import play.api.libs.json.{JsResultException, JsString, Json}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.SpecBase
 
 class FileSelectionSpec extends SpecBase {

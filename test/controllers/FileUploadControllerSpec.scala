@@ -16,28 +16,35 @@
 
 package controllers
 
-import models.file_upload.{UploadCargo, UploadedFileMetadata}
-import models.{Nonce, _}
-
-import play.api.{Application, inject}
+import connector.UploadDocumentsConnector
+import models.file_upload.{UploadCargo, UploadedFile, UploadedFileMetadata}
+import models.{Nonce, *}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import play.api.{Application, inject}
 import repositories.SessionCache
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 import utils.SpecBase
 
 import java.time.LocalDate
 import java.util.UUID
-import connector.UploadDocumentsConnector
 import scala.concurrent.Future
-import models.file_upload.UploadedFile
 
 class FileUploadControllerSpec extends SpecBase {
 
   "chooseFiles" should {
     "initialize file upload service and redirect to the returned url" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(Some("/url")))
+      (mockUploadDocumentsConnector
+        .startFileUpload(
+          _: Nonce,
+          _: String,
+          _: ServiceType,
+          _: FileSelection,
+          _: Seq[UploadedFile]
+        )(_: HeaderCarrier, _: Messages))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(Some("/url")))
 
       val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
@@ -56,8 +63,16 @@ class FileUploadControllerSpec extends SpecBase {
     }
 
     "initialize file upload service and redirect to the default url if missing" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(None))
+      (mockUploadDocumentsConnector
+        .startFileUpload(
+          _: Nonce,
+          _: String,
+          _: ServiceType,
+          _: FileSelection,
+          _: Seq[UploadedFile]
+        )(_: HeaderCarrier, _: Messages))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(None))
 
       val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
@@ -219,10 +234,13 @@ class FileUploadControllerSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
+
+    stubEmailAndCompanyName
+
     val mockUploadDocumentsConnector: UploadDocumentsConnector =
       mock[UploadDocumentsConnector]
 
-    val app: Application = applicationWithMongoCache
+    val app = applicationWithMongoCache
       .overrides(
         inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
       )

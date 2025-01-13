@@ -17,10 +17,9 @@
 package controllers
 
 import models.{AllClaims, FileSelection, InProgressClaim, NDRC, PendingClaim, SessionData}
-
 import play.api.Application
 import play.api.i18n.Messages
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.SpecBase
@@ -85,6 +84,7 @@ class FileSelectionControllerSpec extends SpecBase {
     }
 
     "redirect back to the claim details if the claim is not found" in new Setup {
+      stubEmailAndCompanyName
       running(app) {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
@@ -199,7 +199,9 @@ class FileSelectionControllerSpec extends SpecBase {
 
   trait Setup extends SetupBase {
 
-    val app: Application = applicationWithMongoCache.build()
+    stubEmailAndCompanyName
+
+    val app = applicationWithMongoCache.build()
 
     def sessionCache: SessionCache = app.injector.instanceOf[SessionCache]
 

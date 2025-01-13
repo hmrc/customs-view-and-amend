@@ -16,14 +16,13 @@
 
 package controllers
 
-import models._
-import models.CaseType._
+import models.*
+import models.CaseType.*
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
-import org.mockito.Mockito
-import org.scalatest.matchers.must.Matchers._
 import play.api.Application
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -33,8 +32,15 @@ class ClaimDetailControllerSpec extends SpecBase {
 
   "claimDetail" should {
     "return OK when a in progress claim has been found" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(Some(claimDetail))))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(Some(claimDetail))))
 
       running(app) {
         val request =
@@ -45,8 +51,15 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return OK when a in progress claim has been found without claimType" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimType = None)))))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(Some(claimDetail.copy(claimType = None)))))
 
       running(app) {
         val request =
@@ -57,8 +70,15 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return OK when a pending claim has been found" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimStatus = Pending)))))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(Some(claimDetail.copy(claimStatus = Pending)))))
 
       running(app) {
         val request =
@@ -69,8 +89,15 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return OK when a closed claim has been found" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(Some(claimDetail.copy(claimStatus = Closed)))))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(Some(claimDetail.copy(claimStatus = Closed)))))
 
       running(app) {
         val request =
@@ -81,6 +108,11 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return NOT_FOUND when user not authorised to view claim" in new Setup {
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
       running(app) {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
@@ -90,8 +122,12 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "redirect to the unverified email page when there is no active email found" in new Setup {
-      when(mockDataStoreConnector.getEmail(any)(any))
-        .thenReturn(Future.successful(Left(UnverifiedEmail)))
+      (mockDataStoreConnector
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(
+          Future.successful(Left(UnverifiedEmail))
+        )
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -101,10 +137,26 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return OK when there is email check connectivity issue" in new Setup {
-      when(mockDataStoreConnector.getEmail(any)(any))
-        .thenReturn(Future.failed(new Exception("email check fails")))
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(Some(claimDetail))))
+      (mockDataStoreConnector
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(
+          Future.failed(new Exception("email check fails"))
+        )
+      (mockDataStoreConnector
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .stubs(*, *)
+        .returning(
+          Future.successful(Some("companyName"))
+        )
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(Some(claimDetail))))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -114,8 +166,26 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return NOT_FOUND when claim not found from the API" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Right(None)))
+      (mockDataStoreConnector
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(
+          Future.failed(new Exception("email check fails"))
+        )
+      (mockDataStoreConnector
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .stubs(*, *)
+        .returning(
+          Future.successful(Some("companyName"))
+        )
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Right(None)))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -125,8 +195,15 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "redirect to error page when API returns 500" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Left("ERROR_HTTP_500")))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Left("ERROR_HTTP_500")))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -139,8 +216,15 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return NOT_FOUND when API returns other error" in new Setup {
-      when(mockClaimsConnector.getClaimInformation(any, any, any)(any))
-        .thenReturn(Future.successful(Left("FOO")))
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
+      (mockClaimsConnector
+        .getClaimInformation(_: String, _: ServiceType, _: Option[String])(_: HeaderCarrier))
+        .expects(*, *, *, *)
+        .returning(Future.successful(Left("FOO")))
 
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
@@ -150,6 +234,11 @@ class ClaimDetailControllerSpec extends SpecBase {
     }
 
     "return NOT_FOUND when a claim is not present in the list of claims" in new Setup {
+      stubEmailAndCompanyName
+      (mockClaimsConnector
+        .getAllClaims(_: Boolean)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(allClaims))
       running(app) {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
@@ -188,12 +277,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       closedClaims = Seq.empty
     )
 
-    val app: Application = applicationWithMongoCache.build()
-
-    Mockito
-      .lenient()
-      .when(mockClaimsConnector.getAllClaims(any)(any))
-      .thenReturn(Future.successful(allClaims))
+    val app = applicationWithMongoCache.build()
   }
 
 }

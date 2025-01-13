@@ -18,12 +18,10 @@ package views.components.hints
 
 import play.api.i18n.Messages
 import play.twirl.api.Html
-import utils.HtmlUtil.html
-import views.components.hints.DropdownHints.bulletList
-import views.components.hints.DropdownHints.titleAndDescription
-import views.html.components.bullets
-import views.html.components.title_and_description
 import utils.EnumerationFormat
+import utils.HtmlUtil.html
+import views.components.hints.DropdownHints.{bulletList, titleAndDescription}
+import views.html.components.{bullets, title_and_description}
 
 final case class DropdownHints(keys: Seq[String]) extends Hints {
 

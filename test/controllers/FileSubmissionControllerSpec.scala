@@ -20,11 +20,10 @@ import config.AppConfig
 import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models.FileSelection.AdditionalSupportingDocuments
 import models.file_upload.UploadedFile
-import models.{AllClaims, NDRC, PendingClaim, SessionData}
-
+import models.{AllClaims, FileSelection, NDRC, PendingClaim, ServiceType, SessionData}
 import play.api.Application
 import play.api.inject.bind
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repositories.SessionCache
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import utils.SpecBase
@@ -32,14 +31,24 @@ import utils.SpecBase
 import java.time.LocalDate
 import java.util.UUID
 import scala.concurrent.Future
-import models.FileSelection
 
 class FileSubmissionControllerSpec extends SpecBase {
 
   "submitFiles" should {
     "submit file to CDFpay, clear upload service state and redirect to the confirmation page" in new Setup {
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
-        .thenReturn(Future.successful(true))
+      (mockFileSubmissionConnector
+        .submitFileToCDFPay(
+          _: String,
+          _: Boolean,
+          _: String,
+          _: ServiceType,
+          _: String,
+          _: Seq[UploadedFile],
+          _: Option[String]
+        )(_: HeaderCarrier))
+        .expects(*, *, *, *, *, *, *, *)
+        .returning(Future.successful(true))
+
       (mockUploadDocumentsConnector
         .wipeData(_: HeaderCarrier))
         .expects(*)
@@ -89,8 +98,19 @@ class FileSubmissionControllerSpec extends SpecBase {
     }
 
     "throw an exception if file upload not successful" in new Setup {
-      when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
-        .thenReturn(Future.successful(false))
+      (mockFileSubmissionConnector
+        .submitFileToCDFPay(
+          _: String,
+          _: Boolean,
+          _: String,
+          _: ServiceType,
+          _: String,
+          _: Seq[UploadedFile],
+          _: Option[String]
+        )(_: HeaderCarrier))
+        .expects(*, *, *, *, *, *, *, *)
+        .returning(Future.successful(false))
+
       (mockUploadDocumentsConnector
         .wipeData(_: HeaderCarrier))
         .expects(*)
@@ -158,10 +178,12 @@ class FileSubmissionControllerSpec extends SpecBase {
 
   trait Setup extends SetupBase {
 
+    stubEmailAndCompanyName
+
     val mockFileSubmissionConnector: FileSubmissionConnector   = mock[FileSubmissionConnector]
     val mockUploadDocumentsConnector: UploadDocumentsConnector = mock[UploadDocumentsConnector]
 
-    val app: Application = applicationWithMongoCache
+    val app = applicationWithMongoCache
       .overrides(
         bind[FileSubmissionConnector].toInstance(mockFileSubmissionConnector),
         bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)

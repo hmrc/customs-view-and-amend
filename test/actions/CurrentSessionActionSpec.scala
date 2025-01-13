@@ -16,19 +16,17 @@
 
 package actions
 
-import models.{AuthorisedRequest, SessionData, Error}
-
-import play.api.test.FakeRequest
-import play.api.test.Helpers._
-import utils.SpecBase
-import uk.gov.hmrc.auth.core.retrieve.Email
 import models.email.{UndeliverableEmail, UnverifiedEmail}
-
-import scala.concurrent.Future
-import uk.gov.hmrc.http.ServiceUnavailableException
+import models.{AuthorisedRequest, Error, SessionData}
 import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.FakeRequest
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.retrieve.Email
+import uk.gov.hmrc.http.{HeaderCarrier, ServiceUnavailableException}
+import utils.SpecBase
+
+import scala.concurrent.Future
 
 class CurrentSessionActionSpec extends SpecBase {
 
@@ -37,34 +35,37 @@ class CurrentSessionActionSpec extends SpecBase {
       val sessionData = SessionData()
         .withVerifiedEmail("foo@bar.co.uk")
         .withCompanyName("Foo Bar")
+
+      (mockSessionCache
+        .get()(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(Right(Some(sessionData))))
+
       running(app) {
-        (mockSessionCache
-          .get()(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(Right(Some(sessionData))))
         val response = await(currentSessionAction.refine(authorisedRequest))
         response shouldBe Right(authorisedRequest.withSessionData(sessionData))
       }
     }
 
     "return authorised request with new session data" in new Setup {
+      (mockSessionCache
+        .get()(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(Right(None)))
+      (mockDataStoreConnector
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
+      (mockDataStoreConnector
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Some("LastMan Ltd.")))
+      (mockSessionCache
+        .store(_: SessionData)(_: HeaderCarrier))
+        .expects(*, *)
+        .returning(Future.successful(Right(())))
+
       running(app) {
-        (mockSessionCache
-          .get()(_: HeaderCarrier))
-          .expects(*)
-          .returning(Future.successful(Right(None)))
-        (mockDataStoreConnector
-          .getEmail(_: String)(_: HeaderCarrier))
-          .expects(*, *)
-          .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
-        (mockDataStoreConnector
-          .getCompanyName(_: String)(_: HeaderCarrier))
-          .expects(*, *)
-          .returning(Future.successful(Some("LastMan Ltd.")))
-        (mockSessionCache
-          .store(_: SessionData)(_: HeaderCarrier))
-          .expects(*, *)
-          .returning(Future.successful(Right(())))
         val response = await(currentSessionAction.refine(authorisedRequest))
         response shouldBe Right(
           authorisedRequest.withSessionData(
@@ -220,7 +221,7 @@ class CurrentSessionActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app: Application                                             = application.build()
+    val app                                                          = application.build()
     val currentSessionAction: CurrentSessionAction                   = app.injector.instanceOf[CurrentSessionAction]
     val authorisedRequest: AuthorisedRequest[AnyContentAsEmpty.type] =
       AuthorisedRequest(FakeRequest("GET", "/"), "someEori")

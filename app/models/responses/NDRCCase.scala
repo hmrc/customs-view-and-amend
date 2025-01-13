@@ -17,8 +17,8 @@
 package models.responses
 
 import helpers.DateFormatters
-import models._
-import play.api.libs.functional.syntax._
+import models.*
+import play.api.libs.functional.syntax.*
 import play.api.libs.json.{JsPath, Reads, Writes}
 import utils.DateTimeUtil
 

@@ -16,7 +16,7 @@
 
 package models
 
-import models.CaseType._
+import models.CaseType.*
 import play.api.libs.json.{JsString, JsSuccess}
 import utils.SpecBase
 

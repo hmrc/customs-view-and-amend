@@ -18,7 +18,7 @@ package models
 
 import play.api.data.Form
 import play.api.i18n.Messages
-import play.api.libs.json._
+import play.api.libs.json.*
 import uk.gov.hmrc.govukfrontend.views.Aliases.Text
 import uk.gov.hmrc.govukfrontend.views.viewmodels.radios.RadioItem
 

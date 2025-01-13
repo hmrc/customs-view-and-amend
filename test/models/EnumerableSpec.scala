@@ -16,11 +16,10 @@
 
 package models
 
-import play.api.libs.json.{Format, JsNumber, JsPath, JsString, Json, JsonValidationError, Reads, Writes}
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.EitherValues
-import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, OptionValues}
+import play.api.libs.json.{Format, JsNumber, JsPath, JsString, Json, JsonValidationError, Reads, Writes}
 
 object EnumerableSpec {
 
@@ -54,10 +53,10 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
     }
 
     "fail to bind for invalid values" in {
-      Json.fromJson[Foo](JsString("invalid")).asEither.left.value should contain(
+      Json.fromJson[Foo](JsString("invalid")).asEither.left.value must contain(
         JsPath -> Seq(JsonValidationError("error.invalid"))
       )
-      Json.fromJson[Foo](JsNumber(2)).asEither.left.value         should contain(
+      Json.fromJson[Foo](JsNumber(2)).asEither.left.value         must contain(
         JsPath -> Seq(JsonValidationError("error.invalid"))
       )
     }
