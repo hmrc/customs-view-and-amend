@@ -40,7 +40,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -52,7 +52,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -64,7 +64,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -76,7 +76,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -85,7 +85,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) shouldBe NOT_FOUND
       }
     }
 
@@ -96,7 +96,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
       }
     }
 
@@ -109,7 +109,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -120,7 +120,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) shouldBe NOT_FOUND
       }
     }
 
@@ -131,8 +131,10 @@ class ClaimDetailControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(
+          routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url
+        )
       }
     }
 
@@ -143,7 +145,7 @@ class ClaimDetailControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) shouldBe NOT_FOUND
       }
     }
 
@@ -152,7 +154,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe NOT_FOUND
+        status(result) shouldBe NOT_FOUND
       }
     }
   }

@@ -24,7 +24,7 @@ import play.api.i18n.MessagesApi
 class WelshTranslatedMessagesSpec extends SpecBase {
 
   "WelshTranslatedMessagesSpec" when {
-    "ensure all english messages" must {
+    "ensure all english messages" should {
       "have a welsh translation" in new Setup {
 
         lazy val serviceMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]

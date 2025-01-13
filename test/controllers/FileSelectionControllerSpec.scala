@@ -17,7 +17,7 @@
 package controllers
 
 import models.{AllClaims, FileSelection, InProgressClaim, NDRC, PendingClaim, SessionData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.Application
 import play.api.i18n.Messages
 import play.api.test.Helpers._
@@ -39,7 +39,7 @@ class FileSelectionControllerSpec extends SpecBase {
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
         redirectLocation(result) shouldBe None
-        status(result) mustBe OK
+        status(result)           shouldBe OK
       }
     }
 
@@ -52,7 +52,7 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -67,7 +67,7 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -80,7 +80,7 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -89,8 +89,8 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
       }
     }
 
@@ -101,8 +101,8 @@ class FileSelectionControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.FileSelectionController.onPageLoad("claim-123").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status/claim/claim-123")
       }
     }
   }
@@ -120,8 +120,8 @@ class FileSelectionControllerSpec extends SpecBase {
             "value" -> "commercial-invoice"
           )
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileUploadController.chooseFiles.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileUploadController.chooseFiles.url
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
@@ -140,8 +140,8 @@ class FileSelectionControllerSpec extends SpecBase {
             "value" -> "commercial-invoice"
           )
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileUploadController.chooseFiles.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileUploadController.chooseFiles.url
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withDocumentType(FileSelection.CommercialInvoice)))
@@ -160,7 +160,7 @@ class FileSelectionControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "invalid-file-type")
 
         val result = route(app, request).value
-        status(result) mustBe BAD_REQUEST
+        status(result) shouldBe BAD_REQUEST
       }
     }
 
@@ -174,8 +174,8 @@ class FileSelectionControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "proof-of-authority")
 
         val result = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some("/claim-back-import-duty-vat/claims-status")
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some("/claim-back-import-duty-vat/claims-status")
       }
     }
 
@@ -191,8 +191,8 @@ class FileSelectionControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("value" -> "proof-of-authority")
 
         val result = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result) mustBe Some(routes.FileSubmissionController.showConfirmation.url)
+        status(result)           shouldBe SEE_OTHER
+        redirectLocation(result) shouldBe Some(routes.FileSubmissionController.showConfirmation.url)
       }
     }
   }

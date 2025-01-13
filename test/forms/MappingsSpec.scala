@@ -18,7 +18,7 @@ package forms
 
 import forms.MappingsSpec.{Bar, Foo}
 import models.Enumerable
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.data.{Form, FormError}
 import utils.SpecBase
 
@@ -56,12 +56,12 @@ class MappingsSpec extends SpecBase with Mappings {
 
     "not bind an invalid option" in {
       val result = testForm.bind(Map("value" -> "Not Bar"))
-      result.errors must contain(FormError("value", "error.invalid"))
+      result.errors should contain(FormError("value", "error.invalid"))
     }
 
     "not bind an empty map" in {
       val result = testForm.bind(Map.empty[String, String])
-      result.errors must contain(FormError("value", "error.required"))
+      result.errors should contain(FormError("value", "error.required"))
     }
   }
 }

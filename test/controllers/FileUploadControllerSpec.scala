@@ -18,7 +18,7 @@ package controllers
 
 import models.file_upload.{UploadCargo, UploadedFileMetadata}
 import models.{Nonce, _}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.{Application, inject}
 import play.api.libs.json.Json
 import play.api.test.Helpers._
@@ -48,8 +48,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/url"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe "http://localhost:10110/url"
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -68,8 +68,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/choose-files"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe "http://localhost:10110/choose-files"
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -86,8 +86,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileSubmissionController.showConfirmation.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSubmissionController.showConfirmation.url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -102,8 +102,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileSelectionController.onPageLoad("claim-123").url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSelectionController.onPageLoad("claim-123").url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -117,8 +117,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.ClaimsOverviewController.show.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.ClaimsOverviewController.show.url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -143,7 +143,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe NO_CONTENT
+        status(result) shouldBe NO_CONTENT
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withUploadedFiles(uploadedFiles)))
@@ -164,7 +164,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe NO_CONTENT
+        status(result) shouldBe NO_CONTENT
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -179,7 +179,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 
@@ -195,7 +195,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 
@@ -212,7 +212,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 

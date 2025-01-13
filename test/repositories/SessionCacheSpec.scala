@@ -42,7 +42,7 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
   val sessionCache =
     new DefaultSessionCache(mongoComponent, new CurrentTimestampSupport(), config)
 
-  "SessionCache" must {
+  "SessionCache" should {
 
     "be able to insert empty SessionData into mongo and read it back" in new TestEnvironment {
       val sessionData: SessionData = SessionData()

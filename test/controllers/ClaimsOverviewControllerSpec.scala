@@ -17,7 +17,7 @@
 package controllers
 
 import models._
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
@@ -44,7 +44,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
 
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.ClaimsOverviewController.show.url)
       val result: Future[Result]                       = route(app, request).value
-      status(result) mustBe OK
+      status(result) shouldBe OK
     }
   }
 
@@ -54,7 +54,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
         val request                =
           fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url).withFormUrlEncodedBody("search" -> "")
         val result: Future[Result] = route(app, request).value
-        status(result) mustBe BAD_REQUEST
+        status(result) shouldBe BAD_REQUEST
         verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
@@ -66,7 +66,7 @@ class ClaimsOverviewControllerSpec extends SpecBase {
             .withFormUrlEncodedBody("search" -> "NDRC-0003")
         val result: Future[Result] = route(app, request).value
 
-        status(result) mustBe OK
+        status(result) shouldBe OK
         verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }

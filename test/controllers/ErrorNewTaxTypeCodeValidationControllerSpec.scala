@@ -36,7 +36,7 @@ class ErrorNewTaxTypeCodeValidationControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -45,7 +45,7 @@ class ErrorNewTaxTypeCodeValidationControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ErrorNewTaxTypeCodeValidationController.showError("someOtherClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
       }
     }
 

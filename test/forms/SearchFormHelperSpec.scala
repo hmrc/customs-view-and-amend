@@ -16,7 +16,6 @@
 
 package forms
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.data.{Form, FormError}
 import utils.SpecBase
 
@@ -32,17 +31,17 @@ class SearchFormHelperSpec extends SpecBase {
 
     "report error when an empty input" in {
       val result = testForm.fillAndValidate("")
-      result.error("search") must contain(FormError("search", "claim-search.error.required"))
+      result.error("search") should contain(FormError("search", "claim-search.error.required"))
     }
 
     "bind valid input" in {
       val result = testForm.bind(Map("search" -> "Foo"))
-      result.value mustBe Some("Foo")
+      result.value shouldBe Some("Foo")
     }
 
     "filter html injection" in {
       val result = testForm.bind(Map("search" -> "<img src='https://owasp.org/assets/images/logo.png'>Foo</img>"))
-      result.value mustBe Some("Foo")
+      result.value shouldBe Some("Foo")
     }
   }
 }

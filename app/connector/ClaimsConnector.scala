@@ -27,6 +27,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import uk.gov.hmrc.http.UpstreamErrorResponse
+import java.net.URL
 
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {
@@ -49,11 +50,11 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
   private val getGbClaimsUrl      = s"$baseUrl/claims"
   private val getGbAndXiClaimsUrl = s"$baseUrl/claims?includeXiClaims=true"
 
-  private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String) =
-    s"$baseUrl/claims/$serviceType/$caseNumber"
+  private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String): URL =
+    URL(s"$baseUrl/claims/$serviceType/$caseNumber")
 
   final def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims] = httpClient
-    .GET[AllClaimsResponse](if (includeXiClaims) getGbAndXiClaimsUrl else getGbClaimsUrl)
+    .GET[AllClaimsResponse](if (includeXiClaims) URL(getGbAndXiClaimsUrl) else URL(getGbClaimsUrl))
     .map { claimsResponse =>
       val claims =
         claimsResponse.claims.ndrcClaims.map(_.toClaim) ++

@@ -17,7 +17,7 @@
 package actions
 
 import models.{AllClaims, AuthorisedRequestWithSessionData, Error, SessionData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.HeaderCarrier
@@ -36,10 +36,10 @@ class ModifySessionActionSpec extends SpecBase {
           .thenAnswer((f: SessionData => SessionData) => Future.successful(Right(f(existingSessionData))))
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(existingSessionData.copy(claims = Some(testClaims)))
+        newSession shouldBe Some(existingSessionData.copy(claims = Some(testClaims)))
       }
     }
 
@@ -49,7 +49,7 @@ class ModifySessionActionSpec extends SpecBase {
           .thenAnswer((f: SessionData => SessionData) => Future.successful(Left(Error("do not panick"))))
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
           await(modifier.update(_.copy(claims = Some(testClaims))))
@@ -63,7 +63,7 @@ class ModifySessionActionSpec extends SpecBase {
           .thenAnswer((f: SessionData => SessionData) => Future.failed(new Exception("do not panick")))
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
           await(modifier.update(_.copy(claims = Some(testClaims))))

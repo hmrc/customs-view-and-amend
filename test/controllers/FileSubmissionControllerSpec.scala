@@ -21,7 +21,7 @@ import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models.FileSelection.AdditionalSupportingDocuments
 import models.file_upload.UploadedFile
 import models.{AllClaims, NDRC, PendingClaim, SessionData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.Application
 import play.api.inject.bind
 import play.api.test.Helpers._
@@ -40,8 +40,10 @@ class FileSubmissionControllerSpec extends SpecBase {
     "submit file to CDFpay, clear upload service state and redirect to the confirmation page" in new Setup {
       when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
         .thenReturn(Future.successful(true))
-      when(mockUploadDocumentsConnector.wipeData(any))
-        .thenReturn(Future.successful(true))
+      (mockUploadDocumentsConnector
+        .wipeData(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(true))
 
       running(app) {
         val sessionData = SessionData(claims = Some(allClaimsWithPending))
@@ -89,8 +91,10 @@ class FileSubmissionControllerSpec extends SpecBase {
     "throw an exception if file upload not successful" in new Setup {
       when(mockFileSubmissionConnector.submitFileToCDFPay(any, any, any, any, any, any, any)(any))
         .thenReturn(Future.successful(false))
-      when(mockUploadDocumentsConnector.wipeData(any))
-        .thenReturn(Future.successful(true))
+      (mockUploadDocumentsConnector
+        .wipeData(_: HeaderCarrier))
+        .expects(*)
+        .returning(Future.successful(true))
 
       running(app) {
         val sessionData = SessionData(claims = Some(allClaimsWithPending))
@@ -117,7 +121,7 @@ class FileSubmissionControllerSpec extends SpecBase {
           val request =
             fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
           val result  = route(app, request).value
-          status(result) mustBe OK
+          status(result)            shouldBe OK
           await(sessionCache.get()) shouldBe Right(Some(session))
         }
       }
@@ -129,8 +133,8 @@ class FileSubmissionControllerSpec extends SpecBase {
           val request =
             fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
           val result  = route(app, request).value
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.ClaimsOverviewController.show.url)
+          status(result)            shouldBe SEE_OTHER
+          redirectLocation(result)  shouldBe Some(routes.ClaimsOverviewController.show.url)
           await(sessionCache.get()) shouldBe Right(Some(session))
         }
       }
@@ -144,8 +148,8 @@ class FileSubmissionControllerSpec extends SpecBase {
           val request =
             fakeRequest(GET, routes.FileSubmissionController.showConfirmation.url)
           val result  = route(app, request).value
-          status(result) mustBe SEE_OTHER
-          redirectLocation(result) mustBe Some(routes.FileUploadController.chooseFiles.url)
+          status(result)            shouldBe SEE_OTHER
+          redirectLocation(result)  shouldBe Some(routes.FileUploadController.chooseFiles.url)
           await(sessionCache.get()) shouldBe Right(Some(session))
         }
       }

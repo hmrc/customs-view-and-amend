@@ -41,7 +41,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(uglifyCompressOptions := Seq("unused=false", "dead_code=false"))
   .settings(
     majorVersion := 0,
-    scalaVersion := "2.13.15",
+    scalaVersion := "3.3.4",
     libraryDependencies ++= AppDependencies.compile ++ AppDependencies.test,
-    scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s"
+    scalacOptions += s"-Wconf:src=${target.value}/scala-${scalaBinaryVersion.value}/routes/.*:s,src=${target.value}/scala-${scalaBinaryVersion.value}/twirl/.*:s",
+    scalacOptions += "-source:3.0-migration"
   )

@@ -22,7 +22,6 @@ import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
 import org.apache.pekko.stream.testkit.NoMaterializer
 import org.mockito.Mockito
-import org.mockito.scalatest.MockitoSugar
 import org.scalatest.OptionValues
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
@@ -43,15 +42,16 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames => HMRCHeaderNames, SessionK
 import java.util.UUID
 import scala.concurrent.Future
 import org.scalatest.EitherValues
+import org.scalamock.scalatest.MockFactory
 
 trait SpecBase
     extends AnyWordSpecLike
-    with MockitoSugar
     with OptionValues
     with EitherValues
     with ScalaFutures
     with Matchers
-    with IntegrationPatience {
+    with IntegrationPatience
+    with MockFactory {
 
   def fakeRequest(method: String = "", path: String = "")(implicit
     hc: HeaderCarrier = HeaderCarrier()
@@ -72,15 +72,19 @@ trait SpecBase
     val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
     val mockXiEoriConnector: XiEoriConnector       = mock[XiEoriConnector]
 
-    Mockito
-      .lenient()
-      .when(mockDataStoreConnector.getEmail(any)(any))
-      .thenReturn(Future.successful(Right(Email("some@email.com"))))
+    (mockDataStoreConnector
+      .getEmail(_: String)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(
+        Future.successful(Right(Email("some@email.com")))
+      )
 
-    Mockito
-      .lenient()
-      .when(mockDataStoreConnector.getCompanyName(any)(any))
-      .thenReturn(Future.successful(Some("companyName")))
+    (mockDataStoreConnector
+      .getCompanyName(_: String)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(
+        Future.successful(Some("companyName"))
+      )
 
     val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
 

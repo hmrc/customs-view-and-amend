@@ -19,7 +19,7 @@ package actions
 import com.google.inject.Inject
 import config.AppConfig
 import controllers.routes
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
 import play.api.test.Helpers._
 import uk.gov.hmrc.auth.core._
@@ -46,8 +46,10 @@ class IdentifierActionSpec extends SpecBase {
       "call block" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "test")), "Active")))
             )
@@ -63,7 +65,7 @@ class IdentifierActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe OK
+          status(result) shouldBe OK
         }
       }
     }
@@ -72,8 +74,10 @@ class IdentifierActionSpec extends SpecBase {
       "return unauthorised" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("INVALID", "test")), "Active")))
             )
@@ -89,7 +93,7 @@ class IdentifierActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe SEE_OTHER
+          status(result) shouldBe SEE_OTHER
         }
       }
     }
@@ -111,9 +115,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result).get must startWith(config.loginUrl)
+        redirectLocation(result).get should startWith(config.loginUrl)
       }
     }
 
@@ -134,9 +138,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result).get must startWith(config.loginUrl)
+        redirectLocation(result).get should startWith(config.loginUrl)
       }
     }
 
@@ -157,9 +161,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -180,9 +184,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -203,9 +207,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -226,9 +230,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -248,9 +252,9 @@ class IdentifierActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
 
-        redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+        redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
       }
     }
 
@@ -258,8 +262,10 @@ class IdentifierActionSpec extends SpecBase {
       "call block" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(
                 Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "GB000000000000001")), "Active"))
@@ -284,7 +290,7 @@ class IdentifierActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe OK
+          status(result) shouldBe OK
         }
       }
     }
@@ -293,8 +299,10 @@ class IdentifierActionSpec extends SpecBase {
       "redirect the user to the unauthorised page" in new SetupBase {
         val mockAuthConnector = mock[AuthConnector]
 
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(
                 Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "GB000000000000003")), "Active"))
@@ -319,9 +327,9 @@ class IdentifierActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe SEE_OTHER
+          status(result) shouldBe SEE_OTHER
 
-          redirectLocation(result) mustBe Some(routes.UnauthorisedController.onPageLoad.url)
+          redirectLocation(result) shouldBe Some(routes.UnauthorisedController.onPageLoad.url)
         }
       }
     }

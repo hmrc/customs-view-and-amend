@@ -19,7 +19,7 @@ package connectors
 import connector.DataStoreConnector
 import models.company.{CompanyAddress, CompanyInformationResponse}
 import models.email._
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers._
@@ -44,7 +44,7 @@ class DataStoreConnectorSpec extends SpecBase {
       running(app) {
         val response = connector.getEmail(eori)
         val result   = await(response)
-        result mustBe Right(Email("someemail@mail.com"))
+        result shouldBe Right(Email("someemail@mail.com"))
       }
     }
 
@@ -55,7 +55,7 @@ class DataStoreConnectorSpec extends SpecBase {
 
       running(app) {
         val response = connector.getEmail(eori)
-        await(response) mustBe Left(UnverifiedEmail)
+        await(response) shouldBe Left(UnverifiedEmail)
       }
     }
 
@@ -70,7 +70,7 @@ class DataStoreConnectorSpec extends SpecBase {
       running(app) {
         val response = connector.getEmail(eori)
         val result   = await(response)
-        result mustBe Left(UnverifiedEmail)
+        result shouldBe Left(UnverifiedEmail)
       }
     }
 
@@ -85,7 +85,7 @@ class DataStoreConnectorSpec extends SpecBase {
       running(app) {
         val response = connector.getEmail(eori)
         val result   = await(response)
-        result mustBe Left(UndeliverableEmail("email@email.com"))
+        result shouldBe Left(UndeliverableEmail("email@email.com"))
       }
     }
 
@@ -109,7 +109,7 @@ class DataStoreConnectorSpec extends SpecBase {
       running(app) {
         val response = connector.getCompanyName(eori)
         val result   = await(response)
-        result must be(Some(companyName))
+        result should be(Some(companyName))
       }
     }
 
@@ -120,7 +120,7 @@ class DataStoreConnectorSpec extends SpecBase {
 
       running(app) {
         val response = await(connector.getCompanyName(eori))
-        response mustBe None
+        response shouldBe None
       }
     }
   }

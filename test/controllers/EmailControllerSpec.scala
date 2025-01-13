@@ -16,7 +16,6 @@
 
 package controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
@@ -31,7 +30,7 @@ class EmailControllerSpec extends SpecBase {
     "return OK" in new Setup {
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.EmailController.showUnverified().url)
       val result: Future[Result]                       = route(app, request).value
-      status(result) mustBe OK
+      status(result) shouldBe OK
     }
   }
 

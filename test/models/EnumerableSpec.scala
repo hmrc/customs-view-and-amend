@@ -41,7 +41,7 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
 
   import EnumerableSpec._
 
-  ".reads" must {
+  ".reads" should {
 
     "be found implicitly" in {
       implicitly[Reads[Foo]]
@@ -54,16 +54,16 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
     }
 
     "fail to bind for invalid values" in {
-      Json.fromJson[Foo](JsString("invalid")).asEither.left.value must contain(
+      Json.fromJson[Foo](JsString("invalid")).asEither.left.value should contain(
         JsPath -> Seq(JsonValidationError("error.invalid"))
       )
-      Json.fromJson[Foo](JsNumber(2)).asEither.left.value         must contain(
+      Json.fromJson[Foo](JsNumber(2)).asEither.left.value         should contain(
         JsPath -> Seq(JsonValidationError("error.invalid"))
       )
     }
   }
 
-  ".writes" must {
+  ".writes" should {
 
     "be found implicitly" in {
       implicitly[Writes[Foo]]
@@ -76,7 +76,7 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
     }
   }
 
-  ".formats" must {
+  ".formats" should {
 
     "be found implicitly" in {
       implicitly[Format[Foo]]

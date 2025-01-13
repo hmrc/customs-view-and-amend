@@ -18,7 +18,7 @@ package controllers
 
 import models._
 import org.mockito.Mockito
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+
 import play.api.Application
 import play.api.test.Helpers._
 import utils.SpecBase
@@ -33,7 +33,7 @@ class ClaimListControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showInProgressClaimList(Some(1)).url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
   }
@@ -43,7 +43,7 @@ class ClaimListControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showPendingClaimList(None).url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
   }
@@ -53,7 +53,7 @@ class ClaimListControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.ClaimListController.showClosedClaimList(None).url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
   }

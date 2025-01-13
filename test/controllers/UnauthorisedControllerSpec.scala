@@ -16,7 +16,6 @@
 
 package controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.test.Helpers._
 import utils.SpecBase
 
@@ -28,7 +27,7 @@ class UnauthorisedControllerSpec extends SpecBase {
 
       running(app) {
         val result = route(app, fakeRequest("GET", routes.UnauthorisedController.onPageLoad.url)).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
   }
