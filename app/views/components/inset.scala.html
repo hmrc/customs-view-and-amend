@@ -17,12 +17,13 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukInsetText
 @import uk.gov.hmrc.govukfrontend.views.viewmodels.insettext.InsetText
 @import uk.gov.hmrc.govukfrontend.views.Aliases.HtmlContent
+@import play.twirl.api.HtmlFormat
 
 @this(govukInsetText: GovukInsetText)
 
 @(msg: String, id: Option[String] = None, additionalContent: Option[Html] = None)(implicit messages: Messages)
 
 @govukInsetText(InsetText(
-    content = HtmlContent(Html(messages(msg)) + additionalContent.map(v => s" $v").getOrElse("")),
+    content =  HtmlContent(HtmlFormat.fill(Seq(Html(messages(msg))) ++ additionalContent.toSeq)),
     id = id
 ))

@@ -17,9 +17,10 @@
 package actions
 
 import models.{AllClaims, AuthorisedRequestWithSessionData, Error, SessionData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
@@ -30,24 +31,32 @@ class ModifySessionActionSpec extends SpecBase {
   "ModifySessionAction" should {
     "return existing session modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.update(any)(any, any))
-          .thenAnswer((f: SessionData => SessionData) => Future.successful(Right(f(existingSessionData))))
+        (mockSessionCache
+          .update(_: SessionData => SessionData)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *)
+          .onCall { case (f: Function1[SessionData, SessionData], _, _) =>
+            Future.successful(Right(f(existingSessionData)))
+          }
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         val newSession = await(modifier.update(_.copy(claims = Some(testClaims))))
-        newSession mustBe Some(existingSessionData.copy(claims = Some(testClaims)))
+        newSession shouldBe Some(existingSessionData.copy(claims = Some(testClaims)))
       }
     }
 
     "return existing session with failing modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.update(any)(any, any))
-          .thenAnswer((f: SessionData => SessionData) => Future.successful(Left(Error("do not panick"))))
+        (mockSessionCache
+          .update(_: SessionData => SessionData)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *)
+          .onCall { case _ =>
+            Future.successful(Left(Error("do not panick")))
+          }
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
           await(modifier.update(_.copy(claims = Some(testClaims))))
@@ -57,11 +66,15 @@ class ModifySessionActionSpec extends SpecBase {
 
     "return existing session with blowing up modifier alongside the original request" in new Setup {
       running(app) {
-        when(mockSessionCache.update(any)(any, any))
-          .thenAnswer((f: SessionData => SessionData) => Future.failed(new Exception("do not panick")))
+        (mockSessionCache
+          .update(_: SessionData => SessionData)(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *)
+          .onCall { case _ =>
+            Future.failed(new Exception("do not panick"))
+          }
 
         val (request, modifier) = await(modifySessionAction.transform(authenticatedRequest))
-        request mustBe authenticatedRequest
+        request shouldBe authenticatedRequest
 
         an[Exception] shouldBe thrownBy {
           await(modifier.update(_.copy(claims = Some(testClaims))))
@@ -71,14 +84,14 @@ class ModifySessionActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app                 = application.build()
-    val modifySessionAction = app.injector.instanceOf[ModifySessionAction]
+    val app                                      = application.build()
+    val modifySessionAction: ModifySessionAction = app.injector.instanceOf[ModifySessionAction]
 
-    val existingSessionData = SessionData()
+    val existingSessionData: SessionData = SessionData()
       .withVerifiedEmail("foo@bar.com")
       .withCompanyName("companyName")
 
-    val authenticatedRequest =
+    val authenticatedRequest: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",

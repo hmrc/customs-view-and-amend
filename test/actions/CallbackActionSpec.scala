@@ -18,10 +18,9 @@ package actions
 
 import com.google.inject.Inject
 import config.AppConfig
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.mvc.{Action, AnyContent, BodyParsers, Results}
-import play.api.test.Helpers._
-import uk.gov.hmrc.auth.core._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.{Retrieval, ~}
 import uk.gov.hmrc.http.HeaderCarrier
@@ -43,13 +42,12 @@ class CallbackActionSpec extends SpecBase {
   "Callback Action" when {
     "successfully passes all checks" should {
       "call block" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
-        when(mockDataStoreConnector.getCompanyName(any)(any))
-          .thenReturn(Future.successful(None))
-
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("EORINumber", "test")), "Active")))
             )
@@ -65,17 +63,19 @@ class CallbackActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe OK
+          status(result) shouldBe OK
         }
       }
     }
 
     "the user does not have the correct enrolment" should {
       "return unauthorised" in new SetupBase {
-        val mockAuthConnector = mock[AuthConnector]
+        val mockAuthConnector: AuthConnector & scala.reflect.Selectable = mock[AuthConnector]
 
-        when(mockAuthConnector.authorise[Enrolments](any, any)(any, any))
-          .thenReturn(
+        (mockAuthConnector
+          .authorise(_: Predicate, _: Retrieval[Enrolments])(_: HeaderCarrier, _: ExecutionContext))
+          .expects(*, *, *, *)
+          .returning(
             Future.successful(
               Enrolments(Set(Enrolment("HMRC-CUS-ORG", Seq(EnrolmentIdentifier("INVALID", "test")), "Active")))
             )
@@ -91,7 +91,7 @@ class CallbackActionSpec extends SpecBase {
 
         running(app) {
           val result = controller.onPageLoad()(fakeRequest().withHeaders("X-Session-Id" -> "someSessionId"))
-          status(result) mustBe FORBIDDEN
+          status(result) shouldBe FORBIDDEN
         }
       }
     }
@@ -113,7 +113,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -134,7 +134,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -155,7 +155,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -176,7 +176,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -197,7 +197,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -218,7 +218,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
 
@@ -239,7 +239,7 @@ class CallbackActionSpec extends SpecBase {
         val controller = new Harness(authAction)
         val result     = controller.onPageLoad()(fakeRequest())
 
-        status(result) mustBe FORBIDDEN
+        status(result) shouldBe FORBIDDEN
       }
     }
   }

@@ -16,28 +16,35 @@
 
 package controllers
 
-import models.file_upload.{UploadCargo, UploadedFileMetadata}
-import models.{Nonce, _}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.{Application, inject}
+import connector.UploadDocumentsConnector
+import models.file_upload.{UploadCargo, UploadedFile, UploadedFileMetadata}
+import models.{Nonce, *}
+import play.api.i18n.Messages
 import play.api.libs.json.Json
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import play.api.{Application, inject}
 import repositories.SessionCache
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 import utils.SpecBase
 
 import java.time.LocalDate
 import java.util.UUID
-import connector.UploadDocumentsConnector
 import scala.concurrent.Future
-import models.file_upload.UploadedFile
 
 class FileUploadControllerSpec extends SpecBase {
 
   "chooseFiles" should {
     "initialize file upload service and redirect to the returned url" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(Some("/url")))
+      (mockUploadDocumentsConnector
+        .startFileUpload(
+          _: Nonce,
+          _: String,
+          _: ServiceType,
+          _: FileSelection,
+          _: Seq[UploadedFile]
+        )(_: HeaderCarrier, _: Messages))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(Some("/url")))
 
       val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
@@ -48,16 +55,24 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/url"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe "http://localhost:10110/url"
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
     }
 
     "initialize file upload service and redirect to the default url if missing" in new Setup {
-      when(mockUploadDocumentsConnector.startFileUpload(any, any, any, any, any)(any, any))
-        .thenReturn(Future.successful(None))
+      (mockUploadDocumentsConnector
+        .startFileUpload(
+          _: Nonce,
+          _: String,
+          _: ServiceType,
+          _: FileSelection,
+          _: Seq[UploadedFile]
+        )(_: HeaderCarrier, _: Messages))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(None))
 
       val sessionData = SessionData(claims = Some(allClaimsWithPending))
         .withInitialFileUploadData("claim-123")
@@ -68,8 +83,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe "http://localhost:10110/choose-files"
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe "http://localhost:10110/choose-files"
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -86,8 +101,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileSubmissionController.showConfirmation.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSubmissionController.showConfirmation.url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -102,8 +117,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.FileSelectionController.onPageLoad("claim-123").url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.FileSelectionController.onPageLoad("claim-123").url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -117,8 +132,8 @@ class FileUploadControllerSpec extends SpecBase {
       running(app) {
         val request = fakeRequest(GET, routes.FileUploadController.chooseFiles.url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
-        redirectLocation(result).value mustBe routes.ClaimsOverviewController.show.url
+        status(result)                 shouldBe SEE_OTHER
+        redirectLocation(result).value shouldBe routes.ClaimsOverviewController.show.url
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -143,7 +158,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe NO_CONTENT
+        status(result) shouldBe NO_CONTENT
 
         await(sessionCache.get()) shouldBe
           Right(Some(sessionData.withUploadedFiles(uploadedFiles)))
@@ -164,7 +179,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe NO_CONTENT
+        status(result) shouldBe NO_CONTENT
 
         await(sessionCache.get()) shouldBe Right(Some(sessionData))
       }
@@ -179,7 +194,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 
@@ -195,7 +210,7 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 
@@ -212,23 +227,26 @@ class FileUploadControllerSpec extends SpecBase {
             )
           )
         val result  = route(app, request).value
-        status(result) mustBe UNAUTHORIZED
+        status(result) shouldBe UNAUTHORIZED
       }
     }
 
   }
 
   trait Setup extends SetupBase {
+
+    stubEmailAndCompanyName
+
     val mockUploadDocumentsConnector: UploadDocumentsConnector =
       mock[UploadDocumentsConnector]
 
-    val app: Application = applicationWithMongoCache
+    val app = applicationWithMongoCache
       .overrides(
         inject.bind[UploadDocumentsConnector].toInstance(mockUploadDocumentsConnector)
       )
       .build()
 
-    def sessionCache = app.injector.instanceOf[SessionCache]
+    def sessionCache: SessionCache = app.injector.instanceOf[SessionCache]
 
     implicit val hc: HeaderCarrier =
       HeaderCarrier(

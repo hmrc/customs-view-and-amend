@@ -18,8 +18,9 @@ package models
 
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
-import scala.util.Random
 import play.api.libs.json.Json
+
+import scala.util.Random
 
 class NonceSpec extends AnyWordSpec with Matchers {
 

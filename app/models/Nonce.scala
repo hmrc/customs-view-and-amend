@@ -17,12 +17,10 @@
 package models
 
 import play.api.libs.json.Format
-import java.util.Base64
-import java.nio.charset.StandardCharsets
-import scala.util.Random
-import scala.util.Try
 
-import models.SimpleDecimalFormat
+import java.nio.charset.StandardCharsets
+import java.util.Base64
+import scala.util.{Random, Try}
 sealed trait Nonce {
 
   val value: Int

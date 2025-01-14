@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.*
 
 sealed trait ClaimStatus {
   val messageKey: String
@@ -38,17 +38,16 @@ object ClaimStatus {
     override def reads(json: JsValue): JsResult[ClaimStatus] =
       json match {
         case JsString("InProgress") => JsSuccess(InProgress)
-        case JsString("Pending") => JsSuccess(Pending)
-        case JsString("Closed") => JsSuccess(Closed)
-        case e => JsError(s"Unable to parse claim type: $e")
+        case JsString("Pending")    => JsSuccess(Pending)
+        case JsString("Closed")     => JsSuccess(Closed)
+        case e                      => JsError(s"Unable to parse claim type: $e")
       }
-
 
     override def writes(o: ClaimStatus): JsValue =
       o match {
         case InProgress => JsString("InProgress")
-        case Pending => JsString("Pending")
-        case Closed => JsString("Closed")
+        case Pending    => JsString("Pending")
+        case Closed     => JsString("Closed")
       }
   }
 }

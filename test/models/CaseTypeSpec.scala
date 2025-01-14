@@ -16,7 +16,7 @@
 
 package models
 
-import models.CaseType._
+import models.CaseType.*
 import play.api.libs.json.{JsString, JsSuccess}
 import utils.SpecBase
 
@@ -24,14 +24,14 @@ class CaseTypeSpec extends SpecBase {
 
   "format" should {
     "correctly format data in read and writes" in {
-      CaseType.format.writes(Individual) shouldBe JsString("Individual")
-      CaseType.format.writes(Bulk) shouldBe JsString("Bulk")
-      CaseType.format.writes(CMA) shouldBe JsString("CMA")
-      CaseType.format.writes(C18) shouldBe JsString("C18")
+      CaseType.format.writes(Individual)            shouldBe JsString("Individual")
+      CaseType.format.writes(Bulk)                  shouldBe JsString("Bulk")
+      CaseType.format.writes(CMA)                   shouldBe JsString("CMA")
+      CaseType.format.writes(C18)                   shouldBe JsString("C18")
       CaseType.format.reads(JsString("Individual")) shouldBe JsSuccess(Individual)
-      CaseType.format.reads(JsString("Bulk")) shouldBe JsSuccess(Bulk)
-      CaseType.format.reads(JsString("CMA")) shouldBe JsSuccess(CMA)
-      CaseType.format.reads(JsString("C18")) shouldBe JsSuccess(C18)
+      CaseType.format.reads(JsString("Bulk"))       shouldBe JsSuccess(Bulk)
+      CaseType.format.reads(JsString("CMA"))        shouldBe JsSuccess(CMA)
+      CaseType.format.reads(JsString("C18"))        shouldBe JsSuccess(C18)
     }
   }
 }

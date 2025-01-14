@@ -18,13 +18,14 @@ package connector
 
 import com.google.inject.ImplementedBy
 import config.AppConfig
-import models._
+import models.*
 import models.file_upload.UploadedFile
 import play.api.Logging
 import play.api.http.Status.ACCEPTED
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
+import java.net.URL
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -73,7 +74,7 @@ class FileSubmissionConnectorImpl @Inject() (httpClient: HttpClient, appConfig: 
       reasonForSecurity
     )
     httpClient
-      .POST[Dec64UploadRequest, HttpResponse](fileUploadUrl, request)
+      .POST[Dec64UploadRequest, HttpResponse](URL(fileUploadUrl), request)
       .map {
         case HttpResponse(ACCEPTED, _, _) => true
 

@@ -17,11 +17,9 @@
 package models.file_upload
 
 import config.AppConfig
-import models.{FileSelection, ServiceType}
+import models.{FileSelection, Nonce, ServiceType}
 import play.api.i18n.Messages
 import play.api.libs.json.{Json, OFormat}
-
-import models.Nonce
 case class UploadDocumentsWrapper(config: UploadDocumentsConfig, existingFiles: Seq[UploadedFile])
 
 object UploadDocumentsWrapper {

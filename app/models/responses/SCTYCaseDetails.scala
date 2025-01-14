@@ -16,9 +16,10 @@
 
 package models.responses
 
-import models._
+import models.*
 import play.api.libs.json.{Json, OFormat}
 import utils.DateTimeUtil.toDateTime
+
 import java.time.LocalDate
 
 case class SCTYCaseDetails(

@@ -16,11 +16,10 @@
 
 package controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.SpecBase
 
 class LogoutControllerSpec extends SpecBase {
@@ -33,7 +32,7 @@ class LogoutControllerSpec extends SpecBase {
         val result = route(app, request).value
         redirectLocation(
           result
-        ).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
+        ).value shouldBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
       }
     }
   }
@@ -44,13 +43,15 @@ class LogoutControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.LogoutController.logoutNoSurvey.url).withHeaders("X-Session-Id" -> "someSession")
         val result  = route(app, request).value
-        redirectLocation(result).value mustBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
+        redirectLocation(
+          result
+        ).value shouldBe "http://localhost:9553/bas-gateway/sign-out-without-state?continue=http%3A%2F%2Flocalhost%3A7500%2Fclaim-back-import-duty-vat%2Fsign-out"
       }
     }
   }
 
   trait Setup extends SetupBase {
-    val app: Application = application
+    val app = application
       .build()
   }
 }

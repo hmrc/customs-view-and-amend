@@ -24,10 +24,10 @@ class NDRCCaseSpec extends SpecBase {
 
   "toClaimDetail" should {
     "transform the case status into the corresponding case object" in new SetupBase {
-      val inProgressCase =
+      val inProgressCase: NDRCCase =
         ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "In Progress", MRNDetails = None, entryDetails = None))
-      val pendingCase    = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Pending"))
-      val closedCase     = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Closed"))
+      val pendingCase: NDRCCase    = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Pending"))
+      val closedCase: NDRCCase     = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "Closed"))
 
       inProgressCase.toClaimDetail(None).claimStatus shouldBe InProgress
       pendingCase.toClaimDetail(None).claimStatus    shouldBe Pending
@@ -36,7 +36,7 @@ class NDRCCaseSpec extends SpecBase {
 
     "read/write json correctly" in new SetupBase {
 
-      val json =
+      val json: String =
         """{
           |    "claimantEORI": "ClaimaintEori",
           |    "declarationID": "DeclarationId",
@@ -93,7 +93,7 @@ class NDRCCaseSpec extends SpecBase {
     }
 
     "throw an exception if an invalid case status passed from the api" in new SetupBase {
-      val invalidCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "INVALID"))
+      val invalidCase: NDRCCase = ndrcCase.copy(ndrcCase.NDRCDetail.copy(caseStatus = "INVALID"))
 
       intercept[RuntimeException] {
         invalidCase.toClaimDetail(None)

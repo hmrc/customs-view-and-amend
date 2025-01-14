@@ -26,12 +26,12 @@ object Error {
   def apply(t: Throwable): Error = new Error {
     final override type Value = Throwable
     final override val value: Throwable = t
-    final override def exception          = value
+    final override def exception        = value
   }
 
   def apply(message: String): Error = new Error {
     final override type Value = String
     final override val value: String = message
-    final override def exception       = new Exception(message)
+    final override def exception     = new Exception(message)
   }
 }

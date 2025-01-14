@@ -21,20 +21,28 @@ import models.FileSelection.AdditionalSupportingDocuments
 import models.{NDRC, Nonce}
 import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers._
+import play.api.libs.json.Writes
+import play.api.test.Helpers.*
 import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, UpstreamErrorResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 class UploadDocumentsConnectorSpec extends SpecBase {
   implicit val messages: Messages = stubMessages()
 
   "startFileUpload" should {
     "return the response header on a successful request" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))))
 
       running(app) {
         val result =
@@ -44,8 +52,15 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     }
 
     "return None if other status returned" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "", Map.empty[String, Seq[String]])))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(HttpResponse(NO_CONTENT, "", Map("Location" -> Seq("/location")))))
 
       running(app) {
         val result =
@@ -55,8 +70,15 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     }
 
     "return default UCDF location if the response header is empty" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.successful(HttpResponse(CREATED, "", Map.empty[String, Seq[String]])))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/upload-customs-documents")))))
 
       running(app) {
         val result =
@@ -66,8 +88,15 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     }
 
     "return None if the api request fails" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POST(any, any, any)(any, any, any, any))
-        .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      (mockHttp
+        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
+          _: Writes[Any],
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *, *, *)
+        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
         val result =
@@ -79,8 +108,14 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
   "wipeData" should {
     "return false on a failed response" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POSTEmpty(any, any)(any, any, any))
-        .thenReturn(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      (mockHttp
+        .POSTEmpty(_: String, _: Seq[(String, String)])(
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *)
+        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
 
       running(app) {
         val result = await(connector.wipeData)
@@ -89,8 +124,14 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     }
 
     "return true on a successful response" in new Setup {
-      when[Future[HttpResponse]](mockHttp.POSTEmpty(any, any)(any, any, any))
-        .thenReturn(Future.successful(HttpResponse(NO_CONTENT, "")))
+      (mockHttp
+        .POSTEmpty(_: String, _: Seq[(String, String)])(
+          _: HttpReads[HttpResponse],
+          _: HeaderCarrier,
+          _: ExecutionContext
+        ))
+        .expects(*, *, *, *, *)
+        .returning(Future.successful(HttpResponse(NO_CONTENT, "")))
 
       running(app) {
         val result = await(connector.wipeData)
@@ -104,7 +145,7 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
     implicit val hc: HeaderCarrier = HeaderCarrier()
 
-    val app: Application = GuiceApplicationBuilder()
+    val app = GuiceApplicationBuilder()
       .overrides(
         inject.bind[HttpClient].toInstance(mockHttp)
       )

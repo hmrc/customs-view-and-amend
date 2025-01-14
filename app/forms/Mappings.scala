@@ -17,7 +17,7 @@
 package forms
 
 import models.Enumerable
-import play.api.data.Forms._
+import play.api.data.Forms.*
 import play.api.data.format.Formatter
 import play.api.data.{FieldMapping, FormError}
 

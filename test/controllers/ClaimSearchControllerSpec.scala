@@ -16,12 +16,11 @@
 
 package controllers
 
-import models._
-import org.mockito.Mockito
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import models.*
 import play.api.Application
 import play.api.mvc.Result
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -32,10 +31,10 @@ class ClaimSearchControllerSpec extends SpecBase {
   "onPageLoad" should {
     "return OK" in new Setup {
       running(app) {
-        val request                = fakeRequest(GET, routes.ClaimSearchController.onPageLoad.url)
-        val result: Future[Result] = route(app, request).value
-        status(result) mustBe OK
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+        val request = fakeRequest(GET, routes.ClaimSearchController.onPageLoad.url)
+        val result  = route(app, request).value
+        status(result) shouldBe OK
+        // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
   }
@@ -43,26 +42,28 @@ class ClaimSearchControllerSpec extends SpecBase {
   "onSubmit" should {
     "return BAD_REQUEST when field is empty" in new Setup {
       running(app) {
-        val request                = fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("value" -> "")
-        val result: Future[Result] = route(app, request).value
-        status(result) mustBe BAD_REQUEST
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+        val request = fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("value" -> "")
+        val result  = route(app, request).value
+        status(result) shouldBe BAD_REQUEST
+        // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
 
     "return OK when the field is not empty" in new Setup {
       running(app) {
-        val request                =
+        val request =
           fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-2000")
-        val result: Future[Result] = route(app, request).value
+        val result  = route(app, request).value
 
-        status(result) mustBe OK
-        verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+        status(result) shouldBe OK
+        // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
   }
 
   trait Setup extends SetupBase {
+
+    stubEmailAndCompanyName
 
     val allClaims: AllClaims = AllClaims(
       pendingClaims = Seq(
@@ -82,12 +83,12 @@ class ClaimSearchControllerSpec extends SpecBase {
       )
     )
 
-    val app: Application = applicationWithMongoCache.build()
+    val app = applicationWithMongoCache.build()
 
-    Mockito
-      .lenient()
-      .when(mockClaimsConnector.getAllClaims(any)(any))
-      .thenReturn(Future.successful(allClaims))
+    (mockClaimsConnector
+      .getAllClaims(_: Boolean)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(Future.successful(allClaims))
   }
 
 }

@@ -24,7 +24,7 @@ import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.Configuration
 import play.api.libs.json.{Reads, Writes}
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import uk.gov.hmrc.http.{HeaderCarrier, SessionId}
 import uk.gov.hmrc.mongo.CurrentTimestampSupport
 import uk.gov.hmrc.mongo.cache.{CacheItem, DataKey}
@@ -42,7 +42,7 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
   val sessionCache =
     new DefaultSessionCache(mongoComponent, new CurrentTimestampSupport(), config)
 
-  "SessionCache" must {
+  "SessionCache" should {
 
     "be able to insert empty SessionData into mongo and read it back" in new TestEnvironment {
       val sessionData: SessionData = SessionData()
@@ -217,7 +217,7 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
 
 object SessionCacheSpec {
 
-  val config = Configuration(
+  val config: Configuration = Configuration(
     ConfigFactory.parseString(
       """
         | session-store.expiry-time = 7 days
@@ -226,7 +226,7 @@ object SessionCacheSpec {
   )
 
   class TestEnvironment {
-    val sessionId                  = SessionId(UUID.randomUUID().toString)
+    val sessionId: SessionId       = SessionId(UUID.randomUUID().toString)
     implicit val hc: HeaderCarrier = HeaderCarrier(sessionId = Some(sessionId))
   }
 

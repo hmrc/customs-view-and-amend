@@ -16,13 +16,12 @@
 
 package controllers
 
-import models.CaseType._
-import models._
+import models.*
+import models.CaseType.*
 import models.responses.{C285, ProcedureDetail}
-import org.mockito.Mockito
-import org.scalatest.matchers.must.Matchers._
 import play.api.Application
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -36,7 +35,7 @@ class ErrorNewTaxTypeCodeValidationControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe OK
+        status(result) shouldBe OK
       }
     }
 
@@ -45,13 +44,15 @@ class ErrorNewTaxTypeCodeValidationControllerSpec extends SpecBase {
         val request =
           fakeRequest(GET, routes.ErrorNewTaxTypeCodeValidationController.showError("someOtherClaim").url)
         val result  = route(app, request).value
-        status(result) mustBe SEE_OTHER
+        status(result) shouldBe SEE_OTHER
       }
     }
 
   }
 
   trait Setup extends SetupBase {
+
+    stubEmailAndCompanyName
 
     val claimDetail: ClaimDetail = ClaimDetail(
       "caseNumber",
@@ -80,12 +81,12 @@ class ErrorNewTaxTypeCodeValidationControllerSpec extends SpecBase {
       closedClaims = Seq.empty
     )
 
-    val app: Application = applicationWithMongoCache.build()
+    val app = applicationWithMongoCache.build()
 
-    Mockito
-      .lenient()
-      .when(mockClaimsConnector.getAllClaims(any)(any))
-      .thenReturn(Future.successful(allClaims))
+    (mockClaimsConnector
+      .getAllClaims(_: Boolean)(_: HeaderCarrier))
+      .expects(*, *)
+      .returning(Future.successful(allClaims))
   }
 
 }

@@ -16,10 +16,12 @@
 
 package actions
 
-import models.{AllClaims, ClosedClaim, Error, AuthorisedRequestWithSessionData, InProgressClaim, PendingClaim, SessionData}
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
+import models.{AllClaims, AuthorisedRequestWithSessionData, ClosedClaim, Error, InProgressClaim, PendingClaim, SessionData}
+import play.api.Application
+import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
+import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
 
 import scala.concurrent.Future
@@ -30,25 +32,32 @@ class AllClaimsActionSpec extends SpecBase {
     "return existing claims alongside the original request" in new Setup {
       running(app) {
         val response = await(allClaimsAction.transform(authorisedRequestWithClaims))
-        response mustBe ((authorisedRequestWithClaims, testClaims))
+        response shouldBe ((authorisedRequestWithClaims, testClaims))
       }
     }
 
     "call for claims if missing in the session" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any)(any))
-          .thenReturn(Future.successful(testClaims))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.successful(Right(())))
+        (mockClaimsConnector
+          .getAllClaims(_: Boolean)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.successful(testClaims))
+        (mockSessionCache
+          .store(_: SessionData)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.successful(Right(())))
+
         val response = await(allClaimsAction.transform(authorisedRequestWithoutClaims))
-        response mustBe ((authorisedRequestWithoutClaims.withAllClaims(testClaims), testClaims))
+        response shouldBe ((authorisedRequestWithoutClaims.withAllClaims(testClaims), testClaims))
       }
     }
 
     "throw claims not found if claims connector error" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any)(any))
-          .thenReturn(Future.failed(new Exception("do not panick")))
+        (mockClaimsConnector
+          .getAllClaims(_: Boolean)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.failed(new Exception("do not panick")))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
           await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
@@ -57,10 +66,14 @@ class AllClaimsActionSpec extends SpecBase {
 
     "throw claims not found if cache error when storing" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any)(any))
-          .thenReturn(Future.successful(testClaims))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.failed(new Exception("do not panick")))
+        (mockClaimsConnector
+          .getAllClaims(_: Boolean)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.successful(testClaims))
+        (mockSessionCache
+          .store(_: SessionData)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.failed(new Exception("do not panick")))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
           await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
@@ -69,10 +82,14 @@ class AllClaimsActionSpec extends SpecBase {
 
     "throw claims not found if cache connection error when store" in new Setup {
       running(app) {
-        when(mockClaimsConnector.getAllClaims(any)(any))
-          .thenReturn(Future.successful(testClaims))
-        when(mockSessionCache.store(any)(any))
-          .thenReturn(Future.successful(Left(Error(new Exception("do not panick")))))
+        (mockClaimsConnector
+          .getAllClaims(_: Boolean)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.successful(testClaims))
+        (mockSessionCache
+          .store(_: SessionData)(_: HeaderCarrier))
+          .expects(*, *)
+          .returning(Future.successful(Left(Error(new Exception("do not panick")))))
         an[AllClaimsAction.ClaimsNotFoundException] shouldBe thrownBy {
           await(allClaimsAction.transform(authorisedRequestWithoutClaims))
         }
@@ -81,8 +98,8 @@ class AllClaimsActionSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app             = application.build()
-    val allClaimsAction = app.injector.instanceOf[AllClaimsAction]
+    val app                              = application.build()
+    val allClaimsAction: AllClaimsAction = app.injector.instanceOf[AllClaimsAction]
 
     val testClaims: AllClaims = AllClaims(
       pendingClaims = Seq.empty[PendingClaim],
@@ -90,7 +107,7 @@ class AllClaimsActionSpec extends SpecBase {
       closedClaims = Seq.empty[ClosedClaim]
     )
 
-    val authorisedRequestWithClaims =
+    val authorisedRequestWithClaims: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",
@@ -100,7 +117,7 @@ class AllClaimsActionSpec extends SpecBase {
           .withAllClaims(testClaims)
       )
 
-    val authorisedRequestWithoutClaims =
+    val authorisedRequestWithoutClaims: AuthorisedRequestWithSessionData[AnyContentAsEmpty.type] =
       AuthorisedRequestWithSessionData(
         FakeRequest("GET", "/"),
         "someEori",

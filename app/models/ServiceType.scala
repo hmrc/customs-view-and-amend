@@ -16,7 +16,7 @@
 
 package models
 
-import play.api.libs.json._
+import play.api.libs.json.*
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
 sealed trait ServiceType {
@@ -36,15 +36,14 @@ object ServiceType {
       value match {
         case "NDRC" => Right(NDRC)
         case "SCTY" => Right(SCTY)
-        case _ => Left("Invalid service type")
+        case _      => Left("Invalid service type")
       }
 
-    override def unbind(key: String, value: ServiceType): String = {
+    override def unbind(key: String, value: ServiceType): String =
       value match {
         case NDRC => "NDRC"
         case SCTY => "SCTY"
       }
-    }
   }
 
   implicit def queryBindable: QueryStringBindable[ServiceType] = new QueryStringBindable[ServiceType] {
@@ -52,24 +51,22 @@ object ServiceType {
       params.apply(key) match {
         case "NDRC" :: Nil => Some(Right(NDRC))
         case "SCTY" :: Nil => Some(Right(SCTY))
-        case _ => Some(Left("Invalid service type"))
+        case _             => Some(Left("Invalid service type"))
       }
 
-    override def unbind(key: String, value: ServiceType): String = {
+    override def unbind(key: String, value: ServiceType): String =
       value match {
         case NDRC => s"$key=NDRC"
         case SCTY => s"$key=SCTY"
       }
-    }
   }
-
 
   implicit val format: Format[ServiceType] = new Format[ServiceType] {
     override def reads(json: JsValue): JsResult[ServiceType] =
       json match {
         case JsString("SCTY") => JsSuccess(SCTY)
         case JsString("NDRC") => JsSuccess(NDRC)
-        case e => JsError(s"Unexpected CDFPayService: $e")
+        case e                => JsError(s"Unexpected CDFPayService: $e")
       }
 
     override def writes(o: ServiceType): JsValue =

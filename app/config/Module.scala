@@ -16,11 +16,12 @@
 
 package config
 
-import org.apache.pekko.actor.ActorSystem
 import com.google.inject.AbstractModule
+import org.apache.pekko.actor.ActorSystem
 import play.api.libs.json.Json
 import play.api.libs.ws.WSClient
 import play.api.{Configuration, Logger}
+import uk.gov.hmrc.http.client.{HttpClientV2, HttpClientV2Impl}
 import uk.gov.hmrc.http.hooks.HookData.{FromMap, FromString}
 import uk.gov.hmrc.http.hooks.{Data, HttpHook, RequestData, ResponseData}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
@@ -30,7 +31,7 @@ import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import scala.io.AnsiColor._
+import scala.io.AnsiColor.*
 import scala.util.{Failure, Success, Try}
 
 class Module extends AbstractModule {
@@ -38,6 +39,7 @@ class Module extends AbstractModule {
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   override def configure(): Unit = {
     bind(classOf[HttpClient]).to(classOf[DebuggingHttpClient])
+    bind(classOf[HttpClientV2]).to(classOf[DebuggingHttpClientV2])
     ()
   }
 }
@@ -45,7 +47,7 @@ class Module extends AbstractModule {
 @Singleton
 class DebuggingHttpClient @Inject() (
   config: Configuration,
-  override val httpAuditing: HttpAuditing,
+  val httpAuditing: HttpAuditing,
   override val wsClient: WSClient,
   override protected val actorSystem: ActorSystem
 ) extends DefaultHttpClient(config, httpAuditing, wsClient, actorSystem) {
@@ -111,3 +113,11 @@ class DebuggingHook(config: Configuration) extends HttpHook {
   }
 
 }
+
+@Singleton
+class DebuggingHttpClientV2 @Inject() (
+  config: Configuration,
+  httpAuditing: HttpAuditing,
+  wsClient: WSClient,
+  actorSystem: ActorSystem
+) extends HttpClientV2Impl(wsClient, actorSystem, config, Seq(httpAuditing.AuditingHook, new DebuggingHook(config)))

@@ -21,7 +21,7 @@ import connector.DataStoreConnector
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import models.{AuthorisedRequest, AuthorisedRequestWithSessionData, SessionData}
 import play.api.i18n.{I18nSupport, MessagesApi}
-import play.api.mvc.Results._
+import play.api.mvc.Results.*
 import play.api.mvc.{ActionRefiner, Result}
 import repositories.SessionCache
 import uk.gov.hmrc.http.HeaderCarrier
@@ -47,10 +47,11 @@ class CurrentSessionAction @Inject(
   override def refine[A](
     request: AuthorisedRequest[A]
   ): Future[Either[Result, AuthorisedRequestWithSessionData[A]]] = {
-    implicit val hc: HeaderCarrier = if (request.isCallback)
-      HeaderCarrierConverter.fromRequest(request)
-    else
-      HeaderCarrierConverter.fromRequestAndSession(request, request.session)
+    implicit val hc: HeaderCarrier =
+      if (request.isCallback)
+        HeaderCarrierConverter.fromRequest(request)
+      else
+        HeaderCarrierConverter.fromRequestAndSession(request, request.session)
 
     sessionCache
       .get()

@@ -17,14 +17,18 @@
 package models
 
 import utils.SpecBase
+import models.responses.SCTYCase
+import models.responses.SCTYCase
+import models.responses.SCTYCase
+import models.responses.SCTYCase
 
 class SCTYCaseSpec extends SpecBase {
 
   "SCTYCase.toClaimDetail" should {
     "transform the caseStatus to the correct object" in new SetupBase {
-      val closedCase     = sctyCase.copy(caseStatus = "Closed")
-      val pendingCase    = sctyCase.copy(caseStatus = "Pending")
-      val inProgressCase = sctyCase.copy(caseStatus = "In Progress")
+      val closedCase: SCTYCase     = sctyCase.copy(caseStatus = "Closed")
+      val pendingCase: SCTYCase    = sctyCase.copy(caseStatus = "Pending")
+      val inProgressCase: SCTYCase = sctyCase.copy(caseStatus = "In Progress")
 
       closedCase.toClaimDetail(None).claimStatus     shouldBe Closed
       pendingCase.toClaimDetail(None).claimStatus    shouldBe Pending
@@ -32,7 +36,7 @@ class SCTYCaseSpec extends SpecBase {
     }
 
     "throw an exception on an invalid case status" in new SetupBase {
-      val invalid = sctyCase.copy(caseStatus = "INVALID")
+      val invalid: SCTYCase = sctyCase.copy(caseStatus = "INVALID")
       intercept[RuntimeException] {
         invalid.toClaimDetail(None)
       }.getMessage shouldBe "Unknown case status: INVALID"

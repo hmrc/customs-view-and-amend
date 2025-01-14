@@ -20,8 +20,8 @@ import play.api.i18n.Messages
 
 import java.time.LocalDate
 
-
 trait DateFormatters {
-  def dateAsMonth(date: LocalDate)(implicit messages: Messages): String = messages(s"month.${date.getMonthValue}")
-  def dateAsDayMonthAndYear(date: LocalDate)(implicit messages: Messages): String = s"${date.getDayOfMonth} ${dateAsMonth(date)} ${date.getYear}"
+  def dateAsMonth(date: LocalDate)(implicit messages: Messages): String           = messages(s"month.${date.getMonthValue}")
+  def dateAsDayMonthAndYear(date: LocalDate)(implicit messages: Messages): String =
+    s"${date.getDayOfMonth} ${dateAsMonth(date)} ${date.getYear}"
 }

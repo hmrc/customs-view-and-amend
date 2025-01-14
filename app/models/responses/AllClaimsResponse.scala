@@ -24,8 +24,7 @@ object AllClaimsResponse {
   implicit val format: OFormat[AllClaimsResponse] = Json.format[AllClaimsResponse]
 }
 
-case class Claims(sctyClaims: Seq[SCTYCaseDetails],
-                  ndrcClaims: Seq[NDRCCaseDetails])
+case class Claims(sctyClaims: Seq[SCTYCaseDetails], ndrcClaims: Seq[NDRCCaseDetails])
 
 object Claims {
   implicit val format: OFormat[Claims] = Json.format[Claims]

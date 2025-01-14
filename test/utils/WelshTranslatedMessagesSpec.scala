@@ -24,15 +24,15 @@ import play.api.i18n.MessagesApi
 class WelshTranslatedMessagesSpec extends SpecBase {
 
   "WelshTranslatedMessagesSpec" when {
-    "ensure all english messages" must {
+    "ensure all english messages" should {
       "have a welsh translation" in new Setup {
 
         lazy val serviceMessagesApi: MessagesApi = app.injector.instanceOf[MessagesApi]
 
-        val serviceMessages  = serviceMessagesApi.messages
-        val englishMessages  = serviceMessages("default")
-        val welshMessages    = serviceMessages("cy")
-        val missingWelshKeys = englishMessages.keySet.filterNot(welshMessages.keySet)
+        val serviceMessages                      = serviceMessagesApi.messages
+        val englishMessages: Map[String, String] = serviceMessages("default")
+        val welshMessages: Map[String, String]   = serviceMessages("cy")
+        val missingWelshKeys: Set[String]        = englishMessages.keySet.filterNot(welshMessages.keySet)
 
         if (missingWelshKeys.nonEmpty) {
           val failureText =
@@ -48,7 +48,7 @@ class WelshTranslatedMessagesSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val app: Application = application.build()
+    val app = application.build()
   }
 
 }

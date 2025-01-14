@@ -18,14 +18,14 @@ package utils
 
 import actions.IdentifierAction
 import models.AuthorisedRequest
-import play.api.mvc._
+import play.api.mvc.*
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class FakeIdentifierAction @Inject() (bodyParsers: PlayBodyParsers) extends IdentifierAction {
 
-  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] =
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]) =
     block(AuthorisedRequest(request, "exampleEori"))
 
   override def parser: BodyParser[AnyContent] =

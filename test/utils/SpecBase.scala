@@ -21,12 +21,11 @@ import models.CaseType.Individual
 import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
 import org.apache.pekko.stream.testkit.NoMaterializer
-import org.mockito.Mockito
-import org.mockito.scalatest.MockitoSugar
-import org.scalatest.OptionValues
+import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpecLike
+import org.scalatest.{EitherValues, OptionValues}
 import play.api.Application
 import play.api.i18n.{Messages, MessagesApi}
 import play.api.inject.bind
@@ -38,20 +37,20 @@ import play.api.test.Helpers.stubPlayBodyParsers
 import repositories.SessionCache
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.Email
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames => HMRCHeaderNames, SessionKeys}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames as HMRCHeaderNames, HttpClient, SessionKeys}
 
 import java.util.UUID
-import scala.concurrent.Future
-import org.scalatest.EitherValues
+import scala.concurrent.{ExecutionContext, Future}
+import org.scalamock.handlers.CallHandler2
 
 trait SpecBase
     extends AnyWordSpecLike
-    with MockitoSugar
     with OptionValues
     with EitherValues
     with ScalaFutures
     with Matchers
-    with IntegrationPatience {
+    with IntegrationPatience
+    with MockFactory {
 
   def fakeRequest(method: String = "", path: String = "")(implicit
     hc: HeaderCarrier = HeaderCarrier()
@@ -72,15 +71,22 @@ trait SpecBase
     val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
     val mockXiEoriConnector: XiEoriConnector       = mock[XiEoriConnector]
 
-    Mockito
-      .lenient()
-      .when(mockDataStoreConnector.getEmail(any)(any))
-      .thenReturn(Future.successful(Right(Email("some@email.com"))))
+    def stubEmailAndCompanyName: CallHandler2[String, HeaderCarrier, Future[Option[String]]] = {
 
-    Mockito
-      .lenient()
-      .when(mockDataStoreConnector.getCompanyName(any)(any))
-      .thenReturn(Future.successful(Some("companyName")))
+      (mockDataStoreConnector
+        .getEmail(_: String)(_: HeaderCarrier))
+        .stubs(*, *)
+        .returning(
+          Future.successful(Right(Email("some@email.com")))
+        )
+
+      (mockDataStoreConnector
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .stubs(*, *)
+        .returning(
+          Future.successful(Some("companyName"))
+        )
+    }
 
     val reimbursement: Reimbursement = Reimbursement("date", "10.00", "10.00", "method")
 
@@ -177,6 +183,7 @@ trait SpecBase
         "metrics.enabled"                -> "false",
         "session-store.expiry-time"      -> "15 seconds"
       )
+
   }
 
 }

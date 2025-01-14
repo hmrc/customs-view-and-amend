@@ -16,11 +16,10 @@
 
 package controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
 import play.api.Application
 import play.api.mvc.{AnyContentAsEmpty, Result}
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.SpecBase
 
 import scala.concurrent.Future
@@ -30,13 +29,13 @@ class EmailControllerSpec extends SpecBase {
   "showUnverified" should {
     "return OK" in new Setup {
       val request: FakeRequest[AnyContentAsEmpty.type] = fakeRequest(GET, routes.EmailController.showUnverified().url)
-      val result: Future[Result]                       = route(app, request).value
-      status(result) mustBe OK
+      val result                                       = route(app, request).value
+      status(result) shouldBe OK
     }
   }
 
   trait Setup extends SetupBase {
-    val app: Application = application.build()
+    val app = application.build()
   }
 
 }

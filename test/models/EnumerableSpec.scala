@@ -16,11 +16,10 @@
 
 package models
 
-import play.api.libs.json.{Format, JsNumber, JsPath, JsString, Json, JsonValidationError, Reads, Writes}
-import org.scalatest.wordspec.AnyWordSpec
-import org.scalatest.EitherValues
-import org.scalatest.OptionValues
 import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{EitherValues, OptionValues}
+import play.api.libs.json.{Format, JsNumber, JsPath, JsString, Json, JsonValidationError, Reads, Writes}
 
 object EnumerableSpec {
 
@@ -41,7 +40,7 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
 
   import EnumerableSpec._
 
-  ".reads" must {
+  ".reads" should {
 
     "be found implicitly" in {
       implicitly[Reads[Foo]]
@@ -63,7 +62,7 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
     }
   }
 
-  ".writes" must {
+  ".writes" should {
 
     "be found implicitly" in {
       implicitly[Writes[Foo]]
@@ -76,7 +75,7 @@ class EnumerableSpec extends AnyWordSpec with Matchers with EitherValues with Op
     }
   }
 
-  ".formats" must {
+  ".formats" should {
 
     "be found implicitly" in {
       implicitly[Format[Foo]]

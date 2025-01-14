@@ -72,7 +72,8 @@ class ClaimsOverviewController @Inject() (
                 routes.ClaimsOverviewController.onSubmit,
                 request.companyName.orNull,
                 request.eori
-              )),
+              )
+            ),
           query => {
             val claims = allClaims.searchForClaim(query)
             Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))

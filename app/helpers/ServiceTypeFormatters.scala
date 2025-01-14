@@ -16,11 +16,11 @@
 
 package helpers
 
+import models.ServiceType
 import play.api.i18n.Messages
 
-import models.ServiceType
-
-
 trait ServiceTypeFormatters {
-  def serviceTypeAsMessage(serviceType: ServiceType)(implicit messages: Messages): String = messages(s"claim-list.${serviceType.toString.toLowerCase()}")
+  def serviceTypeAsMessage(serviceType: ServiceType)(implicit messages: Messages): String = messages(
+    s"claim-list.${serviceType.toString.toLowerCase()}"
+  )
 }

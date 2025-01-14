@@ -39,7 +39,7 @@
 
     <br>
 
-    @formWithCSRF(actionUrl, 'novalidate -> "novalidate", 'role -> "search") {
+    @formWithCSRF(actionUrl, Symbol("novalidate") -> "novalidate", Symbol("role") -> "search") {
 
         <div class="govuk-form-group">
 

@@ -56,7 +56,8 @@ class AllClaimsAction @Inject(
     request: AuthorisedRequestWithSessionData[A]
   ): Future[AllClaimsAction.RequestWithClaims[A]] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequestAndSession(request, request.session)
-    claimsConnector.getAllClaims(appConfig.includeXiClaims)
+    claimsConnector
+      .getAllClaims(appConfig.includeXiClaims)
       .flatMap { allClaims =>
         sessionCache
           .store(request.sessionData.withAllClaims(allClaims))

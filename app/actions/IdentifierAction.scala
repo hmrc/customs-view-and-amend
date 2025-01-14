@@ -20,17 +20,17 @@ import com.google.inject.ImplementedBy
 import config.AppConfig
 import controllers.routes
 import models.AuthorisedRequest
-import play.api.mvc.Results._
-import play.api.mvc._
-import uk.gov.hmrc.auth.core._
+import play.api.Logger
+import play.api.mvc.*
+import play.api.mvc.Results.*
+import uk.gov.hmrc.auth.core.*
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
+import java.util.Locale
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import java.util.Locale
-import play.api.Logger
 
 @ImplementedBy(classOf[AuthenticatedIdentifierAction])
 trait IdentifierAction
@@ -48,7 +48,7 @@ class AuthenticatedIdentifierAction @Inject() (
 
   val logger: Logger = Logger(this.getClass)
 
-  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]) = {
 
     implicit val hc: HeaderCarrier =
       HeaderCarrierConverter.fromRequestAndSession(request, request.session)

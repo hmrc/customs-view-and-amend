@@ -17,19 +17,23 @@
 package config
 
 import play.api.i18n.MessagesApi
-import play.api.mvc.Request
+import play.api.mvc.{Request, RequestHeader}
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import views.html.ErrorTemplate
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)
-    extends FrontendErrorHandler {
+class ErrorHandler @Inject() (errorTemplate: ErrorTemplate, val messagesApi: MessagesApi, appConfig: AppConfig)(implicit
+  val ec: ExecutionContext
+) extends FrontendErrorHandler {
 
   override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit
-    request: Request[_]
-  ): Html =
-    errorTemplate(pageTitle, heading, message)(request, implicitly, appConfig)
+    requestHeader: RequestHeader
+  ): Future[Html] = {
+    implicit val r: Request[_] = Request(requestHeader, "")
+    Future.successful(errorTemplate(pageTitle, heading, message)(r, implicitly, appConfig))
+  }
 }

@@ -16,9 +16,9 @@
 
 package controllers
 
-import org.scalatest.matchers.must.Matchers.convertToAnyMustWrapper
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import utils.SpecBase
+import play.api.Application
 
 class NotFoundControllerSpec extends SpecBase {
 
@@ -28,7 +28,7 @@ class NotFoundControllerSpec extends SpecBase {
 
       running(app) {
         val result = route(app, fakeRequest("GET", routes.NotFoundController.onPageLoad.url)).value
-        status(result) mustBe NOT_FOUND
+        status(result) shouldBe NOT_FOUND
       }
     }
   }

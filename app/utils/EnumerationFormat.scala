@@ -17,17 +17,16 @@
 package utils
 
 import cats.Eq
-import cats.syntax.eq._
+import cats.syntax.eq.*
 import play.api.libs.json.Format
-import play.api.mvc.PathBindable
-import play.api.mvc.QueryStringBindable
+import play.api.mvc.{PathBindable, QueryStringBindable}
 
 /** Provides capabilities to the set of case objects of a sealed trait T:
- * - JSON serialization
- * - cats Eq (equality)
- * - path binding
- * - query string binding
- */
+  *   - JSON serialization
+  *   - cats Eq (equality)
+  *   - path binding
+  *   - query string binding
+  */
 @SuppressWarnings(Array("org.wartremover.warts.Throw"))
 trait EnumerationFormat[T] {
 

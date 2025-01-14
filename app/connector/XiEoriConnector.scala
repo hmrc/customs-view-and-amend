@@ -22,9 +22,10 @@ import config.AppConfig
 import models.XiEori
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
-import uk.gov.hmrc.http.HttpReads.Implicits._
+import uk.gov.hmrc.http.HttpReads.Implicits.*
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 
+import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,7 +40,7 @@ class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
 ) extends XiEoriConnector
     with Logging {
   private val baseUrl      = appConfig.cdsReimbursementClaim
-  private val getXiEoriUrl = s"$baseUrl/eori/xi"
+  private val getXiEoriUrl = URL(s"$baseUrl/eori/xi")
 
   final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]] =
     httpClient
