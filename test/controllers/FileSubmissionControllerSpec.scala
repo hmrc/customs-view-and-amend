@@ -21,7 +21,6 @@ import connector.{FileSubmissionConnector, UploadDocumentsConnector}
 import models.FileSelection.AdditionalSupportingDocuments
 import models.file_upload.UploadedFile
 import models.{AllClaims, FileSelection, NDRC, PendingClaim, ServiceType, SessionData}
-import play.api.Application
 import play.api.inject.bind
 import play.api.test.Helpers.*
 import repositories.SessionCache
@@ -44,9 +43,10 @@ class FileSubmissionControllerSpec extends SpecBase {
           _: ServiceType,
           _: String,
           _: Seq[UploadedFile],
-          _: Option[String]
+          _: Option[String],
+          _: String
         )(_: HeaderCarrier))
-        .expects(*, *, *, *, *, *, *, *)
+        .expects(*, *, *, *, *, *, *, *, *)
         .returning(Future.successful(true))
 
       (mockUploadDocumentsConnector
@@ -106,9 +106,10 @@ class FileSubmissionControllerSpec extends SpecBase {
           _: ServiceType,
           _: String,
           _: Seq[UploadedFile],
-          _: Option[String]
+          _: Option[String],
+          _: String
         )(_: HeaderCarrier))
-        .expects(*, *, *, *, *, *, *, *)
+        .expects(*, *, *, *, *, *, *, *, *)
         .returning(Future.successful(false))
 
       (mockUploadDocumentsConnector

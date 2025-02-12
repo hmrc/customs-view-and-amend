@@ -21,25 +21,20 @@ import models.*
 import models.responses.{AllClaimsResponse, C285, Claims, NDRCCaseDetails, ProcedureDetail, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, UpstreamErrorResponse}
+import play.api.inject
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.UpstreamErrorResponse
 import utils.SpecBase
 
+import java.net.URL
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
 
-class ClaimsConnectorSpec extends SpecBase {
+class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
 
   "getAllClaims" should {
     "return AllClaims and call the financials api" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[AllClaimsResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(allClaimsResponse))
+
+      mockHttpGet[AllClaimsResponse](URL("http://host1:123/cds-reimbursement-claim/claims"))(allClaimsResponse)
 
       running(app) {
         val result = await(connector.getAllClaims())
@@ -72,14 +67,9 @@ class ClaimsConnectorSpec extends SpecBase {
     }
 
     "return AllClaims and call the financials api (XI EORI)" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[AllClaimsResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(allClaimsResponse))
+      mockHttpGet[AllClaimsResponse](
+        URL("http://host1:123/cds-reimbursement-claim/claims?includeXiClaims=true")
+      )(allClaimsResponse)
 
       running(app) {
         val result = await(connector.getAllClaims(includeXiClaims = true))
@@ -114,14 +104,9 @@ class ClaimsConnectorSpec extends SpecBase {
 
   "getClaimInformation" should {
     "return NDRC ClaimDetail when a data returned from the API" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(specificClaimResponse))
+      mockHttpGet[SpecificClaimResponse](
+        URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/NDRC-1234")
+      )(specificClaimResponse)
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None)).value.value
@@ -144,14 +129,9 @@ class ClaimsConnectorSpec extends SpecBase {
         Some(sctyCase)
       )
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(response))
+      mockHttpGet[SpecificClaimResponse](
+        URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/SCTY-1234")
+      )(response)
 
       running(app) {
         val result = await(connector.getClaimInformation("SCTY-1234", NDRC, None)).value.value
@@ -164,14 +144,10 @@ class ClaimsConnectorSpec extends SpecBase {
     }
 
     "return ERROR_HTTP_500 when 500 returned from the API" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
+
+      mockHttpGetFailure(URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/NDRC-1234"))(
+        new UpstreamErrorResponse("error", 500, 500, Map.empty)
+      )
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
@@ -180,14 +156,9 @@ class ClaimsConnectorSpec extends SpecBase {
     }
 
     "return None when 503 returned from the API" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("", 503, 500)))
+      mockHttpGetFailure(URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/NDRC-1234"))(
+        new UpstreamErrorResponse("", 503, 500, Map.empty)
+      )
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
@@ -203,14 +174,9 @@ class ClaimsConnectorSpec extends SpecBase {
         Some(sctyCase)
       )
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(response))
+      mockHttpGet[SpecificClaimResponse](
+        URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/NDRC-1234")
+      )(response)
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
@@ -226,14 +192,9 @@ class ClaimsConnectorSpec extends SpecBase {
         None
       )
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[SpecificClaimResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(response))
+      mockHttpGet[SpecificClaimResponse](
+        URL("http://host1:123/cds-reimbursement-claim/claims/NDRC/NDRC-1234")
+      )(response)
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None))
@@ -243,8 +204,6 @@ class ClaimsConnectorSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockHttp: HttpClient       = mock[HttpClient]
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
       "NDRC",
@@ -313,12 +272,14 @@ class ClaimsConnectorSpec extends SpecBase {
 
     val app = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp)
+        inject.bind[HttpClientV2].toInstance(mockHttp)
       )
       .configure(
-        "play.filters.csp.nonce.enabled" -> "false",
-        "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "play.filters.csp.nonce.enabled"                     -> "false",
+        "auditing.enabled"                                   -> "false",
+        "metrics.enabled"                                    -> "false",
+        "microservice.services.cds-reimbursement-claim.host" -> "host1",
+        "microservice.services.cds-reimbursement-claim.port" -> "123"
       )
       .build()
 

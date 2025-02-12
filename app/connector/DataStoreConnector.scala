@@ -23,19 +23,22 @@ import play.api.Logging
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import java.net.URL
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class DataStoreConnector @Inject() (http: HttpClient, appConfig: AppConfig)(implicit executionContext: ExecutionContext)
-    extends Logging {
+class DataStoreConnector @Inject() (http: HttpClientV2, appConfig: AppConfig)(implicit
+  executionContext: ExecutionContext
+) extends Logging {
 
   def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Either[EmailResponses, Email]] = {
     val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/$eori/verified-email"
     http
-      .GET[EmailResponse](URL(dataStoreEndpoint))
+      .get(URL(dataStoreEndpoint))
+      .execute[EmailResponse]
       .map {
         case EmailResponse(Some(address), _, None)  => Right(Email(address))
         case EmailResponse(Some(email), _, Some(_)) => Left(UndeliverableEmail(email))
@@ -48,7 +51,10 @@ class DataStoreConnector @Inject() (http: HttpClient, appConfig: AppConfig)(impl
 
   def getCompanyName(eori: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
     val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/$eori/company-information"
-    http.GET[CompanyInformationResponse](URL(dataStoreEndpoint)).map(response => Some(response.name))
+    http
+      .get(URL(dataStoreEndpoint))
+      .execute[CompanyInformationResponse]
+      .map(response => Some(response.name))
   }.recover { case _ => None }
 
 }

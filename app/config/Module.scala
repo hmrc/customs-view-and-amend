@@ -24,7 +24,7 @@ import play.api.{Configuration, Logger}
 import uk.gov.hmrc.http.client.{HttpClientV2, HttpClientV2Impl}
 import uk.gov.hmrc.http.hooks.HookData.{FromMap, FromString}
 import uk.gov.hmrc.http.hooks.{Data, HttpHook, RequestData, ResponseData}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.HttpAuditing
 import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
@@ -38,21 +38,9 @@ class Module extends AbstractModule {
 
   @SuppressWarnings(Array("org.wartremover.warts.NonUnitStatements"))
   override def configure(): Unit = {
-    bind(classOf[HttpClient]).to(classOf[DebuggingHttpClient])
     bind(classOf[HttpClientV2]).to(classOf[DebuggingHttpClientV2])
     ()
   }
-}
-
-@Singleton
-class DebuggingHttpClient @Inject() (
-  config: Configuration,
-  val httpAuditing: HttpAuditing,
-  override val wsClient: WSClient,
-  override protected val actorSystem: ActorSystem
-) extends DefaultHttpClient(config, httpAuditing, wsClient, actorSystem) {
-
-  override val hooks: Seq[HttpHook] = Seq(httpAuditing.AuditingHook, new DebuggingHook(config))
 }
 
 class DebuggingHook(config: Configuration) extends HttpHook {

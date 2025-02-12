@@ -19,56 +19,48 @@ package connectors
 import connector.FileSubmissionConnector
 import models.*
 import models.FileSelection.AdditionalSupportingDocuments
-import models.file_upload.UploadedFile
+import models.file_upload.{Dec64UploadedFile, UploadedFile}
 import models.responses.{AllClaimsResponse, Claims, NDRCCaseDetails, SCTYCaseDetails, SpecificClaimResponse}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Writes
+import play.api.libs.json.Json
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, UpstreamErrorResponse}
+import play.api.inject
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
-
 import java.time.LocalDate
-import scala.concurrent.{ExecutionContext, Future}
 
-class FileSubmissionConnectorSpec extends SpecBase {
+class FileSubmissionConnectorSpec extends SpecBase with HttpV2Support {
 
   "fileUpload" should {
     "return 'true' if the upload was successful" in new Setup {
 
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(ACCEPTED, "")))
+      val request = Dec64UploadRequest(
+        id = id,
+        declarationId = declarationId,
+        eori = eori,
+        entryNumber = entryNumber,
+        applicationName = ndrc.dec64ServiceType,
+        caseNumber = caseNumber,
+        uploadedFiles = uploadedFiles.map(_.toDec64UploadedFile),
+        reasonForSecurity = reasonForSecurity
+      )
+
+      mockHttpPost[HttpResponse]("http://host1:123/cds-reimbursement-claim/claims/files", Json.toJson(request))(
+        HttpResponse(ACCEPTED, "")
+      )
 
       running(app) {
         val result = await(
           connector.submitFileToCDFPay(
-            declarationId = "declarationId",
-            entryNumber = false,
-            eori = "eori",
-            serviceType = NDRC,
-            caseNumber = "caseNumber",
-            files = Seq(
-              UploadedFile(
-                "ref",
-                "/uri",
-                "timestamp",
-                "sum",
-                "file",
-                "mime",
-                10,
-                None,
-                AdditionalSupportingDocuments,
-                None
-              )
-            ),
-            reasonForSecurity = None
+            declarationId = declarationId,
+            entryNumber = entryNumber,
+            eori = eori,
+            serviceType = ndrc,
+            caseNumber = caseNumber,
+            files = uploadedFiles,
+            reasonForSecurity = reasonForSecurity,
+            id = id
           )
         )
         result shouldBe true
@@ -76,27 +68,34 @@ class FileSubmissionConnectorSpec extends SpecBase {
     }
 
     "return 'false' if the status returned was not ACCEPTED" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(NO_CONTENT, "")))
+
+      val request = Dec64UploadRequest(
+        id = id,
+        declarationId = declarationId,
+        eori = eori,
+        entryNumber = entryNumber,
+        applicationName = ndrc.dec64ServiceType,
+        caseNumber = caseNumber,
+        uploadedFiles = emptyUploadedFiles.map(_.toDec64UploadedFile),
+        reasonForSecurity = reasonForSecurity
+      )
+
+      mockHttpPost[HttpResponse]("http://host1:123/cds-reimbursement-claim/claims/files", Json.toJson(request))(
+        HttpResponse(NO_CONTENT, "")
+      )
 
       running(app) {
         val result =
           await(
             connector.submitFileToCDFPay(
-              declarationId = "declarationId",
-              entryNumber = false,
-              eori = "eori",
-              serviceType = NDRC,
-              caseNumber = "caseNumber",
-              files = Seq.empty,
-              reasonForSecurity = None
+              declarationId = declarationId,
+              entryNumber = entryNumber,
+              eori = eori,
+              serviceType = ndrc,
+              caseNumber = caseNumber,
+              files = emptyUploadedFiles,
+              reasonForSecurity = reasonForSecurity,
+              id = id
             )
           )
         result shouldBe false
@@ -104,15 +103,20 @@ class FileSubmissionConnectorSpec extends SpecBase {
     }
 
     "return false on an exception from the API" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      val request = Dec64UploadRequest(
+        id = id,
+        declarationId = declarationId,
+        eori = eori,
+        entryNumber = entryNumber,
+        applicationName = ndrc.dec64ServiceType,
+        caseNumber = caseNumber,
+        uploadedFiles = emptyUploadedFiles.map(_.toDec64UploadedFile),
+        reasonForSecurity = reasonForSecurity
+      )
+
+      mockHttpPostWithException("http://host1:123/cds-reimbursement-claim/claims/files", Json.toJson(request))(
+        UpstreamErrorResponse("", 500, 500)
+      )
 
       running(app) {
         val result =
@@ -124,7 +128,8 @@ class FileSubmissionConnectorSpec extends SpecBase {
               serviceType = NDRC,
               caseNumber = "caseNumber",
               files = Seq.empty,
-              reasonForSecurity = None
+              reasonForSecurity = None,
+              id = id
             )
           )
         result shouldBe false
@@ -133,8 +138,6 @@ class FileSubmissionConnectorSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockHttp: HttpClient       = mock[HttpClient]
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val specificClaimResponse: SpecificClaimResponse = SpecificClaimResponse(
       "NDRC",
@@ -144,6 +147,29 @@ class FileSubmissionConnectorSpec extends SpecBase {
     )
 
     val startDate: LocalDate = LocalDate.of(2021, 3, 21)
+
+    val id                                    = "testId"
+    val declarationId                         = "declarationId"
+    val entryNumber                           = false
+    val eori                                  = "eori"
+    val ndrc                                  = NDRC
+    val caseNumber                            = "caseNumber"
+    val uploadedFiles: Seq[UploadedFile]      = Seq(
+      UploadedFile(
+        "ref",
+        "/uri",
+        "timestamp",
+        "sum",
+        "file",
+        "mime",
+        10,
+        None,
+        AdditionalSupportingDocuments,
+        None
+      )
+    )
+    val emptyUploadedFiles: Seq[UploadedFile] = Seq.empty
+    val reasonForSecurity                     = None
 
     val allClaimsResponse: AllClaimsResponse =
       AllClaimsResponse(
@@ -203,12 +229,14 @@ class FileSubmissionConnectorSpec extends SpecBase {
 
     val app = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp)
+        inject.bind[HttpClientV2].toInstance(mockHttp)
       )
       .configure(
-        "play.filters.csp.nonce.enabled" -> "false",
-        "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "play.filters.csp.nonce.enabled"                     -> "false",
+        "auditing.enabled"                                   -> "false",
+        "metrics.enabled"                                    -> "false",
+        "microservice.services.cds-reimbursement-claim.host" -> "host1",
+        "microservice.services.cds-reimbursement-claim.port" -> "123"
       )
       .build()
 

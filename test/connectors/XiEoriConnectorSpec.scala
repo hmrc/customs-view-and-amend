@@ -20,24 +20,22 @@ import connector.XiEoriConnector
 import models.XiEori
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse}
+import play.api.inject
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.HttpResponse
+
 import utils.SpecBase
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.net.URL
 
-class XiEoriConnectorSpec extends SpecBase {
+class XiEoriConnectorSpec extends SpecBase with HttpV2Support {
 
   "getXiEori" should {
     "return an eoriXI from backend if it exists" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(OK, validResponse)))
+
+      mockHttpGet[HttpResponse](URL("http://host1:123/cds-reimbursement-claim/eori/xi"))(
+        HttpResponse(OK, validResponse)
+      )
 
       running(app) {
         val result = await(connector.getXiEori)
@@ -50,14 +48,10 @@ class XiEoriConnectorSpec extends SpecBase {
       }
     }
     "return none if eoriXI doesn't exist" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(NO_CONTENT, "")))
+
+      mockHttpGet[HttpResponse](URL("http://host1:123/cds-reimbursement-claim/eori/xi"))(
+        HttpResponse(NO_CONTENT, "")
+      )
 
       running(app) {
         val result = await(connector.getXiEori)
@@ -65,14 +59,9 @@ class XiEoriConnectorSpec extends SpecBase {
       }
     }
     "throw a runtime exception if there is an internal error" in new Setup {
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(INTERNAL_SERVER_ERROR, "")))
+      mockHttpGet[HttpResponse](URL("http://host1:123/cds-reimbursement-claim/eori/xi"))(
+        HttpResponse(INTERNAL_SERVER_ERROR, "")
+      )
 
       running(app) {
         a[XiEoriConnector.Exception] shouldBe thrownBy {
@@ -83,19 +72,19 @@ class XiEoriConnectorSpec extends SpecBase {
   }
 
   trait Setup extends SetupBase {
-    val mockHttp: HttpClient       = mock[HttpClient]
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val validResponse = """{"eoriGB":"GB744638982000","eoriXI":"XI744638982000"}"""
 
     val app = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp)
+        inject.bind[HttpClientV2].toInstance(mockHttp)
       )
       .configure(
-        "play.filters.csp.nonce.enabled" -> "false",
-        "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "play.filters.csp.nonce.enabled"                     -> "false",
+        "auditing.enabled"                                   -> "false",
+        "metrics.enabled"                                    -> "false",
+        "microservice.services.cds-reimbursement-claim.host" -> "host1",
+        "microservice.services.cds-reimbursement-claim.port" -> "123"
       )
       .build()
 

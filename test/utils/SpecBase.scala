@@ -37,7 +37,7 @@ import play.api.test.Helpers.stubPlayBodyParsers
 import repositories.SessionCache
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.Email
-import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames as HMRCHeaderNames, HttpClient, SessionKeys}
+import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames as HMRCHeaderNames, SessionKeys}
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
