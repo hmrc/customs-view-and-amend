@@ -22,16 +22,19 @@ import models.{FileSelection, Nonce, ServiceType}
 import play.api.Logging
 import play.api.http.Status.{ACCEPTED, CREATED, NO_CONTENT}
 import play.api.i18n.Messages
+import play.api.libs.json.Json
 import play.mvc.Http.HeaderNames
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
+import play.api.libs.ws.JsonBodyWritables.*
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class UploadDocumentsConnector @Inject() (httpClient: HttpClient)(implicit
+class UploadDocumentsConnector @Inject() (httpClient: HttpClientV2)(implicit
   executionContext: ExecutionContext,
   appConfig: AppConfig
 ) extends Logging {
@@ -50,7 +53,9 @@ class UploadDocumentsConnector @Inject() (httpClient: HttpClient)(implicit
     val payload = UploadDocumentsWrapper
       .createPayload(nonce, caseNumber, serviceType, documentType, previouslyUploaded)
     httpClient
-      .POST[UploadDocumentsWrapper, HttpResponse](URL(appConfig.fileUploadInitializationUrl), payload)
+      .post(URL(appConfig.fileUploadInitializationUrl))
+      .withBody(Json.toJson(payload))
+      .execute[HttpResponse]
       .map { response =>
         response.status match {
           case CREATED | ACCEPTED =>
@@ -69,7 +74,8 @@ class UploadDocumentsConnector @Inject() (httpClient: HttpClient)(implicit
 
   def wipeData(implicit hc: HeaderCarrier): Future[Boolean] =
     httpClient
-      .POSTEmpty[HttpResponse](URL(appConfig.fileUploadWipeOutUrl))
+      .post(URL(appConfig.fileUploadWipeOutUrl))
+      .execute[HttpResponse]
       .map(_.status == NO_CONTENT)
       .recover { case e =>
         logger.warn(s"Failed to wipe out session data in the upload-customs-document-frontend: $e")

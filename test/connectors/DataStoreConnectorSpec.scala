@@ -22,14 +22,15 @@ import models.email.*
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
+import play.api.inject
 import uk.gov.hmrc.auth.core.retrieve.Email
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import utils.SpecBase
 
-import scala.concurrent.{ExecutionContext, Future}
+import java.net.URL
 
-class DataStoreConnectorSpec extends SpecBase {
+class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
   "Data store connector" should {
     "return existing email" in new Setup {
@@ -37,14 +38,11 @@ class DataStoreConnectorSpec extends SpecBase {
 
       val jsonResponse: String = """{"address":"someemail@mail.com"}""".stripMargin
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[EmailResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(Json.parse(jsonResponse).as[EmailResponse]))
+      val expectedResponse: EmailResponse = Json.parse(jsonResponse).as[EmailResponse]
+
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+        expectedResponse
+      )
 
       running(app) {
         val response = connector.getEmail(eori)
@@ -55,14 +53,10 @@ class DataStoreConnectorSpec extends SpecBase {
 
     "return a UnverifiedEmail" in new Setup {
       val eori = "GB11111"
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[Any],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("NoData", 404, 404)))
+
+      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+        new UpstreamErrorResponse("NoData", 404, 404, Map.empty)
+      )
 
       running(app) {
         val response = connector.getEmail(eori)
@@ -75,14 +69,9 @@ class DataStoreConnectorSpec extends SpecBase {
 
       val emailResponse: EmailResponse = EmailResponse(None, None, None)
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[EmailResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(emailResponse))
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+        emailResponse
+      )
 
       running(app) {
         val response = connector.getEmail(eori)
@@ -96,14 +85,9 @@ class DataStoreConnectorSpec extends SpecBase {
 
       val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(JsString("")))
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[EmailResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(emailResponse))
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+        emailResponse
+      )
 
       running(app) {
         val response = connector.getEmail(eori)
@@ -115,14 +99,10 @@ class DataStoreConnectorSpec extends SpecBase {
     "throw service unavailable" in new Setup {
       running(app) {
         val eori = "ETMP500ERROR"
-        (mockHttp
-          .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-            _: HttpReads[Any],
-            _: HeaderCarrier,
-            _: ExecutionContext
-          ))
-          .expects(*, *, *, *, *, *)
-          .returning(Future.failed(new ServiceUnavailableException("ServiceUnavailable")))
+
+        mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+          new ServiceUnavailableException("ServiceUnavailable")
+        )
 
         assertThrows[ServiceUnavailableException](await(connector.getEmail(eori)))
       }
@@ -134,14 +114,11 @@ class DataStoreConnectorSpec extends SpecBase {
       val address: CompanyAddress                                = CompanyAddress("Street", "City", Some("Post Code"), "Country code")
       val companyInformationResponse: CompanyInformationResponse = CompanyInformationResponse(companyName, address)
 
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[CompanyInformationResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.successful(companyInformationResponse))
+      mockHttpGet[CompanyInformationResponse](
+        URL(s"http://host1:123/customs-data-store/eori/$eori/company-information")
+      )(
+        companyInformationResponse
+      )
 
       running(app) {
         val response = connector.getCompanyName(eori)
@@ -152,14 +129,10 @@ class DataStoreConnectorSpec extends SpecBase {
 
     "return None when no company information is found" in new Setup {
       val eori = "GB11111"
-      (mockHttp
-        .GET(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: HttpReads[Any],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *)
-        .returning(Future.failed(new NotFoundException("Not Found Company Information")))
+
+      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/company-information"))(
+        new NotFoundException("Not Found Company Information")
+      )
 
       running(app) {
         val response = await(connector.getCompanyName(eori))
@@ -169,17 +142,17 @@ class DataStoreConnectorSpec extends SpecBase {
   }
 
   trait Setup {
-    val mockHttp: HttpClient       = mock[HttpClient]
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val app = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp)
+        inject.bind[HttpClientV2].toInstance(mockHttp)
       )
       .configure(
-        "play.filters.csp.nonce.enabled" -> "false",
-        "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "play.filters.csp.nonce.enabled"                -> "false",
+        "auditing.enabled"                              -> "false",
+        "metrics.enabled"                               -> "false",
+        "microservice.services.customs-data-store.host" -> "host1",
+        "microservice.services.customs-data-store.port" -> "123"
       )
       .build()
 

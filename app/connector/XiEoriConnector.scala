@@ -23,7 +23,8 @@ import models.XiEori
 import play.api.Logging
 import play.api.http.Status.{NO_CONTENT, OK}
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
@@ -35,7 +36,7 @@ trait XiEoriConnector {
 }
 
 @Singleton
-class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig)(implicit
+class XiEoriConnectorImpl @Inject() (httpClient: HttpClientV2, appConfig: AppConfig)(implicit
   executionContext: ExecutionContext
 ) extends XiEoriConnector
     with Logging {
@@ -44,7 +45,8 @@ class XiEoriConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
 
   final def getXiEori(implicit hc: HeaderCarrier): Future[Option[XiEori]] =
     httpClient
-      .GET[HttpResponse](getXiEoriUrl)
+      .get(getXiEoriUrl)
+      .execute[HttpResponse]
       .flatMap { response =>
         if (response.status === OK) {
           Future(response.json.asOpt[XiEori])

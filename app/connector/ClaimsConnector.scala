@@ -22,7 +22,8 @@ import models.*
 import models.responses.{AllClaimsResponse, NDRCCase, SCTYCase, SpecificClaimResponse}
 import play.api.Logging
 import uk.gov.hmrc.http.HttpReads.Implicits.*
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, UpstreamErrorResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, UpstreamErrorResponse}
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
@@ -40,7 +41,7 @@ trait ClaimsConnector {
 }
 
 @Singleton
-class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfig)(implicit
+class ClaimsConnectorImpl @Inject() (httpClient: HttpClientV2, appConfig: AppConfig)(implicit
   executionContext: ExecutionContext
 ) extends ClaimsConnector
     with Logging {
@@ -52,33 +53,34 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClient, appConfig: AppConfi
   private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String): URL =
     URL(s"$baseUrl/claims/$serviceType/$caseNumber")
 
-  final def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims] = httpClient
-    .GET[AllClaimsResponse](if (includeXiClaims) URL(getGbAndXiClaimsUrl) else URL(getGbClaimsUrl))
-    .map { claimsResponse =>
-      val claims =
-        claimsResponse.claims.ndrcClaims.map(_.toClaim) ++
-          claimsResponse.claims.sctyClaims
-            .map(_.toClaim)
-      AllClaims(
-        claims.collect { case e: PendingClaim => e },
-        claims.collect { case e: InProgressClaim => e },
-        claims.collect { case e: ClosedClaim => e }
-      )
-    }
-    // $COVERAGE-OFF$
-    .recoverWith { case e =>
-      logger.error(s"Error while getting claims using CDFPay TPI01 request: $e")
-      Future.failed(e)
-    }
+  final def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims] =
+    httpClient
+      .get(if (includeXiClaims) URL(getGbAndXiClaimsUrl) else URL(getGbClaimsUrl))
+      .execute[AllClaimsResponse]
+      .map { claimsResponse =>
+        val claims =
+          claimsResponse.claims.ndrcClaims.map(_.toClaim) ++
+            claimsResponse.claims.sctyClaims
+              .map(_.toClaim)
+        AllClaims(
+          claims.collect { case e: PendingClaim => e },
+          claims.collect { case e: InProgressClaim => e },
+          claims.collect { case e: ClosedClaim => e }
+        )
+      }
+      // $COVERAGE-OFF$
+      .recoverWith { case e =>
+        logger.error(s"Error while getting claims using CDFPay TPI01 request: $e")
+        Future.failed(e)
+      }
   // $COVERAGE-ON$
 
   final def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
   ): Future[Either[String, Option[ClaimDetail]]] =
     httpClient
-      .GET[SpecificClaimResponse](
-        getSpecificClaimUrl(serviceType, caseNumber)
-      )
+      .get(getSpecificClaimUrl(serviceType, caseNumber))
+      .execute[SpecificClaimResponse]
       .map {
         case SpecificClaimResponse("NDRC", true, Some(e: NDRCCase), None) => Right(Some(e.toClaimDetail(lrn)))
         case SpecificClaimResponse("SCTY", true, None, Some(e: SCTYCase)) => Right(Some(e.toClaimDetail(lrn)))

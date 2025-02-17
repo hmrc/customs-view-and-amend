@@ -16,91 +16,79 @@
 
 package connectors
 
+import config.AppConfig
 import connector.UploadDocumentsConnector
 import models.FileSelection.AdditionalSupportingDocuments
+import models.file_upload.UploadDocumentsWrapper
 import models.{NDRC, Nonce}
 import play.api.i18n.Messages
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Writes
+import play.api.libs.json.Json
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpReads, HttpResponse, UpstreamErrorResponse}
+import play.api.inject
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HttpResponse, UpstreamErrorResponse}
 import utils.SpecBase
 
-import scala.concurrent.{ExecutionContext, Future}
-
-class UploadDocumentsConnectorSpec extends SpecBase {
+class UploadDocumentsConnectorSpec extends SpecBase with HttpV2Support {
   implicit val messages: Messages = stubMessages()
 
   "startFileUpload" should {
     "return the response header on a successful request" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))))
+      val payload = UploadDocumentsWrapper
+        .createPayload(nonce, caseNumber, ndrc, documentType, previouslyUploaded)
+
+      mockHttpPost[HttpResponse]("http://host1:123/internal/initialize", Json.toJson(payload))(
+        HttpResponse(CREATED, "", Map("Location" -> Seq("/location")))
+      )
 
       running(app) {
         val result =
-          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
+          await(connector.startFileUpload(nonce, caseNumber, ndrc, documentType, previouslyUploaded))
         result shouldBe Some("/location")
       }
     }
 
     "return None if other status returned" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(NO_CONTENT, "", Map("Location" -> Seq("/location")))))
+      val payload = UploadDocumentsWrapper
+        .createPayload(nonce, caseNumber, ndrc, documentType, previouslyUploaded)
 
+      mockHttpPost[HttpResponse]("http://host1:123/internal/initialize", Json.toJson(payload))(
+        HttpResponse(NO_CONTENT, "", Map("Location" -> Seq("/location")))
+      )
       running(app) {
         val result =
-          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
+          await(connector.startFileUpload(nonce, caseNumber, ndrc, documentType, previouslyUploaded))
         result shouldBe None
       }
     }
 
     "return default UCDF location if the response header is empty" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.successful(HttpResponse(CREATED, "", Map("Location" -> Seq("/upload-customs-documents")))))
+      val payload = UploadDocumentsWrapper
+        .createPayload(nonce, caseNumber, ndrc, documentType, previouslyUploaded)
+
+      mockHttpPost[HttpResponse]("http://host1:123/internal/initialize", Json.toJson(payload))(
+        HttpResponse(CREATED, "", Map("Location" -> Seq("/upload-customs-documents")))
+      )
 
       running(app) {
         val result =
-          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
+          await(connector.startFileUpload(nonce, caseNumber, ndrc, documentType, previouslyUploaded))
         result shouldBe Some("/upload-customs-documents")
       }
     }
 
     "return None if the api request fails" in new Setup {
-      (mockHttp
-        .POST(_: String, _: Seq[(String, String)], _: Seq[(String, String)])(
-          _: Writes[Any],
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      val payload = UploadDocumentsWrapper
+        .createPayload(nonce, caseNumber, ndrc, documentType, previouslyUploaded)
+
+      mockHttpPostWithException("http://host1:123/internal/initialize", Json.toJson(payload))(
+        UpstreamErrorResponse("", 500, 500)
+      )
 
       running(app) {
         val result =
-          await(connector.startFileUpload(nonce, "NDRC-1234", NDRC, AdditionalSupportingDocuments, Seq.empty))
+          await(connector.startFileUpload(nonce, caseNumber, ndrc, documentType, previouslyUploaded))
         result shouldBe None
       }
     }
@@ -108,14 +96,9 @@ class UploadDocumentsConnectorSpec extends SpecBase {
 
   "wipeData" should {
     "return false on a failed response" in new Setup {
-      (mockHttp
-        .POSTEmpty(_: String, _: Seq[(String, String)])(
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *)
-        .returning(Future.failed(UpstreamErrorResponse("", 500, 500)))
+      mockHttpPostEmptyWithException("http://host1:123/internal/wipe-out")(
+        UpstreamErrorResponse("", 500, 500)
+      )
 
       running(app) {
         val result = await(connector.wipeData)
@@ -124,14 +107,9 @@ class UploadDocumentsConnectorSpec extends SpecBase {
     }
 
     "return true on a successful response" in new Setup {
-      (mockHttp
-        .POSTEmpty(_: String, _: Seq[(String, String)])(
-          _: HttpReads[HttpResponse],
-          _: HeaderCarrier,
-          _: ExecutionContext
-        ))
-        .expects(*, *, *, *, *)
-        .returning(Future.successful(HttpResponse(NO_CONTENT, "")))
+      mockHttpPostEmpty[HttpResponse]("http://host1:123/internal/wipe-out")(
+        HttpResponse(NO_CONTENT, "")
+      )
 
       running(app) {
         val result = await(connector.wipeData)
@@ -141,23 +119,28 @@ class UploadDocumentsConnectorSpec extends SpecBase {
   }
 
   trait Setup {
-    val mockHttp: HttpClient = mock[HttpClient]
-
-    implicit val hc: HeaderCarrier = HeaderCarrier()
 
     val app = GuiceApplicationBuilder()
       .overrides(
-        inject.bind[HttpClient].toInstance(mockHttp)
+        inject.bind[HttpClientV2].toInstance(mockHttp)
       )
       .configure(
-        "play.filters.csp.nonce.enabled" -> "false",
-        "auditing.enabled"               -> "false",
-        "metrics.enabled"                -> "false"
+        "play.filters.csp.nonce.enabled"                       -> "false",
+        "auditing.enabled"                                     -> "false",
+        "metrics.enabled"                                      -> "false",
+        "microservice.services.upload-documents-frontend.host" -> "host1",
+        "microservice.services.upload-documents-frontend.port" -> "123"
       )
       .build()
 
+    implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+
     val connector: UploadDocumentsConnector = app.injector.instanceOf[UploadDocumentsConnector]
 
-    val nonce = Nonce.random
+    val nonce              = Nonce.random
+    val caseNumber         = "NDRC-1234"
+    val ndrc               = NDRC
+    val documentType       = AdditionalSupportingDocuments
+    val previouslyUploaded = Seq.empty
   }
 }
