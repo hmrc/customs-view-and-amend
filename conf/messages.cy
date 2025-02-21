@@ -304,11 +304,14 @@ claim-detail.mrn=MRN
 view-upload.updated.desc=Pan fo hawliad newydd wedi agor, gallai gymryd hyd at 1 diwrnod gwaith i ymddangos ar y rhestr ‘hawliadau ar y gweill’.
 verify-your-email.need-to-verify=Dyma fydd yr unig gyfeiriad e-bost a ddefnyddiwn ar gyfer:
 verify-your-email.title=Mae angen i chi ddilysu?r cyfeiriad e-bost cofrestredig ar gyfer y Gwasanaeth Datganiadau Tollau 
-unauthorised.h2.already-subscribed=Os ydych eisoes wedi tanysgrifio i CDS
-unauthorised.h2.subscribe=Tanysgrifiwch i CDS
-unauthorised.link-to-subscribe=<a href="{0}" class="govuk-link">Tanysgrifiwch i’r Gwasanaeth Datganiadau Tollau (CDS)</a>
-unauthorised.p1=Gwiriwch eich bod wedi mewngofnodi gyda?r Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth sy?n gysylltiedig â?ch rhif Cofrestru ac Adnabod Gweithredwyr Economaidd (EORI) a?ch cyfrif CDS.
-unauthorised.title=Er mwyn mynd yn eich blaen, mae angen i chi danysgrifio i’r Gwasanaeth Datganiadau Tollau (CDS)
+
+unauthorised.title=Nid oes gennych fynediad at y Gwasanaeth Datganiadau Tollau (CDS)
+unauthorised.p1=Gallai hyn fod oherwydd y canlynol:
+unauthorised.p1.li1=nid ydych eto wedi <a href="https://www.gov.uk/guidance/get-access-to-the-customs-declaration-service" class="govuk-link">tanysgrifio i’r CDS</a>
+unauthorised.p1.li2=rydych wedi mewngofnodi gyda’r Dynodydd Defnyddiwr (ID) ar gyfer Porth y Llywodraeth anghywir - gwnewch yn siŵr eich bod yn defnyddio’r un sy’n gysylltiedig â’ch rhif EORI
+unauthorised.p1.li3=nid yw’ch sefydliad wedi rhoi mynediad i chi - gofynnwch i’r person a sefydlodd y mynediad i’ch <a href="https://www.gov.uk/guidance/manage-team-members-using-your-hmrc-business-tax-account" class="govuk-link">ychwanegu chi fel aelod o’r tîm a rhoi mynediad i chi at y CDS</a>
+unauthorised.p2=<a href="https://www.gov.uk/log-in-register-hmrc-online-services/problems-signing-in" class="govuk-link">Cael help os ydych yn cael trafferthion mewngofnodi o hyd</a>
+
 
 error-tax-type-code-validation.title=Mae’n ddrwg gennym, ond nid yw manylion yr hawliad ar gael
 error-tax-type-code-validation.h2=Mae’n ddrwg gennym, ond nid yw manylion yr hawliad ar gael

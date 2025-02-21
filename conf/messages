@@ -311,11 +311,12 @@ problem-with-email-address.list.3=some financial notifications, including Direct
 #===================================================
 #  UNAUTHORISED PAGE
 #===================================================
-unauthorised.h2.already-subscribed=If you are already subscribed to CDS
-unauthorised.h2.subscribe=Subscribe to CDS
-unauthorised.link-to-subscribe=<a href="{0}" class="govuk-link">Subscribe to the Custom Declaration Service</a>
-unauthorised.p1=Check that you signed in with the Government Gateway user ID that is linked to your Economic Operator and Registration Identification (EORI) number and CDS account.
-unauthorised.title=To continue you need to subscribe to the Customs Declaration Service (CDS)
+unauthorised.title=You do not have access to the Customs Declaration Service (CDS)
+unauthorised.p1=This may be because:
+unauthorised.p1.li1=you have not yet <a href="https://www.gov.uk/guidance/get-access-to-the-customs-declaration-service" class="govuk-link">subscribed to CDS</a>
+unauthorised.p1.li2=you''re signed in with the wrong Government Gateway user ID – make sure you''re using the one that is linked to your EORI number
+unauthorised.p1.li3=your organisation has not given you access – ask the person who set up the access to <a href="https://www.gov.uk/guidance/manage-team-members-using-your-hmrc-business-tax-account" class="govuk-link">add you as a team member and give you access to CDS</a>
+unauthorised.p2=<a href="https://www.gov.uk/log-in-register-hmrc-online-services/problems-signing-in" class="govuk-link">Get help if you still have problems signing in</a>
 
 #===================================================
 #  FILE SELECTION PAGE
