@@ -18,22 +18,18 @@
 
 @this(
     layout: Layout,
-    h1: components.h1,
-    h2: components.h2,
-    subHeading: components.sub_heading,
+    bullets: components.bullets,
     heading: components.heading,
-    p: components.p,
     paragraph: components.paragraph
 )
 
 @()(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@title = @{messages(s"unauthorised.title")}
+@title = @{messages("unauthorised.title")}
 
-@layout(pageTitle = Some(s"$title")) {
-    @heading(Html(title), classes = "govuk-heading-xl govuk-!-margin-top-2 govuk-!-margin-bottom-10")
-    @subHeading(Html(messages("unauthorised.h2.already-subscribed")), classes = "govuk-heading-m govuk-!-margin-top-8")
-    @paragraph(Html(messages(s"unauthorised.p1")))
-    @subHeading(Html(messages("unauthorised.h2.subscribe")), classes = "govuk-heading-m")
-    @paragraph(Html(messages(s"unauthorised.link-to-subscribe", appConfig.subscribeCdsUrl)))
+@layout(pageTitle = Some(s"$title"), fullWidth = false) {
+    @heading(heading = Html(title), classes = "govuk-heading-l govuk-!-margin-bottom-4")
+    @paragraph(Html(messages("unauthorised.p1")))
+    @bullets((1 to 3).map(i => Html(messages(s"unauthorised.p1.li$i"))))
+    @paragraph(Html(messages("unauthorised.p2")))
 }
