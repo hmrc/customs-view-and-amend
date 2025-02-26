@@ -7,6 +7,7 @@ const CustomsViewAndAmend = {
         const backLinkAnchor = document.querySelector('.govuk-back-link');
 
         if (backLinkAnchor) {
+            backLinkAnchor.classList.remove('govuk-!-display-none');
             backLinkAnchor.addEventListener('click', function (event) {
                 event.preventDefault();
                 history.back();
