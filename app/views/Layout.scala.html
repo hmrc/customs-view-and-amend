@@ -71,9 +71,9 @@
             @hmrcLanguageSelectHelper()
         }
         @if(backLink.isDefined){
-            @govukBackLink(BackLink(href = backLink.get, content = Text(messages("back.link")), attributes = Map("id" -> "back-link")))
+            @govukBackLink(BackLink(href = backLink.get, content = Text(messages("back.link")), attributes = Map("id" -> "back-link"), classes = "govuk-!-display-none"))
         } else {
-            @govukBackLink(BackLink(content = Text(messages("back.text")), attributes = Map("id" -> "back-link")))
+            @govukBackLink(BackLink(content = Text(messages("back.text")), attributes = Map("id" -> "back-link"), classes = "govuk-!-display-none"))
         }
     }
 
