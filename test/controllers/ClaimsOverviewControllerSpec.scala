@@ -52,11 +52,33 @@ class ClaimsOverviewControllerSpec extends SpecBase {
       running(app) {
         val request =
           fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
-            .withFormUrlEncodedBody("search" -> "NDRC-0003")
+            .withFormUrlEncodedBody("search" -> "NDRC-0004")
         val result  = route(app, request).value
 
         status(result) shouldBe OK
         // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
+      }
+    }
+
+    "return OK when the field is not empty and multiple results found" in new Setup {
+      running(app) {
+        val request =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
+            .withFormUrlEncodedBody("search" -> "MRN")
+        val result  = route(app, request).value
+
+        status(result) shouldBe OK
+      }
+    }
+
+    "redirect to claim details page when single claim found" in new Setup {
+      running(app) {
+        val request =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
+            .withFormUrlEncodedBody("search" -> "NDRC-0003")
+        val result  = route(app, request).value
+
+        redirectLocation(result) shouldBe Some(routes.ClaimDetailController.claimDetail("NDRC-0003").url)
       }
     }
   }

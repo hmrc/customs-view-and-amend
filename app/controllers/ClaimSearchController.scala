@@ -54,7 +54,11 @@ class ClaimSearchController @Inject() (
           errors => BadRequest(searchClaim(form = errors)),
           query => {
             val claims = allClaims.searchForClaim(query)
-            Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+            claims.headOption match {
+              case Some(firstClaim) if claims.size == 1 =>
+                Redirect(routes.ClaimDetailController.claimDetail(firstClaim.caseNumber))
+              case _                                    => Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+            }
           }
         )
     }
