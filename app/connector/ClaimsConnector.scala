@@ -32,7 +32,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @ImplementedBy(classOf[ClaimsConnectorImpl])
 trait ClaimsConnector {
 
-  def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims]
+  def getAllClaims(includeXiClaims: Boolean)(implicit hc: HeaderCarrier): Future[AllClaims]
 
   def getClaimInformation(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(implicit
     hc: HeaderCarrier
@@ -53,7 +53,7 @@ class ClaimsConnectorImpl @Inject() (httpClient: HttpClientV2, appConfig: AppCon
   private def getSpecificClaimUrl(serviceType: ServiceType, caseNumber: String): URL =
     URL(s"$baseUrl/claims/$serviceType/$caseNumber")
 
-  final def getAllClaims(includeXiClaims: Boolean = false)(implicit hc: HeaderCarrier): Future[AllClaims] =
+  final def getAllClaims(includeXiClaims: Boolean)(implicit hc: HeaderCarrier): Future[AllClaims] =
     httpClient
       .get(if (includeXiClaims) URL(getGbAndXiClaimsUrl) else URL(getGbClaimsUrl))
       .execute[AllClaimsResponse]

@@ -52,7 +52,7 @@ class ClaimSearchControllerSpec extends SpecBase {
     "return OK when the field is not empty" in new Setup {
       running(app) {
         val request =
-          fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-2000")
+          fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("search" -> "NDRC-0001")
         val result  = route(app, request).value
 
         status(result) shouldBe OK
