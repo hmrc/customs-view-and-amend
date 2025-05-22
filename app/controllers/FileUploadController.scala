@@ -25,7 +25,6 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.play.http.HeaderCarrierConverter
-import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,7 +37,6 @@ class FileUploadController @Inject() (
   currentSession: CurrentSessionAction,
   modifySessionAction: ModifySessionAction,
   uploadDocumentsConnector: UploadDocumentsConnector,
-  notFound: not_found,
   appConfig: AppConfig
 )(implicit executionContext: ExecutionContext)
     extends FrontendController(mcc)

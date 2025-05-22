@@ -23,7 +23,6 @@ import models.{EntryNumber, FileUploadJourney}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.errors.not_found
 import views.html.upload_confirmation
 
 import javax.inject.{Inject, Singleton}
@@ -37,7 +36,6 @@ class FileSubmissionController @Inject() (
   modifySessionAction: ModifySessionAction,
   fileSubmissionConnector: FileSubmissionConnector,
   uploadDocumentsConnector: UploadDocumentsConnector,
-  notFound: not_found,
   upload_confirmation: upload_confirmation
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)

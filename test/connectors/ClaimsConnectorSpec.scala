@@ -37,7 +37,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
       mockHttpGet[AllClaimsResponse](URL("http://host1:123/cds-reimbursement-claim/claims"))(allClaimsResponse)
 
       running(app) {
-        val result = await(connector.getAllClaims())
+        val result = await(connector.getAllClaims(false))
         result.closedClaims     shouldBe Seq(
           ClosedClaim(
             "21LLLLLLLLLL12343",

@@ -18,7 +18,6 @@ package controllers
 
 import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
-import connector.ClaimsConnector
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -34,7 +33,6 @@ class ClaimListController @Inject() (
   authenticate: IdentifierAction,
   currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction,
-  claimsConnector: ClaimsConnector,
   claimsClosed: claims_closed,
   claimsPending: claims_pending,
   claimsInProgress: claims_in_progress

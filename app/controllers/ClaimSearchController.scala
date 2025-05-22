@@ -18,7 +18,6 @@ package controllers
 
 import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
-import connector.ClaimsConnector
 import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
@@ -29,7 +28,6 @@ import javax.inject.{Inject, Singleton}
 
 @Singleton
 class ClaimSearchController @Inject() (
-  connector: ClaimsConnector,
   mcc: MessagesControllerComponents,
   searchClaim: search_claims,
   authenticate: IdentifierAction,
