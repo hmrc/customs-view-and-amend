@@ -29,34 +29,6 @@ import utils.SpecBase
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{ExecutionContext, Future}
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.mvc.Result
-import play.api.Application
-import play.api.mvc.BodyParsers.Default
-import play.api.Application
 import play.api.mvc.BodyParsers.Default
 
 class IdentifierActionSpec extends SpecBase {

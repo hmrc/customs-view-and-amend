@@ -18,9 +18,6 @@ package models
 
 import utils.SpecBase
 import models.responses.SCTYCase
-import models.responses.SCTYCase
-import models.responses.SCTYCase
-import models.responses.SCTYCase
 
 class SCTYCaseSpec extends SpecBase {
 

@@ -17,7 +17,6 @@
 package controllers
 
 import models.{AllClaims, FileSelection, InProgressClaim, NDRC, PendingClaim, SessionData}
-import play.api.Application
 import play.api.i18n.Messages
 import play.api.test.Helpers.*
 import repositories.SessionCache

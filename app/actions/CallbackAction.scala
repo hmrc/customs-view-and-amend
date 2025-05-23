@@ -17,7 +17,6 @@
 package actions
 
 import com.google.inject.ImplementedBy
-import config.AppConfig
 import models.AuthorisedRequest
 import play.api.mvc.*
 import play.api.mvc.Results.*
@@ -37,7 +36,6 @@ trait CallbackAction
 @Singleton
 class AuthorisedCallbackAction @Inject() (
   override val authConnector: AuthConnector,
-  config: AppConfig,
   val parser: BodyParsers.Default
 )(implicit val executionContext: ExecutionContext)
     extends CallbackAction

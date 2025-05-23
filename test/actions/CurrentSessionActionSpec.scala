@@ -18,7 +18,6 @@ package actions
 
 import models.email.{UndeliverableEmail, UnverifiedEmail}
 import models.{AuthorisedRequest, Error, SessionData}
-import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*

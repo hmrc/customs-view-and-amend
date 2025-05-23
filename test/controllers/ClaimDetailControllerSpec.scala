@@ -20,7 +20,6 @@ import models.*
 import models.CaseType.*
 import models.email.UnverifiedEmail
 import models.responses.{C285, ProcedureDetail}
-import play.api.Application
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase
@@ -251,22 +250,24 @@ class ClaimDetailControllerSpec extends SpecBase {
   trait Setup extends SetupBase {
 
     val claimDetail: ClaimDetail = ClaimDetail(
-      "caseNumber",
-      NDRC,
-      Some("DeclarationId"),
-      Seq(ProcedureDetail(MRNNumber = "DeclarationId", mainDeclarationReference = true)),
-      Seq.empty,
-      Some("SomeLrn"),
-      Some("GB746502538945"),
-      InProgress,
-      None,
-      Some(C285),
-      Some(Bulk),
-      Some(LocalDate.now),
-      None,
-      Some("1200"),
-      Some("Sarah Philips"),
-      Some("sarah.philips@acmecorp.com")
+      caseNumber = "caseNumber",
+      serviceType = NDRC,
+      declarationId = Some("DeclarationId"),
+      mrn = Seq(ProcedureDetail(MRNNumber = "DeclarationId", mainDeclarationReference = true)),
+      entryNumbers = Seq.empty,
+      lrn = Some("SomeLrn"),
+      claimantsEori = Some("GB746502538945"),
+      declarantEori = "GB746502538945",
+      importerEori = Some("GB746502538945"),
+      claimStatus = InProgress,
+      caseSubStatus = None,
+      claimType = Some(C285),
+      caseType = Some(Bulk),
+      claimStartDate = Some(LocalDate.now),
+      claimClosedDate = None,
+      totalClaimAmount = Some("1200"),
+      claimantsName = Some("Sarah Philips"),
+      claimantsEmail = Some("sarah.philips@acmecorp.com")
     )
 
     val allClaims: AllClaims = AllClaims(

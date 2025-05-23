@@ -61,24 +61,26 @@ case class SCTYCase(
 
   def toClaimDetail(lrn: Option[String]): ClaimDetail =
     ClaimDetail(
-      CDFPayCaseNumber,
-      SCTY,
-      declarationID,
-      Seq.empty,
-      Seq.empty,
-      lrn,
-      claimantEORI,
-      transformCaseStatus,
-      caseSubStatus,
-      None,
-      None,
-      claimStartDate.map(DateTimeUtil.toDateTime),
-      closedDate.map(DateTimeUtil.toDateTime),
-      totalClaimAmount,
-      claimantName,
-      claimantEmailAddress,
-      Some(reasonForSecurity),
-      getSecurityGoodsDescription
+      caseNumber = CDFPayCaseNumber,
+      serviceType = SCTY,
+      declarationId = declarationID,
+      mrn = Seq.empty,
+      entryNumbers = Seq.empty,
+      lrn = lrn,
+      claimantsEori = claimantEORI.map(_.toUpperCase.trim),
+      declarantEori = declarantEORI.toUpperCase.trim,
+      importerEori = importerEORI.map(_.toUpperCase.trim),
+      claimStatus = transformCaseStatus,
+      caseSubStatus = caseSubStatus,
+      claimType = None,
+      caseType = None,
+      claimStartDate = claimStartDate.map(DateTimeUtil.toDateTime),
+      claimClosedDate = closedDate.map(DateTimeUtil.toDateTime),
+      totalClaimAmount = totalClaimAmount,
+      claimantsName = claimantName,
+      claimantsEmail = claimantEmailAddress,
+      reasonForSecurity = Some(reasonForSecurity),
+      securityGoodsDescription = getSecurityGoodsDescription
     )
 
 }

@@ -20,7 +20,6 @@ import connector.{ClaimsConnector, DataStoreConnector, XiEoriConnector}
 import models.CaseType.Individual
 import models.Reimbursement
 import models.responses.{C285, EntryDetail, Goods, NDRCAmounts, NDRCCase, NDRCDetail, ProcedureDetail, SCTYCase}
-import org.apache.pekko.stream.testkit.NoMaterializer
 import org.scalamock.scalatest.MockFactory
 import org.scalatest.concurrent.{IntegrationPatience, ScalaFutures}
 import org.scalatest.matchers.should.Matchers
@@ -33,7 +32,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.CSRFTokenHelper.CSRFRequest
 import play.api.test.FakeRequest
-import play.api.test.Helpers.stubPlayBodyParsers
 import repositories.SessionCache
 import uk.gov.hmrc.auth.core.AuthConnector
 import uk.gov.hmrc.auth.core.retrieve.Email
@@ -157,7 +155,7 @@ trait SpecBase
 
     def application: GuiceApplicationBuilder = new GuiceApplicationBuilder()
       .overrides(
-        bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
+        bind[AuthConnector].toInstance(new FakeAuthConector()),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[SessionCache].toInstance(mockSessionCache),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
@@ -172,7 +170,7 @@ trait SpecBase
 
     def applicationWithMongoCache: GuiceApplicationBuilder = new GuiceApplicationBuilder()
       .overrides(
-        bind[AuthConnector].toInstance(new FakeAuthConector(stubPlayBodyParsers(NoMaterializer))),
+        bind[AuthConnector].toInstance(new FakeAuthConector()),
         bind[DataStoreConnector].toInstance(mockDataStoreConnector),
         bind[ClaimsConnector].toInstance(mockClaimsConnector),
         bind[XiEoriConnector].toInstance(mockXiEoriConnector)
