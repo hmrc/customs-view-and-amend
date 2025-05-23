@@ -27,6 +27,10 @@ import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import models.ServiceType
+import models.NDRC
+import models.SCTY
+import models.AuthorisedRequestWithSessionData
 
 @Singleton
 class ClaimDetailController @Inject() (
@@ -43,35 +47,57 @@ class ClaimDetailController @Inject() (
 
   private val actions = authenticate andThen currentSession andThen allClaimsAction
 
+  val ndrcCaseNumberRegex = "NDRC-\\d+".r
+  val sctyCaseNumberRegex = "SEC-\\d+".r
+
   final def claimDetail(caseNumber: String): Action[AnyContent] =
     actions.async { case (request, allClaims) =>
       implicit val r = request
       allClaims.findByCaseNumber(caseNumber) match {
         case Some(claim) =>
-          claimsConnector
-            .getClaimInformation(caseNumber, claim.serviceType, claim.lrn)
-            .map {
-              case Right(Some(claimDetails)) =>
-                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
-                Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
-
-              case Right(None) =>
-                NotFound(notFound())
-                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-
-              case Left("ERROR_HTTP_500") =>
-                Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))
-
-              case Left(other) =>
-                NotFound(notFound())
-                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-            }
+          showClaimDetail(caseNumber, claim.serviceType, claim.lrn)
 
         case _ =>
-          Future.successful(
-            NotFound(notFound())
-              .withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
-          )
+          caseNumber match {
+            case ndrcCaseNumberRegex() =>
+              showClaimDetail(caseNumber, NDRC, None)
+
+            case sctyCaseNumberRegex() =>
+              showClaimDetail(caseNumber, SCTY, None)
+
+            case _ =>
+              Future.successful(
+                NotFound(notFound())
+                  .withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+              )
+          }
+
       }
     }
+
+  def showClaimDetail(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(using
+    request: AuthorisedRequestWithSessionData[AnyContent]
+  ) =
+    claimsConnector
+      .getClaimInformation(caseNumber, serviceType, lrn)
+      .map {
+        case Right(Some(claimDetails)) =>
+          if claimDetails.isConnectedTo(request.eori)
+          then
+            val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
+            Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
+          else
+            NotFound(notFound())
+              .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
+        case Right(None)               =>
+          NotFound(notFound())
+            .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
+
+        case Left("ERROR_HTTP_500") =>
+          Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))
+
+        case Left(other) =>
+          NotFound(notFound())
+            .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
+      }
 }

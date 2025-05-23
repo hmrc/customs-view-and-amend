@@ -35,7 +35,7 @@ class FakeAuthConector @Inject() () extends AuthConnector {
         Set(
           Enrolment(
             key = "HMRC-CUS-ORG",
-            identifiers = Seq(EnrolmentIdentifier("EORINumber", "exampleEori")),
+            identifiers = Seq(EnrolmentIdentifier("EORINumber", "GB746502538945")),
             state = "activated"
           )
         )

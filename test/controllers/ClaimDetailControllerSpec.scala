@@ -30,7 +30,7 @@ import scala.concurrent.Future
 class ClaimDetailControllerSpec extends SpecBase {
 
   "claimDetail" should {
-    "return OK when a in progress claim has been found" in new Setup {
+    "return OK when an in progress claim has been found" in new Setup {
       stubEmailAndCompanyName
       (mockClaimsConnector
         .getAllClaims(_: Boolean)(_: HeaderCarrier))
@@ -43,13 +43,13 @@ class ClaimDetailControllerSpec extends SpecBase {
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe OK
       }
     }
 
-    "return OK when a in progress claim has been found without claimType" in new Setup {
+    "return OK when an in progress claim has been found without claimType" in new Setup {
       stubEmailAndCompanyName
       (mockClaimsConnector
         .getAllClaims(_: Boolean)(_: HeaderCarrier))
@@ -62,7 +62,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe OK
       }
@@ -81,7 +81,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe OK
       }
@@ -100,7 +100,7 @@ class ClaimDetailControllerSpec extends SpecBase {
 
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe OK
       }
@@ -114,7 +114,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(allClaims))
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-someOtherClaim").url)
         val result  = route(app, request).value
         status(result) shouldBe NOT_FOUND
       }
@@ -129,7 +129,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         )
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe SEE_OTHER
       }
@@ -158,7 +158,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(Right(Some(claimDetail))))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe OK
       }
@@ -187,7 +187,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(Right(None)))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe NOT_FOUND
       }
@@ -205,11 +205,11 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(Left("ERROR_HTTP_500")))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result)           shouldBe SEE_OTHER
         redirectLocation(result) shouldBe Some(
-          routes.ErrorNewTaxTypeCodeValidationController.showError("someClaim").url
+          routes.ErrorNewTaxTypeCodeValidationController.showError("NDRC-caseNumber").url
         )
       }
     }
@@ -226,7 +226,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(Left("FOO")))
 
       running(app) {
-        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("someClaim").url)
+        val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-caseNumber").url)
         val result  = route(app, request).value
         status(result) shouldBe NOT_FOUND
       }
@@ -240,7 +240,7 @@ class ClaimDetailControllerSpec extends SpecBase {
         .returning(Future.successful(allClaims))
       running(app) {
         val request =
-          fakeRequest(GET, routes.ClaimDetailController.claimDetail("someOtherClaim").url)
+          fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-someOtherClaim").url)
         val result  = route(app, request).value
         status(result) shouldBe NOT_FOUND
       }
@@ -250,7 +250,7 @@ class ClaimDetailControllerSpec extends SpecBase {
   trait Setup extends SetupBase {
 
     val claimDetail: ClaimDetail = ClaimDetail(
-      caseNumber = "caseNumber",
+      caseNumber = "NDRC-caseNumber",
       serviceType = NDRC,
       declarationId = Some("DeclarationId"),
       mrn = Seq(ProcedureDetail(MRNNumber = "DeclarationId", mainDeclarationReference = true)),
@@ -273,7 +273,7 @@ class ClaimDetailControllerSpec extends SpecBase {
     val allClaims: AllClaims = AllClaims(
       pendingClaims = Seq.empty,
       inProgressClaims = Seq(
-        InProgressClaim("MRN", "someClaim", NDRC, None, Some(LocalDate.of(2021, 2, 1)))
+        InProgressClaim("MRN", "NDRC-caseNumber", NDRC, None, Some(LocalDate.of(2021, 2, 1)))
       ),
       closedClaims = Seq.empty
     )
