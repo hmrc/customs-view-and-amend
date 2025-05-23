@@ -19,7 +19,6 @@ package models
 import play.api.libs.json.{JsResult, JsString}
 import utils.SpecBase
 
-@annotation.nowarn
 class SimpleDecimalFormatSpec extends SpecBase {
 
   "SimpleDecimalFormat" should {

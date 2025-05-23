@@ -31,6 +31,8 @@ case class ClaimDetail(
   entryNumbers: Seq[EntryDetail],
   lrn: Option[String],
   claimantsEori: Option[String],
+  declarantEori: String,
+  importerEori: Option[String],
   claimStatus: ClaimStatus,
   caseSubStatus: Option[String],
   claimType: Option[ClaimType],
@@ -58,6 +60,10 @@ case class ClaimDetail(
     case Pending => true
     case _       => false
   }
+
+  def isConnectedTo(eori: String): Boolean =
+    val e = eori.toUpperCase().trim()
+    declarantEori == e || importerEori.contains(e) || claimantsEori.contains(e)
 }
 
 object ClaimDetail {

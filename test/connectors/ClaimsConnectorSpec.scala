@@ -110,7 +110,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
 
       running(app) {
         val result = await(connector.getClaimInformation("NDRC-1234", NDRC, None)).value.value
-        result.claimantsEori.value     shouldBe "ClaimaintEori"
+        result.claimantsEori.value     shouldBe "CLAIMAINTEORI"
         result.claimType.value         shouldBe C285
         result.mrn                     shouldBe Seq(ProcedureDetail("MRN", mainDeclarationReference = true))
         result.claimStatus             shouldBe Closed

@@ -16,7 +16,6 @@
 
 package utils
 
-import play.api.mvc.*
 import uk.gov.hmrc.auth.core.authorise.Predicate
 import uk.gov.hmrc.auth.core.retrieve.Retrieval
 import uk.gov.hmrc.auth.core.{AuthConnector, Enrolment, EnrolmentIdentifier, Enrolments}
@@ -25,7 +24,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class FakeAuthConector @Inject() (bodyParsers: PlayBodyParsers) extends AuthConnector {
+class FakeAuthConector @Inject() () extends AuthConnector {
 
   override def authorise[A](predicate: Predicate, retrieval: Retrieval[A])(implicit
     hc: HeaderCarrier,

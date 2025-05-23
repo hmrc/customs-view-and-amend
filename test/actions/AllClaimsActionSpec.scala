@@ -17,7 +17,6 @@
 package actions
 
 import models.{AllClaims, AuthorisedRequestWithSessionData, ClosedClaim, Error, InProgressClaim, PendingClaim, SessionData}
-import play.api.Application
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers.*

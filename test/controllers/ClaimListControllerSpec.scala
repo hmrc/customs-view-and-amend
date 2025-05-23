@@ -17,7 +17,6 @@
 package controllers
 
 import models.*
-import play.api.Application
 import play.api.test.Helpers.*
 import uk.gov.hmrc.http.HeaderCarrier
 import utils.SpecBase

@@ -22,7 +22,7 @@ import models.{Nonce, *}
 import play.api.i18n.Messages
 import play.api.libs.json.Json
 import play.api.test.Helpers.*
-import play.api.{Application, inject}
+import play.api.inject
 import repositories.SessionCache
 import uk.gov.hmrc.http.{Authorization, HeaderCarrier, SessionId}
 import utils.SpecBase

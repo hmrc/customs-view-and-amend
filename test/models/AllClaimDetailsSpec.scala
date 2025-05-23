@@ -222,6 +222,8 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
     entryNumbers = Seq.empty,
     lrn = None,
     claimantsEori = Some("GB744638982000"),
+    declarantEori = "GB744638982000",
+    importerEori = Some("GB744638982000"),
     claimStatus = Pending,
     caseSubStatus = None,
     claimType = Some(`C&E1179`),

@@ -58,7 +58,7 @@ class CallbackActionSpec extends SpecBase {
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
         val authAction =
-          new AuthorisedCallbackAction(mockAuthConnector, config, bodyParsers)
+          new AuthorisedCallbackAction(mockAuthConnector, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -86,7 +86,7 @@ class CallbackActionSpec extends SpecBase {
         val bodyParsers = app.injector.instanceOf[BodyParsers.Default]
 
         val authAction =
-          new AuthorisedCallbackAction(mockAuthConnector, config, bodyParsers)
+          new AuthorisedCallbackAction(mockAuthConnector, bodyParsers)
         val controller = new Harness(authAction)
 
         running(app) {
@@ -107,7 +107,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new MissingBearerToken),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -128,7 +127,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new BearerTokenExpired),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -149,7 +147,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new InsufficientEnrolments),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -170,7 +167,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new InsufficientConfidenceLevel),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -191,7 +187,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new UnsupportedAuthProvider),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -212,7 +207,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new UnsupportedAffinityGroup),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)
@@ -233,7 +227,6 @@ class CallbackActionSpec extends SpecBase {
 
         val authAction = new AuthorisedCallbackAction(
           new FakeFailingAuthConnector(new UnsupportedCredentialRole),
-          config,
           bodyParsers
         )
         val controller = new Harness(authAction)

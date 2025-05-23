@@ -18,7 +18,6 @@ package controllers
 
 import play.api.test.Helpers.*
 import utils.SpecBase
-import play.api.Application
 
 class NotFoundControllerSpec extends SpecBase {
 
