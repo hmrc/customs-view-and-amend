@@ -47,49 +47,47 @@ class ClaimDetailController @Inject() (
 
   private val actions = authenticate andThen currentSession andThen allClaimsAction
 
-  val ndrcCaseNumberRegex = "NDRC-\\d+".r
-  val sctyCaseNumberRegex = "SEC-\\d+".r
-
   final def claimDetail(caseNumber: String): Action[AnyContent] =
     actions.async { case (request, allClaims) =>
       implicit val r = request
       allClaims.findByCaseNumber(caseNumber) match {
         case Some(claim) =>
-          showClaimDetail(caseNumber, claim.serviceType, claim.lrn)
+          showClaimDetail(caseNumber, claim.serviceType, claim.lrn, checkClaimPermission = false)
 
         case _ =>
           caseNumber match {
-            case ndrcCaseNumberRegex() =>
-              showClaimDetail(caseNumber, NDRC, None)
+            case NDRC.caseNumberRegex() =>
+              showClaimDetail(caseNumber, NDRC, None, checkClaimPermission = true)
 
-            case sctyCaseNumberRegex() =>
-              showClaimDetail(caseNumber, SCTY, None)
+            case SCTY.caseNumberRegex() =>
+              showClaimDetail(caseNumber, SCTY, None, checkClaimPermission = true)
 
             case _ =>
               Future.successful(
                 NotFound(notFound())
-                  .withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
+                  .withHeaders("X-Explanation" -> "CLOSED_CASE_NUMBER_INVALID")
               )
           }
 
       }
     }
 
-  def showClaimDetail(caseNumber: String, serviceType: ServiceType, lrn: Option[String])(using
-    request: AuthorisedRequestWithSessionData[AnyContent]
+  def showClaimDetail(caseNumber: String, serviceType: ServiceType, lrn: Option[String], checkClaimPermission: Boolean)(
+    using request: AuthorisedRequestWithSessionData[AnyContent]
   ) =
     claimsConnector
       .getClaimInformation(caseNumber, serviceType, lrn)
       .map {
         case Right(Some(claimDetails)) =>
-          if claimDetails.isConnectedTo(request.eori)
+          if !checkClaimPermission || claimDetails.isConnectedTo(request.eori)
           then
             val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
             Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
           else
             NotFound(notFound())
-              .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-        case Right(None)               =>
+              .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_ACCESS_FORBIDDEN")
+
+        case Right(None) =>
           NotFound(notFound())
             .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
 
@@ -98,6 +96,6 @@ class ClaimDetailController @Inject() (
 
         case Left(other) =>
           NotFound(notFound())
-            .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
+            .withHeaders("X-Explanation" -> other)
       }
 }

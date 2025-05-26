@@ -25,6 +25,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.search_claims
 
 import javax.inject.{Inject, Singleton}
+import models.NDRC
+import models.SCTY
 
 @Singleton
 class ClaimSearchController @Inject() (
@@ -53,11 +55,20 @@ class ClaimSearchController @Inject() (
         .fold(
           errors => BadRequest(searchClaim(form = errors)),
           query => {
-            val claims = allClaims.searchForClaim(query)
+            val q      = query.toUpperCase.trim()
+            val claims = allClaims.searchForClaim(q)
             claims.headOption match {
-              case Some(firstClaim) if claims.size <= 1 =>
+              case Some(firstClaim) if claims.size == 1 =>
                 Redirect(routes.ClaimDetailController.claimDetail(firstClaim.caseNumber))
-              case _                                    => Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+
+              case None
+                  if claims.isEmpty
+                    && (NDRC.caseNumberRegex.matches(q)
+                      || SCTY.caseNumberRegex.matches(q)) =>
+                Redirect(routes.ClaimDetailController.claimDetail(q))
+
+              case _ =>
+                Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
             }
           }
         )
