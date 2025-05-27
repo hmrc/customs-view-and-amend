@@ -24,9 +24,11 @@ sealed trait ServiceType {
 }
 
 case object NDRC extends ServiceType {
+  val caseNumberRegex                   = "NDRC-\\d+".r
   override val dec64ServiceType: String = "NDRC"
 }
 case object SCTY extends ServiceType {
+  val caseNumberRegex                   = "S(?:EC|CTY)-\\d+".r
   override val dec64ServiceType: String = "Securities"
 }
 

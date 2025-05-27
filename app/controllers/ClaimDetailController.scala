@@ -19,14 +19,20 @@ package controllers
 import actions.{AllClaimsAction, CurrentSessionAction, IdentifierAction}
 import config.AppConfig
 import connector.ClaimsConnector
+import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.claim_detail
+import views.html.{claim_detail, search_claims}
 import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import models.ServiceType
+import models.NDRC
+import models.SCTY
+import models.AuthorisedRequestWithSessionData
+import play.api.Logging
 
 @Singleton
 class ClaimDetailController @Inject() (
@@ -36,10 +42,12 @@ class ClaimDetailController @Inject() (
   allClaimsAction: AllClaimsAction,
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
+  searchClaim: search_claims,
   notFound: not_found
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
-    with I18nSupport {
+    with I18nSupport
+    with Logging {
 
   private val actions = authenticate andThen currentSession andThen allClaimsAction
 
@@ -48,30 +56,50 @@ class ClaimDetailController @Inject() (
       implicit val r = request
       allClaims.findByCaseNumber(caseNumber) match {
         case Some(claim) =>
-          claimsConnector
-            .getClaimInformation(caseNumber, claim.serviceType, claim.lrn)
-            .map {
-              case Right(Some(claimDetails)) =>
-                val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
-                Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
-
-              case Right(None) =>
-                NotFound(notFound())
-                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-
-              case Left("ERROR_HTTP_500") =>
-                Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))
-
-              case Left(other) =>
-                NotFound(notFound())
-                  .withHeaders("X-Explanation" -> "CLAIM_INFORMATION_NOT_FOUND")
-            }
+          showClaimDetail(caseNumber, claim.serviceType, claim.lrn, checkClaimPermission = false)
 
         case _ =>
-          Future.successful(
-            NotFound(notFound())
-              .withHeaders("X-Explanation" -> "NOT_AUTHORISED_TO_VIEW")
-          )
+          caseNumber match {
+            case NDRC.caseNumberRegex() =>
+              showClaimDetail(caseNumber, NDRC, None, checkClaimPermission = true)
+
+            case SCTY.caseNumberRegex() =>
+              showClaimDetail(caseNumber, SCTY, None, checkClaimPermission = true)
+
+            case _ =>
+              Future.successful(
+                NotFound(notFound())
+                  .withHeaders("X-Explanation" -> "CLOSED_CASE_NUMBER_INVALID")
+              )
+          }
+
       }
     }
+
+  def showClaimDetail(caseNumber: String, serviceType: ServiceType, lrn: Option[String], checkClaimPermission: Boolean)(
+    using request: AuthorisedRequestWithSessionData[AnyContent]
+  ) =
+    claimsConnector
+      .getClaimInformation(caseNumber, serviceType, lrn)
+      .map {
+        case Right(Some(claimDetails)) =>
+          if !checkClaimPermission || claimDetails.isConnectedTo(request.eori)
+          then
+            val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
+            Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
+          else {
+            logger.info(s"Permission to see claim details $caseNumber denied")
+            Ok(searchClaim(query = Some(caseNumber), form = SearchFormHelper.form))
+          }
+
+        case Right(None) =>
+          Ok(searchClaim(query = Some(caseNumber), form = SearchFormHelper.form))
+
+        case Left("ERROR_HTTP_500") =>
+          Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))
+
+        case Left(other) =>
+          NotFound(notFound())
+            .withHeaders("X-Explanation" -> other)
+      }
 }
