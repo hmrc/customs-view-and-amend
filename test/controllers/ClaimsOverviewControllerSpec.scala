@@ -47,14 +47,14 @@ class ClaimsOverviewControllerSpec extends SpecBase {
       }
     }
 
-    "return OK when the field is not empty" in new Setup {
+    "redirect to claim details when the field is not empty" in new Setup {
       running(app) {
         val request =
           fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
             .withFormUrlEncodedBody("search" -> "NDRC-0004")
         val result  = route(app, request).value
 
-        status(result) shouldBe OK
+        redirectLocation(result) shouldBe Some(routes.ClaimDetailController.claimDetail("NDRC-0004").url)
         // verify(mockClaimsConnector, times(1)).getAllClaims(any)(any)
       }
     }
@@ -67,6 +67,18 @@ class ClaimsOverviewControllerSpec extends SpecBase {
         val result  = route(app, request).value
 
         status(result) shouldBe OK
+      }
+    }
+
+    "return OK when the field is not empty and query doesn't match regex for case number" in new Setup {
+      running(app) {
+        val request =
+          fakeRequest(POST, routes.ClaimsOverviewController.onSubmit.url)
+            .withFormUrlEncodedBody("search" -> "foo")
+        val result  = route(app, request).value
+
+        status(result)                                                             shouldBe OK
+        contentAsString(result).contains("There are no matching results for foo.") shouldBe true
       }
     }
 
