@@ -25,7 +25,6 @@
     heading: components.heading,
     bullets: components.bullets,
     paragraph: components.paragraph,
-    dropdown: components.dropdown,
     subHeading: components.sub_heading,
     button: components.button,
     input: components.input_text,
@@ -47,24 +46,10 @@
 
 @hasErrors = @{form.hasErrors || form.hasGlobalErrors}
 
-@dropdownContent = {
-    <div class="govuk-grid-row">
-        <div class="govuk-grid-column-two-thirds">
-            @paragraph(Html(messages("view-upload.details.intro")))
-            @ul(titleAndDescriptionList("view-upload", 2))
-        </div>
-    </div>
-}
-
 @layout(pageTitle = Some(messages(s"view-upload.title")), fullWidth = true, hasErrors = hasErrors) {
 
     @errorSummary(form.errors)
     @headerArea("view-upload", form = form)
-
-    @dropdown(
-        summary = s"view-upload.updated.title",
-        dropdownContent
-    )
 
     @if(allClaims.nonEmpty) {
         @card(
@@ -77,7 +62,8 @@
             allClaims.pendingClaims.nonEmpty,
             messages(s"view-upload.more-information.link"),
             controllers.routes.ClaimListController.showPendingClaimList(None).url,
-            insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None
+            insetMessage = if(newMessageCount > 0) Some(messages("claims.overview.pending.indent", newMessageCount)) else None,
+            headingClass = "govuk-heading-l govuk-!-margin-bottom-4"
         )
 
         @card(
@@ -89,7 +75,9 @@
             messages(s"view-upload.in-progress.desc"),
             allClaims.inProgressClaims.nonEmpty,
             messages(s"view-upload.in-progress.link"),
-            controllers.routes.ClaimListController.showInProgressClaimList(None).url
+            controllers.routes.ClaimListController.showInProgressClaimList(None).url,
+            insetMessage = Some(messages("view-upload.in-progress.inset")),
+            headingClass = "govuk-heading-l govuk-!-margin-bottom-4"
         )
 
         @card(
@@ -102,7 +90,8 @@
             allClaims.closedClaims.nonEmpty,
             messages(s"view-upload.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
-            cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9"
+            cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9",
+            headingClass = "govuk-heading-l govuk-!-margin-bottom-4"
         )
     } else {
         @p(s"view-upload.no-claims.p1")

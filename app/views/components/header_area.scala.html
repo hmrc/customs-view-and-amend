@@ -30,6 +30,7 @@
   form: Form[String] = SearchFormHelper.form,
   showCompanyNameAndEori: Boolean = true,
   showInset: Boolean = false,
+  showP1: Boolean = false,
   showSearchTitle: Boolean = true,
   xiEori: Option[XiEori] = Option.empty,
   query: Option[String] = None,
@@ -47,6 +48,10 @@
     }
 } else {
   @heading(Html(messages(s"${key}.title")))
+}
+
+@if(showP1){
+    @paragraph(content = Html(messages(s"${key}.p1")))
 }
 
 @if(showInset){

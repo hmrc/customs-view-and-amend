@@ -22,8 +22,7 @@
 
 @this(layout: Layout,
       headerArea: components.header_area,
-      claimTable: components.claim_table, 
-      p: components.p, 
+      claimTable: components.claim_table,
       dropdownDetails: components.dropdown_details)
 
 @(model: ClosedClaimListViewModel,
@@ -34,7 +33,7 @@
 
 @layout(pageTitle = Some(title)) {
           
-          @headerArea(key, showInset = true)
+          @headerArea(key, showInset = true, showP1 = true)
           
           @dropdownDetails( summary = (s"$key.details.heading"), content = caseStatusHints.renderHintsWithLabels(key))
           
