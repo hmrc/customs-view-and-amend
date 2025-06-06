@@ -74,8 +74,8 @@ class ClaimSearchControllerSpec extends SpecBase {
           fakeRequest(POST, routes.ClaimSearchController.onSubmit.url).withFormUrlEncodedBody("search" -> "foo")
         val result  = route(app, request).value
 
-        status(result)                                                             shouldBe OK
-        contentAsString(result).contains("There are no matching results for foo.") shouldBe true
+        status(result)                                                  shouldBe OK
+        contentAsString(result).contains("No matching results for foo") shouldBe true
       }
     }
 

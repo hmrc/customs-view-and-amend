@@ -121,8 +121,8 @@ class ClaimDetailControllerSpec extends SpecBase {
           fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-0005").url)
         val result  = route(app, request).value
 
-        status(result)                                                                   shouldBe OK
-        contentAsString(result).contains("There are no matching results for NDRC-0005.") shouldBe true
+        status(result)                                                        shouldBe OK
+        contentAsString(result).contains("No matching results for NDRC-0005") shouldBe true
       }
     }
 
@@ -185,8 +185,8 @@ class ClaimDetailControllerSpec extends SpecBase {
         val request = fakeRequest(GET, routes.ClaimDetailController.claimDetail("NDRC-1234").url)
         val result  = route(app, request).value
 
-        status(result)                                                                   shouldBe OK
-        contentAsString(result).contains("There are no matching results for NDRC-1234.") shouldBe true
+        status(result)                                                        shouldBe OK
+        contentAsString(result).contains("No matching results for NDRC-1234") shouldBe true
       }
     }
 
