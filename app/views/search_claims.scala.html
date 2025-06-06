@@ -22,7 +22,6 @@
         subHeading: components.sub_heading,
         searchTable: components.search_table,
         p: components.p,
-        bullets: components.bullets,
         errorSummary: components.error_summary)
 
 @(claims: Seq[Claim] = Seq.empty, query: Option[String] = None, form: Form[String])(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
@@ -44,10 +43,6 @@
                 @subHeading(Html(messages(s"$key.result.title")), classes = "govuk-heading-m")
                 @searchTable(claims)
             </div>
-        } else {
-            @subHeading(Html(messages(s"$key.result.fail.title", query.get)), classes = "govuk-heading-m")
-            @p(s"$key.result.fail.hint")
         }
     }
-
 }

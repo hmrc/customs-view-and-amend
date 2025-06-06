@@ -26,7 +26,13 @@
     inputText: input_text
 )
 
-@(form: Form[String] = SearchFormHelper.form, showSearchTitle: Boolean = true, query: Option[String] = None, pageKey: String = "")(implicit request: Request[_], messages: Messages)
+@(
+    form: Form[String] = SearchFormHelper.form,
+    showSearchTitle: Boolean = true,
+    hintKey: Option[String] = Some("search.hint"),
+    query: Option[String] = None,
+    pageKey: String = ""
+)(implicit request: Request[_], messages: Messages)
 
 @actionUrl = @{
     if(pageKey == "view-upload")
@@ -51,7 +57,7 @@
                 labelClasses = Some("govuk-label--m"),
                 isPageHeading = false,
                 classes = Some("govuk-input--width-20 govuk-!-margin-bottom-5"),
-                hint = Some("search.hint")
+                hint = hintKey
             )
 
             @button(s"$key.button")

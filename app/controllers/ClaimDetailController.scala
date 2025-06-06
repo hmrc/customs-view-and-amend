@@ -23,7 +23,7 @@ import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{claim_detail, search_claims}
+import views.html.{claim_detail, search_claims, search_claims_not_found}
 import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
@@ -43,6 +43,7 @@ class ClaimDetailController @Inject() (
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
   searchClaim: search_claims,
+  searchClaimNotFound: search_claims_not_found,
   notFound: not_found
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
@@ -89,11 +90,11 @@ class ClaimDetailController @Inject() (
             Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
           else {
             logger.info(s"Permission to see claim details $caseNumber denied")
-            Ok(searchClaim(query = Some(caseNumber), form = SearchFormHelper.form))
+            Ok(searchClaimNotFound(query = caseNumber, form = SearchFormHelper.form))
           }
 
         case Right(None) =>
-          Ok(searchClaim(query = Some(caseNumber), form = SearchFormHelper.form))
+          Ok(searchClaimNotFound(query = caseNumber, form = SearchFormHelper.form))
 
         case Left("ERROR_HTTP_500") =>
           Redirect(routes.ErrorNewTaxTypeCodeValidationController.showError(caseNumber))

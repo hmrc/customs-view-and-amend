@@ -23,6 +23,7 @@ import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import views.html.search_claims
+import views.html.search_claims_not_found
 
 import javax.inject.{Inject, Singleton}
 import models.NDRC
@@ -32,6 +33,7 @@ import models.SCTY
 class ClaimSearchController @Inject() (
   mcc: MessagesControllerComponents,
   searchClaim: search_claims,
+  searchClaimNotFound: search_claims_not_found,
   authenticate: IdentifierAction,
   currentSession: CurrentSessionAction,
   allClaimsAction: AllClaimsAction
@@ -68,7 +70,10 @@ class ClaimSearchController @Inject() (
                 Redirect(routes.ClaimDetailController.claimDetail(q))
 
               case _ =>
-                Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+                if (!claims.isEmpty)
+                  Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+                else
+                  Ok(searchClaimNotFound(query, form = SearchFormHelper.form))
             }
           }
         )

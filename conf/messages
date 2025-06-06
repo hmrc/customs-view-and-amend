@@ -288,6 +288,15 @@ claim-search.skipToResults=Skip to results
 claim-search.error.required=Enter a claim reference number or the first movement reference number (MRN)
 
 #===================================================
+#  CLAIM SEARCH PAGE NO CLAIMS FOUND
+#===================================================
+
+claim-search-not-found.title=No matching results for {0}
+claim-search-not-found.p1=If your claim was submitted in the last 30 days and includes more than one Movement Reference Number (MRN), try searching with the first MRN you entered when you started the claim.
+claim-search-not-found.p2=To find older claims, search with your claim reference number.
+claim-search-not-found.search-hint=Enter a claim reference number or the first MRN in your claim
+
+#===================================================
 #  PROBLEM WITH EMAIL ADDRESS PAGE
 #===================================================
 problem-with-email-address.title=There‘s a problem with the CDS registered email address

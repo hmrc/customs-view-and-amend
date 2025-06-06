@@ -23,7 +23,7 @@ import models.RequestWithSessionData
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{claims_overview, search_claims}
+import views.html.{claims_overview, search_claims, search_claims_not_found}
 
 import javax.inject.{Inject, Singleton}
 import models.NDRC
@@ -37,7 +37,8 @@ class ClaimsOverviewController @Inject() (
   allClaimsAction: AllClaimsAction,
   xiEoriAction: XiEoriAction,
   claimsOverview: claims_overview,
-  searchClaim: search_claims
+  searchClaim: search_claims,
+  searchClaimNotFound: search_claims_not_found
 )(implicit appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport {
@@ -90,7 +91,10 @@ class ClaimsOverviewController @Inject() (
                 Redirect(routes.ClaimDetailController.claimDetail(q))
 
               case _ =>
-                Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+                if (!claims.isEmpty)
+                  Ok(searchClaim(claims, Some(query), form = SearchFormHelper.form))
+                else
+                  Ok(searchClaimNotFound(query, form = SearchFormHelper.form))
             }
           }
         )
