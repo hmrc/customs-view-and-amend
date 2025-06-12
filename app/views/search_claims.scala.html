@@ -18,7 +18,7 @@
 @import config.AppConfig
 
 @this(layout: Layout,
-        headerArea: components.header_area,
+        searchHeaderArea: components.search_header_area,
         subHeading: components.sub_heading,
         searchTable: components.search_table,
         p: components.p,
@@ -32,10 +32,10 @@
 @pageTitle = @{if (query.nonEmpty) titleAfterSearch else title}
 @hasErrors = @{form.hasErrors || form.hasGlobalErrors}
 
-@layout(pageTitle = Some(pageTitle), fullWidth = true, hasErrors = hasErrors) {
+@layout(pageTitle = Some(pageTitle), fullWidth = false, hasErrors = hasErrors) {
 
     @errorSummary(form.errors)
-    @headerArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty, form = form)
+    @searchHeaderArea(key, showCompanyNameAndEori = false, showSearchTitle = false, query = query, showingResults = claims.nonEmpty, form = form)
 
     @if(query.isDefined){
         @if(claims.nonEmpty) {
