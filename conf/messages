@@ -269,9 +269,10 @@ verify-your-email.link-text=Verify or change email address
 #===================================================
 #  CLAIM SEARCH PAGE
 #===================================================
-claim-search.title=Find a claim
+claim-search.title=Search for a claim
 claim-search.titleSearchResultSuffix=Search result
 claim-search.inset=Search by claim reference number
+claim-search.search-hint=Enter a Movement Reference Number (MRN), or the claim reference number for older claims
 
 claim-search.result.title=Your search returned
 claim-search.result.fail.title=There are no matching results for {0}.
