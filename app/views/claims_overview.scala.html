@@ -86,10 +86,11 @@
             } else {
                 messages(s"view-upload.closed.plural.title", allClaims.closedClaims.size)
             },
-            messages(s"view-upload.closed.desc"),
+            messages(s"view-upload.closed.desc1"),
             allClaims.closedClaims.nonEmpty,
             messages(s"view-upload.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
+            p2 = Some(messages(s"view-upload.closed.desc2")),
             cardClass = "custom-card govuk-!-padding-4 govuk-!-margin-bottom-9",
             headingClass = "govuk-heading-l govuk-!-margin-bottom-4"
         )
