@@ -286,7 +286,7 @@ claim-search.result.pending=Pending
 claim-search.result.in-progress=In Progress
 claim-search.skipToResults=Skip to results
 
-claim-search.error.required=Enter a claim reference number or the first movement reference number (MRN)
+claim-search.error.required=Enter a Movement Reference Number (MRN), or the claim reference number for older claims
 
 #===================================================
 #  CLAIM SEARCH PAGE NO CLAIMS FOUND
