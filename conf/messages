@@ -162,7 +162,8 @@ view-upload.in-progress.inset=After you submit a new claim, it can take at least
 
 view-upload.closed.singular.title=1 claim has been closed
 view-upload.closed.plural.title={0} claims have been closed
-view-upload.closed.desc=A claim is closed once HMRC has fully reviewed it, and approved or rejected it. If you withdraw your claim, it will also appear here. You‘ll see closed claims for 30 days. After that, they‘re removed from the list, but you can still find an older claim by searching with your claim reference number.
+view-upload.closed.desc1=A claim is closed once HMRC has fully reviewed it, and approved or rejected it. If you withdraw your claim, it will also appear here.
+view-upload.closed.desc2=You‘ll see closed claims for 30 days. After that, they‘re removed from the list, but you can still find an older claim by searching with your claim reference number.
 view-upload.closed.link=View closed claims
 
 view-upload.no-claims.p1=You have no claims to view.

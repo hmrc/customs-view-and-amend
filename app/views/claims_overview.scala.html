@@ -86,7 +86,7 @@
             } else {
                 messages(s"view-upload.closed.plural.title", allClaims.closedClaims.size)
             },
-            messages(s"view-upload.closed.desc"),
+            messages(s"view-upload.closed.desc1") + "<br>" + "<br>" + messages(s"view-upload.closed.desc2"),
             allClaims.closedClaims.nonEmpty,
             messages(s"view-upload.closed.link"),
             controllers.routes.ClaimListController.showClosedClaimList(None).url,
