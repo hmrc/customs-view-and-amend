@@ -240,6 +240,11 @@ file-selection.error.required=Dewiswch y math o ddogfen rydych yn ei huwchlwytho
 claim-detail.decision=Penderfyniad yr hawliad
 view-upload.in-progress.singular.title=1 hawliad ar y gweill
 claim-search.result.fail.hint=Gwiriwch eich cyfeirnod hawlio neu’r cyfeirnod symudiad (MRN) cyntaf ac yna chwiliwch eto.
+claim-search-not-found.title=Nid oes unrhyw ganlyniadau cyfatebol ar gyfer {0}
+claim-search-not-found.p1=Os cyflwynwyd eich hawliad yn ystod y 30 diwrnod diwethaf ac yn cynnwys mwy nag un Rhif Cyfeirnod Symud (MRN), ceisiwch chwilio gyda’r MRN cyntaf a nodwyd pan wnaethoch chi ddechrau’r hawliad.
+claim-search-not-found.p2=I ddod o hyd i hawliadau hŷn, chwiliwch gyda cyfeirnod eich hawliad.
+claim-search-not-found.search-hint=Nodwch gyfeirnod hawliad neu’r MRN cyntaf yn eich hawliad
+
 claim-list.closed.inset=I weld hawliadau hŷn sydd wedi cau, chwiliwch gan ddefnyddio cyfeirnod yr hawliad.
 month.abbr.9=Medi
 view-upload.in-progress.plural.title={0} o hawliadau ar y gweill
