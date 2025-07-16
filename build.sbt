@@ -29,8 +29,6 @@ lazy val scoverageSettings = {
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(
     play.sbt.PlayScala,
-    SbtAutoBuildPlugin,
-    SbtGitVersioning,
     SbtDistributablesPlugin
   )
   .disablePlugins(JUnitXmlReportPlugin)
@@ -38,7 +36,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(scoverageSettings: _*)
   .settings(PlayKeys.playDefaultPort := 9399)
   .settings(Assets / pipelineStages := Seq(uglify))
-  .settings(uglifyCompressOptions := Seq("unused=false", "dead_code=false"))
+  .settings(uglifyOps := UglifyOps.singleFile)
   .settings(
     majorVersion := 0,
     scalaVersion := "3.3.6",
