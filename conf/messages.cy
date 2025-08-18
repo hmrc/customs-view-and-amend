@@ -62,7 +62,6 @@ pager.summary=Yn dangos
 claim-detail.lrn=Cyfeirnod Lleol (LRN)
 not-subscribed-to-cds.detail.get-access-link=cael mynediad at CDS (yn agor ffenestr neu dab newydd)
 view-upload.closed.link=Bwrw golwg dros hawliadau sydd wedi cau
-claim-detail.description-of-goods=Disgrifiad o’r nwyddau
 file-upload.p1=Drwy anfon y ffeiliau hyn, rydych yn cadarnhau bod y manylion a rowch yn gywir.
 file-selection.legend=Ychwanegu dogfennau ategol at eich hawliad
 claim-detail.p1.check-email=Trowch at eich e-byst i weld manylion am ddogfennau sydd ar goll ac unrhyw geisiadau am wybodaeth ychwanegol oddi wrth eich gweithiwr achos.
