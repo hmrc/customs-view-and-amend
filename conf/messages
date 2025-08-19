@@ -215,7 +215,6 @@ claim-detail.value=Claim amount requested
 claim-detail.name=Claimant‘s name
 claim-detail.email=Claimant‘s email address
 claim-detail.upload=Upload files (opens in a new tab link)
-claim-detail.description-of-goods=Description of goods
 
 claim-detail.reason-for-security=Reason for security
 claim-detail.reason-for-security.ACS=Account Sales

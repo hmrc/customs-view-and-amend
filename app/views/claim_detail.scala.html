@@ -95,13 +95,6 @@ actions = None
                     actions = None
                 ))
             },
-            claimDetail.securityGoodsDescription.map { description =>
-                SummaryListRow(
-                    Key(content = HtmlContent(messages("claim-detail.description-of-goods"))),
-                    Value(content = HtmlContent(description)),
-                    actions = None
-                )
-            },
             claimDetail.reasonForSecurity.map { rfs =>
                 SummaryListRow(
                     Key(content = HtmlContent(messages("claim-detail.reason-for-security"))),
