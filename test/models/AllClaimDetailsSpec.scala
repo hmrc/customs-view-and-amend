@@ -19,6 +19,7 @@ package models
 import models.responses.{NDRCCaseDetails, ProcedureDetail, SCTYCaseDetails, `C&E1179`}
 import org.scalatest.Inside
 import play.api.i18n.{DefaultMessagesApi, Lang, Messages}
+import play.api.libs.json.Json
 import utils.SpecBase
 
 import java.time.LocalDate
@@ -131,6 +132,96 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
 
     "check multipleDeclarations" in {
       claimDetail.multipleDeclarations shouldBe false
+    }
+
+    "serialize and deserialize" in {
+      val json = Json.toJson(claimDetail)
+      json shouldBe Json.obj(
+        "caseNumber"      -> "NDRC-2109",
+        "serviceType"     -> "NDRC",
+        "declarationId"   -> "21LLLLLLLLLLLLLLL9",
+        "mrn"             -> Json.arr(Json.obj("MRNNumber" -> "21LLLLLLLLLLLLLLL9", "mainDeclarationReference" -> true)),
+        "entryNumbers"    -> Json.arr(),
+        "claimantsEori"   -> "GB744638982000",
+        "declarantEori"   -> "GB744638982000",
+        "importerEori"    -> "GB744638982000",
+        "claimStatus"     -> "Pending",
+        "claimType"       -> "C&E1179",
+        "claimStartDate"  -> "2022-12-14",
+        "claimClosedDate" -> "2021-07-23",
+        "caseType"        -> "Individual"
+      )
+    }
+  }
+
+  "Claim" should {
+
+    "serialize and deserialize InProgressClaim" in {
+      val claim = InProgressClaim(
+        declarationId = "declarationId",
+        caseNumber = "caseNumber",
+        serviceType = NDRC,
+        lrn = Some("someLrn"),
+        claimStartDate = Some(LocalDate.of(2021, 2, 1))
+      )
+      val json  = Json.toJson(claim)
+      json shouldBe Json.obj(
+        "declarationId"  -> "declarationId",
+        "caseNumber"     -> "caseNumber",
+        "serviceType"    -> "NDRC",
+        "lrn"            -> "someLrn",
+        "claimStartDate" -> "2021-02-01"
+      )
+
+      claim.claimStatus shouldBe InProgress
+    }
+
+    "serialize and deserialize PendingClaim" in {
+      val claim = PendingClaim(
+        declarationId = "declarationId",
+        caseNumber = "caseNumber",
+        serviceType = NDRC,
+        lrn = Some("someLrn"),
+        claimStartDate = Some(LocalDate.of(2021, 2, 1)),
+        respondByDate = Some(LocalDate.of(2022, 1, 1)),
+        reasonForSecurity = Some("reasonForSecurity")
+      )
+      val json  = Json.toJson(claim)
+      json shouldBe Json.obj(
+        "declarationId"     -> "declarationId",
+        "caseNumber"        -> "caseNumber",
+        "serviceType"       -> "NDRC",
+        "lrn"               -> "someLrn",
+        "claimStartDate"    -> "2021-02-01",
+        "respondByDate"     -> "2022-01-01",
+        "reasonForSecurity" -> "reasonForSecurity"
+      )
+
+      claim.claimStatus shouldBe Pending
+    }
+
+    "serialize and deserialize ClosedClaim" in {
+      val claim = ClosedClaim(
+        declarationId = "declarationId",
+        caseNumber = "caseNumber",
+        serviceType = NDRC,
+        lrn = Some("someLrn"),
+        claimStartDate = Some(LocalDate.of(2021, 2, 1)),
+        removalDate = Some(LocalDate.of(2021, 5, 1)),
+        caseSubStatus = "subStatus"
+      )
+      val json  = Json.toJson(claim)
+      json shouldBe Json.obj(
+        "declarationId"  -> "declarationId",
+        "caseNumber"     -> "caseNumber",
+        "serviceType"    -> "NDRC",
+        "lrn"            -> "someLrn",
+        "claimStartDate" -> "2021-02-01",
+        "removalDate"    -> "2021-05-01",
+        "caseSubStatus"  -> "subStatus"
+      )
+
+      claim.claimStatus shouldBe Closed
     }
   }
 

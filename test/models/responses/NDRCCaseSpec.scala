@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package models
+package models.responses
 
-import models.responses.NDRCCase
+import models.{InProgress, Pending, Closed}
 import play.api.libs.json.Json
 import utils.SpecBase
 
