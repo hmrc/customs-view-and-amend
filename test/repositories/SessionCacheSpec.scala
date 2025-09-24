@@ -211,8 +211,34 @@ class SessionCacheSpec extends AnyWordSpec with CleanMongoCollectionSupport with
       }
     }
 
-  }
+    "handle update failure when no session data" in new TestEnvironment {
+      val sessionData: SessionData = SessionData()
 
+      val failingSessionCache: DefaultSessionCache =
+        new DefaultSessionCache(mongoComponent, new CurrentTimestampSupport(), config) {
+          override def get[A : Reads](cacheId: HeaderCarrier)(dataKey: DataKey[A]): Future[Option[A]] =
+            Future.successful(None)
+        }
+
+      val result: Either[models.Error, SessionData] =
+        await(failingSessionCache.update(_ => throw new Exception("no session found in mongo")))
+      result.isLeft shouldBe true
+    }
+
+    "handle update failure when get fails" in new TestEnvironment {
+      val sessionData: SessionData = SessionData()
+
+      val failingSessionCache: DefaultSessionCache =
+        new DefaultSessionCache(mongoComponent, new CurrentTimestampSupport(), config) {
+          override def get[A : Reads](cacheId: HeaderCarrier)(dataKey: DataKey[A]): Future[Option[A]] =
+            Future.failed(new Exception("some error"))
+        }
+
+      val result: Either[models.Error, SessionData] =
+        await(failingSessionCache.update(_ => throw new Exception("some error")))
+      result.isLeft shouldBe true
+    }
+  }
 }
 
 object SessionCacheSpec {

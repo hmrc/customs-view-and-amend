@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package models
+package models.responses
 
-import models.responses.{C285, ClaimType, `C&E1179`}
 import play.api.libs.json.{JsString, JsSuccess}
 import utils.SpecBase
 
