@@ -45,7 +45,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         Some("broomer007"),
         startDate,
         startDate.map(_.plusDays(30)),
-        Some("ACS")
+        Some("MDL")
       )
     }
 
@@ -275,7 +275,7 @@ class AllClaimDetailsSpec extends SpecBase with Inside {
         declarationID = "21LLLLLLLLLL12345",
         claimStartDate = Some("20210320"),
         closedDate = Some("20210520"),
-        reasonForSecurity = "ACS",
+        reasonForSecurity = "MDL",
         caseStatus = status,
         caseSubStatus = Option(status),
         declarantEORI = "GB744638982000",

@@ -102,7 +102,6 @@ claim-detail.p1=Manylion yr hawliad:
 claim-search.title=Chwilio am hawliad
 not-subscribed-to-cds.detail.title=Heb gofrestru â?r Gwasanaeth Datgan Tollau (CDS)
 search.button=Chwilio
-claim-detail.reason-for-security.ACS=Gwerthiannau Cyfrif
 claim-search.result.in-progress=Ar y gweill
 claim-list.closed.details.hint.2=Ni wnaeth yr ymatebydd ateb CThEF am yr hawliad mewn pryd
 view-upload.more-information.desc=Mae’r adran hon yn rhestru hawliadau lle mae gweithiwr achos wedi cysylltu â chi drwy e-bost i ofyn am ragor o wybodaeth. Gallwch uwchlwytho’r dogfennau ategol y gofynnwyd amdanynt drwy glicio i mewn i bob hawliad.
