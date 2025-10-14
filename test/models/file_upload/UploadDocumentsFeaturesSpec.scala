@@ -33,11 +33,11 @@ class UploadDocumentsFeaturesSpec extends SpecBase {
 
       val json = Json.toJson(uploadDocumentsFeatures)
       json shouldBe Json.obj(
-        "showUploadMultiple" -> true,
+        "showUploadMultiple"              -> true,
         "showYesNoQuestionBeforeContinue" -> false,
-        "showAddAnotherDocumentButton" -> false,
-        "showLanguageSelection" -> true,
-        "enableMultipleFilesPicker" -> true
+        "showAddAnotherDocumentButton"    -> false,
+        "showLanguageSelection"           -> true,
+        "enableMultipleFilesPicker"       -> true
       )
 
       val deserialized = json.as[UploadDocumentsFeatures]

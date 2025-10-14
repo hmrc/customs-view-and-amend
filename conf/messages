@@ -217,7 +217,6 @@ claim-detail.email=Claimant‘s email address
 claim-detail.upload=Upload files (opens in a new tab link)
 
 claim-detail.reason-for-security=Reason for security
-claim-detail.reason-for-security.ACS=Account Sales
 claim-detail.reason-for-security.MDC=Missing document: Community System of Duty Relief (CSDR)
 claim-detail.reason-for-security.ENU=End Use Relief
 claim-detail.reason-for-security.IPR=Inward Processing Relief (IPR)

@@ -60,7 +60,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
             Some("broomer007"),
             startDate,
             startDate.map(_.plusDays(30)),
-            Some("ACS")
+            Some("MDL")
           )
         )
       }
@@ -95,7 +95,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
             Some("broomer007"),
             startDate,
             startDate.map(_.plusDays(30)),
-            Some("ACS")
+            Some("MDL")
           )
         )
       }
@@ -223,7 +223,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
               "21LLLLLLLLLL12344",
               Some("20210321"),
               Some("20211220"),
-              "ACS",
+              "MDL",
               "Pending",
               None,
               "GB744638982000",
@@ -238,7 +238,7 @@ class ClaimsConnectorSpec extends SpecBase with HttpV2Support {
               "21LLLLLLLLLL12343",
               Some("20210321"),
               Some("20211220"),
-              "ACS",
+              "MDL",
               "Closed",
               Some("Closed"),
               "GB744638982000",
