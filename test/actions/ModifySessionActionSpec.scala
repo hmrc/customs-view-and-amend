@@ -33,7 +33,7 @@ class ModifySessionActionSpec extends SpecBase {
         (mockSessionCache
           .update(_: SessionData => SessionData)(_: HeaderCarrier, _: ExecutionContext))
           .expects(*, *, *)
-          .onCall { case (f: Function1[SessionData, SessionData], _, _) =>
+          .onCall { case (f: Function1[SessionData, SessionData] @unchecked, _, _) =>
             Future.successful(Right(f(existingSessionData)))
           }
 
