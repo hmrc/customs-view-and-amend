@@ -14,9 +14,8 @@
  * limitations under the License.
  *@
 
-@import views.html.components.claimListRows
 @import views.components.ClaimSubStatus
-@this(claimListRows: claimListRows, h2: components.h2)
+@this(claimListRows: claimListRows)
 
 
 @(claims: Seq[Claim], claimType: ClaimStatus, captionTitle: String)(implicit messages: Messages)
@@ -35,7 +34,7 @@
                          <th class="govuk-table__header" id="decision-label" scope="col">{messages("claim-list.table.heading.decision")}</th>
                     case Pending | InProgress =>
                          <th class="govuk-table__header" id="date-label" scope="col">{messages("claim-list.table.heading.start")}</th>
-                    case _ => Html("") } }
+                    case null => Html("") } }
             </tr>
         </thead>
         <tbody class="govuk-table__body">

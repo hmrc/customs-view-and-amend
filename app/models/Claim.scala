@@ -34,9 +34,6 @@ sealed trait Claim extends DateFormatters with ServiceTypeFormatters {
   def formattedServiceType()(implicit messages: Messages): String       = serviceTypeAsMessage(serviceType)
 }
 
-object Claim {
-  implicit val format: OFormat[Claim] = Json.format[Claim]
-}
 case class InProgressClaim(
   declarationId: String,
   caseNumber: String,

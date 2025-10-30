@@ -14,14 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components._
 @import config.AppConfig
 
 @this(layout: Layout,
         heading: components.heading,
         p: components.p,
-        search: components.search,
-        errorSummary: components.error_summary)
+        search: components.search)
 
 @(query: String, form: Form[String])(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 @key = @{"claim-search-not-found"}
