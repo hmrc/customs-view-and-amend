@@ -14,14 +14,12 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.govukfrontend.views.html.components.FormWithCSRF
 @import config.AppConfig
 
 @this(layout: Layout,
         searchHeaderArea: components.search_header_area,
         subHeading: components.sub_heading,
         searchTable: components.search_table,
-        p: components.p,
         errorSummary: components.error_summary)
 
 @(claims: Seq[Claim] = Seq.empty, query: Option[String] = None, form: Form[String])(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)

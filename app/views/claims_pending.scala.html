@@ -19,7 +19,7 @@
 @import views.html.components.pager
 @import helpers.GenericFormatters._
 
-@this(layout: Layout, h1: components.h1, claimTable: components.claim_table, headerArea: components.header_area)
+@this(layout: Layout, claimTable: components.claim_table, headerArea: components.header_area)
 
 @(model: PendingClaimListViewModel)(implicit request: RequestWithSessionData[_], messages: Messages, appConfig: AppConfig)
 

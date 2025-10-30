@@ -15,7 +15,7 @@
  *@
 
 @import config.AppConfig
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLayout
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcStandardPage
 @import views.html.helper.CSPNonce
 @import uk.gov.hmrc.govukfrontend.views.Aliases._
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcLanguageSelectHelper
@@ -23,18 +23,20 @@
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.TimeoutDialog
 @import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcReportTechnicalIssueHelper
 @import uk.gov.hmrc.govukfrontend.views.html.components.TwoThirdsMainContent
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage.TemplateOverrides._
+@import uk.gov.hmrc.govukfrontend.views.viewmodels.backlink.BackLink
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.userresearchbanner.UserResearchBanner
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.govukfrontend.views.html.components.GovukBackLink
 
 @this(
-        appConfig: AppConfig,
-        hmrcLayout: HmrcLayout,
+        hmrcStandardPage: HmrcStandardPage,
         govukBackLink: GovukBackLink,
         hmrcTimeoutDialog: HmrcTimeoutDialog,
         hmrcReportTechnicalIssueHelper: HmrcReportTechnicalIssueHelper,
         navigationPanel: components.navigation_panel,
         hmrcLanguageSelectHelper: HmrcLanguageSelectHelper,
         twoThirdsMainContent: TwoThirdsMainContent
-
 )
 
 @(pageTitle: Option[String] = None,
@@ -102,16 +104,25 @@
         <script @{CSPNonce.attr} src='@_root_.controllers.routes.Assets.versioned("javascripts/application.min.js")'></script>
     }
 
-    @hmrcLayout(
-        userResearchBannerUrl = if(userResearchBanner) Some(appConfig.helpMakeGovUkBetterUrl) else None,
-        pageTitle = fullPageTitle,
-        serviceUrl = Some(appConfig.guidancePage),
-        signOutUrl = Some(routes.LogoutController.logout.url),
-        mainContentLayout = if(fullWidth) None else Some(twoThirdsMainContent(_)),
-        additionalHeadBlock = Some(additionalHead),
-        additionalScriptsBlock = Some(scripts),
-        beforeContentBlock = Some(beforeContent),
-        phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
-        isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled,
-        accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl)
+    @hmrcStandardPage(
+        HmrcStandardPageParams(
+            serviceURLs = ServiceURLs(
+                serviceUrl = Some(appConfig.guidancePage),
+                signOutUrl = Some(routes.LogoutController.logout.url),
+                accessibilityStatementUrl = Some(appConfig.accessibilityStatementUrl)
+            ),
+            banners = Banners(
+                phaseBanner = Some(PhaseBanner(tag = Some(Tag(content = Text("BETA"))), content = HtmlContent(phaseBannerContent))),
+                userResearchBanner = if(userResearchBanner) Some(UserResearchBanner(url = appConfig.helpMakeGovUkBetterUrl)) else None
+            ),
+            templateOverrides = TemplateOverrides(
+                additionalHeadBlock = Some(additionalHead),
+                additionalScriptsBlock = Some(scripts),
+                beforeContentBlock = Some(beforeContent),
+                mainContentLayout = if(fullWidth) Some(noMainContentLayout) else Some(twoThirdsMainContent(_))
+            ),
+            serviceName = Some(messages("service.name")),
+            pageTitle = fullPageTitle,
+            isWelshTranslationAvailable = appConfig.welshLanguageSupportEnabled
+        )
     )(mainContent)

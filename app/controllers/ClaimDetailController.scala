@@ -23,7 +23,7 @@ import forms.SearchFormHelper
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import views.html.{claim_detail, search_claims, search_claims_not_found}
+import views.html.{claim_detail, search_claims_not_found}
 import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
@@ -42,7 +42,6 @@ class ClaimDetailController @Inject() (
   allClaimsAction: AllClaimsAction,
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
-  searchClaim: search_claims,
   searchClaimNotFound: search_claims_not_found,
   notFound: not_found
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)

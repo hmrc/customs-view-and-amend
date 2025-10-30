@@ -26,7 +26,6 @@ import uk.gov.hmrc.http.hooks.HookData.{FromMap, FromString}
 import uk.gov.hmrc.http.hooks.{Data, HttpHook, RequestData, ResponseData}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.play.audit.http.HttpAuditing
-import uk.gov.hmrc.play.bootstrap.http.DefaultHttpClient
 
 import java.net.URL
 import javax.inject.{Inject, Singleton}
