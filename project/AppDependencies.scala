@@ -5,12 +5,12 @@ import sbt._
 
 object AppDependencies {
 
-  val bootstrapFrontendPlayVersion = "9.16.0"
-  val hmrcMongoPlayVersion         = "2.6.0"
+  val bootstrapFrontendPlayVersion = "9.19.0"
+  val hmrcMongoPlayVersion         = "2.10.0"
 
   val compile = Seq(
     "uk.gov.hmrc"       %% "bootstrap-frontend-play-30" % bootstrapFrontendPlayVersion,
-    "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30" % "12.8.0",
+    "uk.gov.hmrc"       %% "play-frontend-hmrc-play-30" % "12.20.0",
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-30"         % hmrcMongoPlayVersion,
     "org.typelevel"     %% "cats-core"                  % "2.13.0",
     "org.jsoup"          % "jsoup"                      % "1.19.1"
