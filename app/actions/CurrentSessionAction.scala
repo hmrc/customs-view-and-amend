@@ -90,7 +90,7 @@ class CurrentSessionAction @Inject(
     sessionData: SessionData
   )(implicit hc: HeaderCarrier): Future[Either[Result, SessionData]] =
     connector
-      .getEmail(request.eori)
+      .getEmail()
       .map {
         case Left(value) =>
           value match {
@@ -114,7 +114,7 @@ class CurrentSessionAction @Inject(
     sessionData: SessionData
   )(implicit hc: HeaderCarrier): Future[SessionData] =
     connector
-      .getCompanyName(request.eori)
+      .getCompanyName()
       .map {
         case Some(companyName) =>
           sessionData.withCompanyName(companyName)

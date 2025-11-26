@@ -34,8 +34,8 @@ class DataStoreConnector @Inject() (http: HttpClientV2, appConfig: AppConfig)(im
   executionContext: ExecutionContext
 ) extends Logging {
 
-  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Either[EmailResponses, Email]] = {
-    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/$eori/verified-email"
+  def getEmail()(implicit hc: HeaderCarrier): Future[Either[EmailResponses, Email]] = {
+    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/verified-email"
     http
       .get(URL(dataStoreEndpoint))
       .execute[EmailResponse]
@@ -49,8 +49,8 @@ class DataStoreConnector @Inject() (http: HttpClientV2, appConfig: AppConfig)(im
       }
   }
 
-  def getCompanyName(eori: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/$eori/company-information"
+  def getCompanyName()(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/company-information"
     http
       .get(URL(dataStoreEndpoint))
       .execute[CompanyInformationResponse]

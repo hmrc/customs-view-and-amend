@@ -39,7 +39,7 @@ import uk.gov.hmrc.http.{HeaderCarrier, HeaderNames as HMRCHeaderNames, SessionK
 
 import java.util.UUID
 import scala.concurrent.{ExecutionContext, Future}
-import org.scalamock.handlers.CallHandler2
+import org.scalamock.handlers.CallHandler1
 
 trait SpecBase
     extends AnyWordSpecLike
@@ -69,18 +69,18 @@ trait SpecBase
     val mockClaimsConnector: ClaimsConnector       = mock[ClaimsConnector]
     val mockXiEoriConnector: XiEoriConnector       = mock[XiEoriConnector]
 
-    def stubEmailAndCompanyName: CallHandler2[String, HeaderCarrier, Future[Option[String]]] = {
+    def stubEmailAndCompanyName: CallHandler1[HeaderCarrier, Future[Option[String]]] = {
 
       (mockDataStoreConnector
-        .getEmail(_: String)(_: HeaderCarrier))
-        .stubs(*, *)
+        .getEmail()(_: HeaderCarrier))
+        .stubs(*)
         .returning(
           Future.successful(Right(Email("some@email.com")))
         )
 
       (mockDataStoreConnector
-        .getCompanyName(_: String)(_: HeaderCarrier))
-        .stubs(*, *)
+        .getCompanyName()(_: HeaderCarrier))
+        .stubs(*)
         .returning(
           Future.successful(Some("companyName"))
         )
