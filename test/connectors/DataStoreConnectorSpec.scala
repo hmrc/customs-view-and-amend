@@ -40,12 +40,12 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
       val expectedResponse: EmailResponse = Json.parse(jsonResponse).as[EmailResponse]
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
         expectedResponse
       )
 
       running(app) {
-        val response = connector.getEmail(eori)
+        val response = connector.getEmail()
         val result   = await(response)
         result shouldBe Right(Email("someemail@mail.com"))
       }
@@ -54,12 +54,12 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
     "return a UnverifiedEmail" in new Setup {
       val eori = "GB11111"
 
-      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
         new UpstreamErrorResponse("NoData", 404, 404, Map.empty)
       )
 
       running(app) {
-        val response = connector.getEmail(eori)
+        val response = connector.getEmail()
         await(response) shouldBe Left(UnverifiedEmail)
       }
     }
@@ -69,12 +69,12 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
       val emailResponse: EmailResponse = EmailResponse(None, None, None)
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
         emailResponse
       )
 
       running(app) {
-        val response = connector.getEmail(eori)
+        val response = connector.getEmail()
         val result   = await(response)
         result shouldBe Left(UnverifiedEmail)
       }
@@ -85,12 +85,12 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
       val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(JsString("")))
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
         emailResponse
       )
 
       running(app) {
-        val response = connector.getEmail(eori)
+        val response = connector.getEmail()
         val result   = await(response)
         result shouldBe Left(UndeliverableEmail("email@email.com"))
       }
@@ -100,11 +100,11 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
       running(app) {
         val eori = "ETMP500ERROR"
 
-        mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/verified-email"))(
+        mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
           new ServiceUnavailableException("ServiceUnavailable")
         )
 
-        assertThrows[ServiceUnavailableException](await(connector.getEmail(eori)))
+        assertThrows[ServiceUnavailableException](await(connector.getEmail()))
       }
     }
 
@@ -115,13 +115,13 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
       val companyInformationResponse: CompanyInformationResponse = CompanyInformationResponse(companyName, address)
 
       mockHttpGet[CompanyInformationResponse](
-        URL(s"http://host1:123/customs-data-store/eori/$eori/company-information")
+        URL(s"http://host1:123/customs-data-store/eori/company-information")
       )(
         companyInformationResponse
       )
 
       running(app) {
-        val response = connector.getCompanyName(eori)
+        val response = connector.getCompanyName()
         val result   = await(response)
         result should be(Some(companyName))
       }
@@ -130,12 +130,12 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
     "return None when no company information is found" in new Setup {
       val eori = "GB11111"
 
-      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/$eori/company-information"))(
+      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/company-information"))(
         new NotFoundException("Not Found Company Information")
       )
 
       running(app) {
-        val response = await(connector.getCompanyName(eori))
+        val response = await(connector.getCompanyName())
         response shouldBe None
       }
     }
