@@ -52,12 +52,12 @@ class CurrentSessionActionSpec extends SpecBase {
         .expects(*)
         .returning(Future.successful(Right(None)))
       (mockDataStoreConnector
-        .getEmail()(_: HeaderCarrier))
-        .expects(*)
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
         .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
       (mockDataStoreConnector
-        .getCompanyName()(_: HeaderCarrier))
-        .expects(*)
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .expects(*, *)
         .returning(Future.successful(Some("LastMan Ltd.")))
       (mockSessionCache
         .store(_: SessionData)(_: HeaderCarrier))
@@ -83,12 +83,12 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
         (mockDataStoreConnector
-          .getCompanyName()(_: HeaderCarrier))
-          .expects(*)
+          .getCompanyName(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(None))
         (mockSessionCache
           .store(_: SessionData)(_: HeaderCarrier))
@@ -108,12 +108,12 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
         (mockDataStoreConnector
-          .getCompanyName()(_: HeaderCarrier))
-          .expects(*)
+          .getCompanyName(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.failed(new ServiceUnavailableException("")))
         (mockSessionCache
           .store(_: SessionData)(_: HeaderCarrier))
@@ -133,12 +133,12 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.failed(new ServiceUnavailableException("")))
         (mockDataStoreConnector
-          .getCompanyName()(_: HeaderCarrier))
-          .expects(*)
+          .getCompanyName(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Some("Foo")))
         (mockSessionCache
           .store(_: SessionData)(_: HeaderCarrier))
@@ -168,12 +168,12 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Right(Email("last.man@standing.co.uk"))))
         (mockDataStoreConnector
-          .getCompanyName()(_: HeaderCarrier))
-          .expects(*)
+          .getCompanyName(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Some("LastMan Ltd.")))
         (mockSessionCache
           .store(_: SessionData)(_: HeaderCarrier))
@@ -192,8 +192,8 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Left(UndeliverableEmail("some@email.com"))))
         val response =
           await(currentSessionAction.refine(authorisedRequest)).swap.getOrElse(fail("Expected Left response"))
@@ -208,8 +208,8 @@ class CurrentSessionActionSpec extends SpecBase {
           .expects(*)
           .returning(Future.successful(Right(None)))
         (mockDataStoreConnector
-          .getEmail()(_: HeaderCarrier))
-          .expects(*)
+          .getEmail(_: String)(_: HeaderCarrier))
+          .expects(*, *)
           .returning(Future.successful(Left(UnverifiedEmail)))
         val response =
           await(currentSessionAction.refine(authorisedRequest)).swap.getOrElse(fail("Expected Left response"))
