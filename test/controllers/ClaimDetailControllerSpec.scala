@@ -128,8 +128,8 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "redirect to the unverified email page when there is no active email found" in new Setup {
       (mockDataStoreConnector
-        .getEmail()(_: HeaderCarrier))
-        .expects(*)
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
         .returning(
           Future.successful(Left(UnverifiedEmail))
         )
@@ -143,14 +143,14 @@ class ClaimDetailControllerSpec extends SpecBase {
 
     "return OK when there is email check connectivity issue" in new Setup {
       (mockDataStoreConnector
-        .getEmail()(_: HeaderCarrier))
-        .expects(*)
+        .getEmail(_: String)(_: HeaderCarrier))
+        .expects(*, *)
         .returning(
           Future.failed(new Exception("email check fails"))
         )
       (mockDataStoreConnector
-        .getCompanyName()(_: HeaderCarrier))
-        .stubs(*)
+        .getCompanyName(_: String)(_: HeaderCarrier))
+        .stubs(*, *)
         .returning(
           Future.successful(Some("companyName"))
         )

@@ -20,6 +20,8 @@ import config.AppConfig
 import models.company.CompanyInformationResponse
 import models.email.{EmailResponse, EmailResponses, UndeliverableEmail, UnverifiedEmail}
 import play.api.Logging
+import play.api.libs.json.{JsValue, Json, OFormat}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 import play.api.http.Status.NOT_FOUND
 import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.HttpReads.Implicits.*
@@ -34,10 +36,12 @@ class DataStoreConnector @Inject() (http: HttpClientV2, appConfig: AppConfig)(im
   executionContext: ExecutionContext
 ) extends Logging {
 
-  def getEmail()(implicit hc: HeaderCarrier): Future[Either[EmailResponses, Email]] = {
-    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/verified-email"
+  def getEmail(eori: String)(implicit hc: HeaderCarrier): Future[Either[EmailResponses, Email]] = {
+    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/verified-email-third-party"
+    val body: JsValue     = Json.obj("eori" -> eori)
     http
-      .get(URL(dataStoreEndpoint))
+      .post(URL(dataStoreEndpoint))
+      .withBody(body)
       .execute[EmailResponse]
       .map {
         case EmailResponse(Some(address), _, None)  => Right(Email(address))
@@ -49,10 +53,12 @@ class DataStoreConnector @Inject() (http: HttpClientV2, appConfig: AppConfig)(im
       }
   }
 
-  def getCompanyName()(implicit hc: HeaderCarrier): Future[Option[String]] = {
-    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/company-information"
+  def getCompanyName(eori: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+    val dataStoreEndpoint = appConfig.customsDataStore + s"/eori/company-information-third-party"
+    val body: JsValue     = Json.obj("eori" -> eori)
     http
-      .get(URL(dataStoreEndpoint))
+      .post(URL(dataStoreEndpoint))
+      .withBody(body)
       .execute[CompanyInformationResponse]
       .map(response => Some(response.name))
   }.recover { case _ => None }

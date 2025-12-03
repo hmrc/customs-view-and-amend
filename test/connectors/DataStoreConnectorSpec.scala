@@ -27,6 +27,8 @@ import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import utils.SpecBase
+import play.api.libs.json.{JsValue, Json, OFormat}
+import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
 
 import java.net.URL
 
@@ -34,63 +36,63 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
   "Data store connector" should {
     "return existing email" in new Setup {
-      val eori = "GB11111"
-
+      val eori                 = "GB11111"
+      val body: JsValue        = Json.obj("eori" -> eori)
       val jsonResponse: String = """{"address":"someemail@mail.com"}""".stripMargin
 
       val expectedResponse: EmailResponse = Json.parse(jsonResponse).as[EmailResponse]
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
+      mockHttpPost[EmailResponse](s"http://host1:123/customs-data-store/eori/verified-email-third-party", body)(
         expectedResponse
       )
 
       running(app) {
-        val response = connector.getEmail()
+        val response = connector.getEmail(eori)
         val result   = await(response)
         result shouldBe Right(Email("someemail@mail.com"))
       }
     }
 
     "return a UnverifiedEmail" in new Setup {
-      val eori = "GB11111"
-
-      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
+      val eori          = "GB11111"
+      val body: JsValue = Json.obj("eori" -> eori)
+      mockHttpPostWithException(s"http://host1:123/customs-data-store/eori/verified-email-third-party", body)(
         new UpstreamErrorResponse("NoData", 404, 404, Map.empty)
       )
 
       running(app) {
-        val response = connector.getEmail()
+        val response = connector.getEmail(eori)
         await(response) shouldBe Left(UnverifiedEmail)
       }
     }
 
     "return a UnverifiedEmail when unexpected response occurs" in new Setup {
-      val eori = "GB11111"
-
+      val eori                         = "GB11111"
+      val body: JsValue                = Json.obj("eori" -> eori)
       val emailResponse: EmailResponse = EmailResponse(None, None, None)
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
+      mockHttpPost[EmailResponse](s"http://host1:123/customs-data-store/eori/verified-email-third-party", body)(
         emailResponse
       )
 
       running(app) {
-        val response = connector.getEmail()
+        val response = connector.getEmail(eori)
         val result   = await(response)
         result shouldBe Left(UnverifiedEmail)
       }
     }
 
     "return an UndeliverableEmail" in new Setup {
-      val eori = "GB11111"
-
+      val eori                         = "GB11111"
+      val body: JsValue                = Json.obj("eori" -> eori)
       val emailResponse: EmailResponse = EmailResponse(Some("email@email.com"), None, Some(JsString("")))
 
-      mockHttpGet[EmailResponse](URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
+      mockHttpPost[EmailResponse](s"http://host1:123/customs-data-store/eori/verified-email-third-party", body)(
         emailResponse
       )
 
       running(app) {
-        val response = connector.getEmail()
+        val response = connector.getEmail(eori)
         val result   = await(response)
         result shouldBe Left(UndeliverableEmail("email@email.com"))
       }
@@ -98,13 +100,13 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
     "throw service unavailable" in new Setup {
       running(app) {
-        val eori = "ETMP500ERROR"
-
-        mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/verified-email"))(
+        val eori          = "ETMP500ERROR"
+        val body: JsValue = Json.obj("eori" -> eori)
+        mockHttpPostWithException(s"http://host1:123/customs-data-store/eori/verified-email-third-party", body)(
           new ServiceUnavailableException("ServiceUnavailable")
         )
 
-        assertThrows[ServiceUnavailableException](await(connector.getEmail()))
+        assertThrows[ServiceUnavailableException](await(connector.getEmail(eori)))
       }
     }
 
@@ -113,29 +115,30 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
       val companyName                                            = "Company name"
       val address: CompanyAddress                                = CompanyAddress("Street", "City", Some("Post Code"), "Country code")
       val companyInformationResponse: CompanyInformationResponse = CompanyInformationResponse(companyName, address)
-
-      mockHttpGet[CompanyInformationResponse](
-        URL(s"http://host1:123/customs-data-store/eori/company-information")
+      val body: JsValue                                          = Json.obj("eori" -> eori)
+      mockHttpPost[CompanyInformationResponse](
+        s"http://host1:123/customs-data-store/eori/company-information-third-party",
+        body
       )(
         companyInformationResponse
       )
 
       running(app) {
-        val response = connector.getCompanyName()
+        val response = connector.getCompanyName(eori)
         val result   = await(response)
         result should be(Some(companyName))
       }
     }
 
     "return None when no company information is found" in new Setup {
-      val eori = "GB11111"
-
-      mockHttpGetFailure(URL(s"http://host1:123/customs-data-store/eori/company-information"))(
+      val eori          = "GB11111"
+      val body: JsValue = Json.obj("eori" -> eori)
+      mockHttpPostWithException(s"http://host1:123/customs-data-store/eori/company-information-third-party", body)(
         new NotFoundException("Not Found Company Information")
       )
 
       running(app) {
-        val response = await(connector.getCompanyName())
+        val response = await(connector.getCompanyName(eori))
         response shouldBe None
       }
     }
