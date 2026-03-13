@@ -16,10 +16,13 @@
 
 package models.file_upload
 
+import config.AppConfig
 import models.FileSelection.AirwayBill
-import models.{FileSelection, Nonce}
+import models.{FileSelection, NDRC, Nonce}
 import models.Nonce.Any
+import play.api.Application
 import play.api.libs.json.Json
+import play.api.test.Helpers.running
 import utils.SpecBase
 
 class UploadDocumentsWrapperSpec extends SpecBase {
@@ -40,6 +43,28 @@ class UploadDocumentsWrapperSpec extends SpecBase {
   )
 
   "UploadDocumentsWrapper" should {
+
+    "createPayload should only allow expected file extensions" in new SetupBase {
+      val app: Application = application.build()
+      running(app) {
+        implicit val appConfig: AppConfig = app.injector.instanceOf[AppConfig]
+        implicit val msgs                 = messages(app)
+
+        val payload = UploadDocumentsWrapper.createPayload(
+          nonce = Any,
+          caseNumber = "NDRC-1234",
+          serviceType = NDRC,
+          documentType = AirwayBill
+        )
+
+        val allowedExtensions = payload.config.allowedFileExtensions.value.split(",").toSet
+
+        allowedExtensions should not contain ".pst"
+        allowedExtensions should not contain ".ost"
+        allowedExtensions should not contain ".eml"
+      }
+    }
+
     "serialize and deserialize" in {
       val config = UploadDocumentsConfig(
         nonce = Any,
