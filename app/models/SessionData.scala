@@ -40,21 +40,30 @@ final case class SessionData(
   def withAllClaims(claims: AllClaims): SessionData =
     copy(claims = Some(claims))
 
-  def withInitialFileUploadData(caseNumber: String): SessionData =
+  def withInitialFileUploadData(caseNumber: String): SessionData = {
+    println("got here 342234")
     fileUploadJourney match {
       case Some(value)
           if value.claim.caseNumber == caseNumber &&
             !value.submitted =>
+        println("got here 1")
         this
 
       case _ =>
+        println("got here 435345")
+        println("claims: " + claims)
         copy(fileUploadJourney = claims.flatMap {
           _.findByCaseNumber(caseNumber).flatMap {
-            case claim: PendingClaim => Some(FileUploadJourney(claim))
-            case _                   => None
+            case claim: PendingClaim =>
+              println("got here 2")
+              Some(FileUploadJourney(claim))
+            case _                   =>
+              println("got here 3")
+              None
           }
         })
     }
+  }
 
   def withDocumentType(documentType: FileSelection): SessionData =
     copy(fileUploadJourney =
