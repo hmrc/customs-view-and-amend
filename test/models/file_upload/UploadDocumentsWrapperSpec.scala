@@ -62,6 +62,10 @@ class UploadDocumentsWrapperSpec extends SpecBase {
         allowedExtensions should not contain ".pst"
         allowedExtensions should not contain ".ost"
         allowedExtensions should not contain ".eml"
+        allowedExtensions should not contain ".msg"
+
+        val allowedMimeTypes = payload.config.allowedContentTypes.value.split(",").toSet
+        allowedMimeTypes should not contain "application/vnd.ms-outlook"
       }
     }
 
