@@ -49,9 +49,9 @@ object UploadDocumentsWrapper {
         cargo = UploadCargo(caseNumber),
         newFileDescription = documentType,
         allowedContentTypes = Some(
-          "application/pdf,image/jpeg,image/png,text/csv,text/plain,application/vnd.ms-outlook,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet"
+          "application/pdf,image/jpeg,image/png,text/csv,text/plain,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,application/vnd.oasis.opendocument.text,application/vnd.oasis.opendocument.spreadsheet"
         ),
-        allowedFileExtensions = Some(".pdf,.png,.jpg,.jpeg,.csv,.txt,.msg,.doc,.docx,.xls,.xlsx,.ods,.odt"),
+        allowedFileExtensions = Some(".pdf,.png,.jpg,.jpeg,.csv,.txt,.doc,.docx,.xls,.xlsx,.ods,.odt"),
         content = Some(
           UploadDocumentsContent(
             serviceName = Some(messages("service.name")),
