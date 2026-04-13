@@ -43,8 +43,7 @@ class FileSelectionController @Inject() (
 
   private val actions = authenticate andThen currentSession andThen modifySessionAction
 
-  final def onPageLoad(caseNumber: String): Action[AnyContent] = {
-    println("got here 6")
+  final def onPageLoad(caseNumber: String): Action[AnyContent] =
     actions.async { case (request, session) =>
       implicit val r = request
       session
@@ -62,12 +61,10 @@ class FileSelectionController @Inject() (
             )
 
           case _ =>
-            println("got here 5")
             println(session)
             Redirect(routes.ClaimDetailController.claimDetail(caseNumber))
         }
     }
-  }
 
   final val onSubmit: Action[AnyContent] =
     actions.async { case (request, session) =>
