@@ -32,8 +32,6 @@ import models.{AuthorisedRequestWithSessionData, ClaimDetail, NDRC, PendingClaim
 import play.api.Logging
 import repositories.SessionCache
 
-import scala.language.{postfixOps, reflectiveCalls}
-
 @Singleton
 class ClaimDetailController @Inject() (
   mcc: MessagesControllerComponents,
