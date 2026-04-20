@@ -60,7 +60,8 @@ class FileSelectionController @Inject() (
               )
             )
 
-          case _ => Redirect(routes.ClaimDetailController.claimDetail(caseNumber))
+          case _ =>
+            Redirect(routes.ClaimDetailController.claimDetail(caseNumber))
         }
     }
 

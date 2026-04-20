@@ -50,10 +50,8 @@ final case class SessionData(
       case _ =>
         copy(fileUploadJourney = claims.flatMap {
           _.findByCaseNumber(caseNumber).flatMap {
-            case claim: PendingClaim =>
-              Some(FileUploadJourney(claim))
-            case _                   =>
-              None
+            case claim: PendingClaim => Some(FileUploadJourney(claim))
+            case _                   => None
           }
         })
     }
