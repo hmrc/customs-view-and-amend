@@ -28,11 +28,9 @@ import views.html.errors.not_found
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
-import models.ServiceType
-import models.NDRC
-import models.SCTY
-import models.AuthorisedRequestWithSessionData
+import models.{AuthorisedRequestWithSessionData, ClaimDetail, NDRC, PendingClaim, SCTY, ServiceType}
 import play.api.Logging
+import repositories.SessionCache
 
 @Singleton
 class ClaimDetailController @Inject() (
@@ -43,7 +41,8 @@ class ClaimDetailController @Inject() (
   claimsConnector: ClaimsConnector,
   claimDetail: claim_detail,
   searchClaimNotFound: search_claims_not_found,
-  notFound: not_found
+  notFound: not_found,
+  sessionCache: SessionCache
 )(implicit executionContext: ExecutionContext, appConfig: AppConfig)
     extends FrontendController(mcc)
     with I18nSupport
@@ -85,6 +84,12 @@ class ClaimDetailController @Inject() (
         case Right(Some(claimDetails)) =>
           if !checkClaimPermission || claimDetails.isConnectedTo(request.eori)
           then
+            if (
+              claimDetails.isPending && !request.sessionData.claims.get.pendingClaims
+                .exists(_.caseNumber == claimDetails.caseNumber)
+            ) {
+              updateSessionCacheWithSearchedClaim(claimDetails)
+            }
             val fileSelectionUrl = routes.FileSelectionController.onPageLoad(claimDetails.caseNumber)
             Ok(claimDetail(claimDetails, request.verifiedEmail, fileSelectionUrl.url))
           else {
@@ -102,4 +107,26 @@ class ClaimDetailController @Inject() (
           NotFound(notFound())
             .withHeaders("X-Explanation" -> other)
       }
+
+  private def updateSessionCacheWithSearchedClaim(claimDetails: ClaimDetail)(using
+    request: AuthorisedRequestWithSessionData[AnyContent]
+  ): Unit = {
+    val allClaims = request.sessionData.claims.get
+
+    val searchedPendingClaim =
+      PendingClaim(
+        claimDetails.declarationId.get,
+        claimDetails.caseNumber,
+        claimDetails.serviceType,
+        claimDetails.lrn,
+        claimDetails.claimStartDate,
+        None,
+        claimDetails.reasonForSecurity
+      )
+
+    val newAllClaims = allClaims.copy(pendingClaims = allClaims.pendingClaims :+ searchedPendingClaim)
+
+    sessionCache
+      .update(_.withAllClaims(newAllClaims))
+  }
 }
