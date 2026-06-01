@@ -22,15 +22,12 @@ import models.email.*
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsString, Json}
 import play.api.test.Helpers.*
-import play.api.inject
+import play.api.{Application, inject}
 import uk.gov.hmrc.auth.core.retrieve.Email
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.http.{NotFoundException, ServiceUnavailableException, UpstreamErrorResponse}
 import utils.SpecBase
-import play.api.libs.json.{JsValue, Json, OFormat}
-import play.api.libs.ws.WSBodyWritables.writeableOf_JsValue
-
-import java.net.URL
+import play.api.libs.json.JsValue
 
 class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
@@ -146,7 +143,7 @@ class DataStoreConnectorSpec extends SpecBase with HttpV2Support {
 
   trait Setup {
 
-    val app = GuiceApplicationBuilder()
+    val app: Application = GuiceApplicationBuilder()
       .overrides(
         inject.bind[HttpClientV2].toInstance(mockHttp)
       )
