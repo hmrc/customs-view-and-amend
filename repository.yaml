@@ -3,3 +3,4 @@ digital-service: CDS Reimbursements
 type: service
 test-repositories:
   - customs-view-and-amend-performance-tests
+  - customs-view-and-amend-acceptance-tests
